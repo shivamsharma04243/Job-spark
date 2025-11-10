@@ -20,7 +20,7 @@ import Saved from "../modules/user/Dashboard/Saved.jsx";
 import Applied from "../modules/user/Dashboard/Applied.jsx";
 import AlertsManage from "../modules/user/Dashboard/Alerts.jsx";
 
-import ProtectedRoute from "../modules/protected/ProtectedRoute.jsx";
+import ProtectedRoute from "../protected/ProtectedRoute.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },

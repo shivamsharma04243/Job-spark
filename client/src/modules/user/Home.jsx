@@ -78,7 +78,7 @@ function Header() {
         </nav>
 
         <div className="flex gap-3">
-          <Link to="/sign-in"><Button variant="ghost" className="text-slate-300 hover:text-white hover:bg-slate-800">Sign in</Button></Link>
+          <Link to="/sign-in"><Button variant="ghost" className="text-slate-300 text-white hover:bg-slate-800">Sign in</Button></Link>
           <Link to="/sign-up"><Button className="bg-orange-500 hover:bg-orange-600 text-white">Get Job Alerts</Button></Link>
         </div>
       </div>
