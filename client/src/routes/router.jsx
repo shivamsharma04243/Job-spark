@@ -4,9 +4,12 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "../modules/user/Home.jsx";
 import Companies from "../modules/user/Companies.jsx";
 import CareerKit from "../modules/user/CareerKit.jsx";
-import Alerts from "../modules/user/Alerts.jsx";
+import Alerts from "../modules/user/alerts.jsx";
 import Jobs from "../modules/user/Jobs/Index.jsx";
 import JobDetail from "../modules/user/jobs/details.jsx";
+// recruiter pages 
+import RecruiterCreateJob  from "../modules/recruiter/jobs/create-job.jsx";
+import RecruiterProfile from "../modules/recruiter/dashboard/recruiter-profile.jsx";
 
 // auth
 import SignIn from "../modules/auth/SignIn.jsx";
@@ -15,7 +18,7 @@ import Forgot from "../modules/auth/Forgot.jsx";
 
 // dashboard (protected)
 import Dashboard from "../modules/user/Dashboard/Index.jsx";
-import Profile from "../modules/user/Dashboard/Profile.jsx";
+import UserProfile from "../modules/user/Dashboard/Profile.jsx";
 import Saved from "../modules/user/Dashboard/Saved.jsx";
 import Applied from "../modules/user/Dashboard/Applied.jsx";
 import AlertsManage from "../modules/user/Dashboard/Alerts.jsx";
@@ -33,8 +36,9 @@ const router = createBrowserRouter([
   { path: "/sign-in", element: <SignIn /> },
   { path: "/sign-up", element: <SignUp /> },
   { path: "/forgot", element: <Forgot /> },
-
-  {
+  {path: "/recruiter-profile", element: <RecruiterProfile />},
+  {path: "/create-job", element: <RecruiterCreateJob />},
+{
     path: "/dashboard",
     element: (
       <ProtectedRoute>
@@ -46,7 +50,7 @@ const router = createBrowserRouter([
     path: "/dashboard/profile",
     element: (
       <ProtectedRoute>
-        <Profile />
+        <UserProfile />
       </ProtectedRoute>
     ),
   },

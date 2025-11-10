@@ -4,17 +4,6 @@ import { Sparkles, Search, MapPin } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 
-/*
-  Single-file React app (App.jsx) that reproduces the HireSpark-like UI shown in your screenshots.
-  - Uses Tailwind utility classes
-  - Uses shadcn-like UI components (Button, Card) which you already referenced
-  - Drop this file into your src/ (or split into components as you prefer)
-
-  Notes:
-  - This is a presentational UI with sample data. Replace sample arrays with live API data later.
-  - If some shadcn components in your project differ in props, adapt accordingly.
-*/
-
 const sampleJobs = [
   {
     id: 1,
@@ -141,21 +130,21 @@ function WhyHireSpark() {
           <p className="text-slate-600 mb-6">We focus only on students & freshers—and we verify listings to keep out spam. Career resources help you apply smarter and get hired faster.</p>
 
           <div className="space-y-4">
-            <Card className="rounded-2xl bg-[#0F172B] text-white">
+            <Card className="rounded-2xl bg-[#0F172A] text-white">
               <CardContent>
                 <div className="font-semibold">Higher-quality early-career listings</div>
                 <div className="text-sm text-slate-200 opacity-90 mt-1">Only internships and 0–2 year roles, hand-checked to reduce junk.</div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl bg-[#0F172B] text-white">
+            <Card className="rounded-2xl bg-[#0F172A] text-white">
               <CardContent>
                 <div className="font-semibold">Unlimited career resources</div>
                 <div className="text-sm text-slate-200 opacity-90 mt-1">Resume templates, interview prep, and skill guides tailored for freshers.</div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl bg-[#0F172B] text-white">
+            <Card className="rounded-2xl bg-[#0F172A] text-white">
               <CardContent>
                 <div className="font-semibold">Save time with smart apply</div>
                 <div className="text-sm text-slate-200 opacity-90 mt-1">Skill-based profiles, alerts, and one-click apply on select roles.</div>
