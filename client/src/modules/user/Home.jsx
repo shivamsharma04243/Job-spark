@@ -1,50 +1,15 @@
+// Home.jsx
 import React from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { Sparkles, Search, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Sparkles, Search } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 
 const sampleJobs = [
-  {
-    id: 1,
-    title: "Associate Product Designer",
-    company: "PixelPath",
-    location: "Gurugram, IN",
-    tags: ["Figma", "Prototyping", "UX"],
-    posted: "1d ago",
-    type: "Full-time",
-    experiance: "1-2 yrs",
-  },
-  {
-    id: 2,
-    title: "Business Operations Trainee",
-    company: "MercuryOps",
-    location: "Pune, IN",
-    tags: ["Excel", "Communication", "CRM"],
-    posted: "New",
-    type: "Apprenticeship",
-    experiance: "Fresher",
-  },
-  {
-    id: 3,
-    title: "Junior Data Analyst",
-    company: "QuantLeaf",
-    location: "Bengaluru, IN",
-    tags: ["SQL", "Excel", "Tableau"],
-    posted: "2h ago",
-    type: "Full-time",
-    experiance: "0-2 yrs",
-  },
-  {           
-    id: 4,
-    title: "Software Engineer Intern",
-    company: "CloudMints",
-    location: "Remote (IN)",
-    tags: ["JavaScript", "React", "API"],
-    posted: "Today",
-    type: "Internship",
-    experiance: "Student",
-  },
+  { id: 1, title: "Associate Product Designer", company: "PixelPath", location: "Gurugram, IN", tags: ["Figma","Prototyping","UX"], posted: "1d ago", type: "Full-time", experiance: "1-2 yrs" },
+  { id: 2, title: "Business Operations Trainee", company: "MercuryOps", location: "Pune, IN", tags: ["Excel","Communication","CRM"], posted: "New", type: "Apprenticeship", experiance: "Fresher" },
+  { id: 3, title: "Junior Data Analyst", company: "QuantLeaf", location: "Bengaluru, IN", tags: ["SQL","Excel","Tableau"], posted: "2h ago", type: "Full-time", experiance: "0-2 yrs" },
+  { id: 4, title: "Software Engineer Intern", company: "CloudMints", location: "Remote (IN)", tags: ["JavaScript","React","API"], posted: "Today", type: "Internship", experiance: "Student" },
 ];
 
 function Header() {
@@ -80,7 +45,9 @@ function Hero() {
     <section className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8 items-center">
       <div>
         <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm mb-6">Early-career only: Students & 0-2 yrs</div>
-        <h1 className="text-5xl leading-tight font-extrabold text-slate-900 mb-6">Find legit internships & entry-level jobs — <span className="text-orange-600">no spam</span>, just opportunities</h1>
+        <h1 className="text-5xl leading-tight font-extrabold text-slate-900 mb-6">
+          Find legit internships & entry-level jobs — <span className="text-orange-600">no spam</span>, just opportunities
+        </h1>
         <p className="text-slate-600 mb-6">Discover remote, hybrid, and in-office roles curated for students and freshers. Apply fast with a smart profile and skill-based search.</p>
         <div className="flex gap-4">
           <Link to="/jobs"><Button className="shadow">Find Your First Job</Button></Link>
@@ -96,7 +63,7 @@ function Hero() {
 
       <aside>
         <Card className="rounded-2xl shadow-sm">
-          <CardContent>
+          <CardContent className="bg-white rounded-2xl">
             <div className="text-lg font-medium mb-3">Search jobs</div>
             <div className="flex gap-2 items-center">
               <div className="flex items-center gap-2 border rounded-md px-3 py-2 w-full">
@@ -130,22 +97,22 @@ function WhyHireSpark() {
           <p className="text-slate-600 mb-6">We focus only on students & freshers—and we verify listings to keep out spam. Career resources help you apply smarter and get hired faster.</p>
 
           <div className="space-y-4">
-            <Card className="rounded-2xl bg-[#0F172A] text-white">
-              <CardContent>
+            <Card className="rounded-2xl bg-slate-900 text-white">
+              <CardContent className="bg-slate-900 text-white rounded-2xl">
                 <div className="font-semibold">Higher-quality early-career listings</div>
                 <div className="text-sm text-slate-200 opacity-90 mt-1">Only internships and 0–2 year roles, hand-checked to reduce junk.</div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl bg-[#0F172A] text-white">
-              <CardContent>
+            <Card className="rounded-2xl bg-slate-900 text-white">
+              <CardContent className="bg-slate-900 text-white rounded-2xl">
                 <div className="font-semibold">Unlimited career resources</div>
                 <div className="text-sm text-slate-200 opacity-90 mt-1">Resume templates, interview prep, and skill guides tailored for freshers.</div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl bg-[#0F172A] text-white">
-              <CardContent>
+            <Card className="rounded-2xl bg-slate-900 text-white">
+              <CardContent className="bg-slate-900 text-white rounded-2xl">
                 <div className="font-semibold">Save time with smart apply</div>
                 <div className="text-sm text-slate-200 opacity-90 mt-1">Skill-based profiles, alerts, and one-click apply on select roles.</div>
               </CardContent>
@@ -158,7 +125,7 @@ function WhyHireSpark() {
             <CardHeader>
               <CardTitle>Popular searches</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="rounded-2xl">
               <ul className="grid grid-cols-2 gap-2 text-sm text-slate-700">
                 <li>Internships</li>
                 <li>Remote Fresher Jobs</li>
@@ -194,9 +161,7 @@ function JobCard({ job }) {
       </div>
 
       <div className="mt-4 flex items-center gap-2 flex-wrap">
-        {job.tags.map((t, i) => (
-          <span key={i} className="px-2 py-1 text-xs rounded-md border">{t}</span>
-        ))}
+        {job.tags.map((t, i) => <span key={i} className="px-2 py-1 text-xs rounded-md border">{t}</span>)}
       </div>
 
       <div className="mt-6 flex items-center justify-between">
@@ -216,34 +181,11 @@ function JobsListing() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {sampleJobs.map((j) => (
-          <JobCard key={j.id} job={j} />
-        ))}
+        {sampleJobs.map(j => <JobCard key={j.id} job={j} />)}
       </div>
 
       <div className="mt-10 flex justify-center">
         <Button className="px-8 bg-orange-500 hover:bg-orange-600 text-white">Find Your Next Role</Button>
-      </div>
-
-      <div className="mt-14">
-        <h3 className="text-xl font-semibold mb-4">What our members are saying</h3>
-        <div className="grid md:grid-cols-3 gap-6">
-          <Card className="rounded-2xl p-6">
-            <CardContent>
-              <div className="text-slate-700">"HireSpark showed only early-career roles and helped me find my internship."</div>
-            </CardContent>
-          </Card>
-          <Card className="rounded-2xl p-6">
-            <CardContent>
-              <div className="text-slate-700">"Filters for 0–2 yrs and skill-based search saved me hours."</div>
-            </CardContent>
-          </Card>
-          <Card className="rounded-2xl p-6">
-            <CardContent>
-              <div className="text-slate-700">"Quick apply made the whole process easy and fast."</div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </main>
   );
@@ -263,20 +205,12 @@ function Footer() {
 
         <div>
           <div className="font-semibold mb-2">Product</div>
-          <ul className="text-sm text-slate-400 space-y-1">
-            <li>Jobs</li>
-            <li>Companies</li>
-            <li>Career Kit</li>
-          </ul>
+          <ul className="text-sm text-slate-400 space-y-1"><li>Jobs</li><li>Companies</li><li>Career Kit</li></ul>
         </div>
 
         <div>
           <div className="font-semibold mb-2">Company</div>
-          <ul className="text-sm text-slate-600 space-y-1">
-            <li>About</li>
-            <li>Blog</li>
-            <li>Contact</li>
-          </ul>
+          <ul className="text-sm text-slate-600 space-y-1"><li>About</li><li>Blog</li><li>Contact</li></ul>
         </div>
       </div>
 
@@ -285,29 +219,13 @@ function Footer() {
   );
 }
 
-export default function App() {
+export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <Header />
-
-      <Routes>
-        <Route path="/" element={
-          <>
-            <Hero />
-            <WhyHireSpark />
-            <JobsListing />
-          </>
-        } />
-
-        <Route path="/jobs" element={<JobsListing />} />
-        <Route path="/why" element={<WhyHireSpark />} />
-        <Route path="/companies" element={<div className="max-w-6xl mx-auto px-4 py-12">Companies list (placeholder)</div>} />
-        <Route path="/career-kit" element={<div className="max-w-6xl mx-auto px-4 py-12">Career Kit (placeholder)</div>} />
-        <Route path="/sign-in" element={<div className="max-w-6xl mx-auto px-4 py-12">Sign in (placeholder)</div>} />
-        <Route path="/sign-up" element={<div className="max-w-6xl mx-auto px-4 py-12">Sign up (placeholder)</div>} />
-        <Route path="/jobs/:id" element={<div className="max-w-6xl mx-auto px-4 py-12">Job Details (placeholder)</div>} />
-      </Routes>
-
+      <Hero />
+      <WhyHireSpark />
+      <JobsListing />
       <Footer />
     </div>
   );
