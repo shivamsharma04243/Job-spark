@@ -18,10 +18,10 @@ import Forgot from "../modules/auth/Forgot.jsx";
 
 // dashboard (protected)
 import Dashboard from "../modules/user/Dashboard/Index.jsx";
-import UserProfile from "../modules/user/Dashboard/Profile.jsx";
-import Saved from "../modules/user/Dashboard/Saved.jsx";
-import Applied from "../modules/user/Dashboard/Applied.jsx";
-import AlertsManage from "../modules/user/Dashboard/Alerts.jsx";
+import UserProfile from "../modules/user/Dashboard/user-Profile.jsx";
+import Saved from "../modules/user/Dashboard/user-Saved.jsx";
+import Applied from "../modules/user/Dashboard/user-Applied.jsx";
+import AlertsManage from "../modules/user/Dashboard/user-Alerts.jsx";
 
 import ProtectedRoute from "../protected/ProtectedRoute.jsx";
 
