@@ -1,63 +1,78 @@
 // Home.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import { Sparkles, Search } from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
 import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import Nav from "./nav";
 
 const sampleJobs = [
-  { id: 1, title: "Associate Product Designer", company: "PixelPath", location: "Gurugram, IN", tags: ["Figma","Prototyping","UX"], posted: "1d ago", type: "Full-time", experiance: "1-2 yrs" },
-  { id: 2, title: "Business Operations Trainee", company: "MercuryOps", location: "Pune, IN", tags: ["Excel","Communication","CRM"], posted: "New", type: "Apprenticeship", experiance: "Fresher" },
-  { id: 3, title: "Junior Data Analyst", company: "QuantLeaf", location: "Bengaluru, IN", tags: ["SQL","Excel","Tableau"], posted: "2h ago", type: "Full-time", experiance: "0-2 yrs" },
-  { id: 4, title: "Software Engineer Intern", company: "CloudMints", location: "Remote (IN)", tags: ["JavaScript","React","API"], posted: "Today", type: "Internship", experiance: "Student" },
+  {
+    id: 1,
+    title: "Associate Product Designer",
+    company: "PixelPath",
+    location: "Gurugram, IN",
+    tags: ["Figma", "Prototyping", "UX"],
+    posted: "1d ago",
+    type: "Full-time",
+    experiance: "1-2 yrs",
+  },
+  {
+    id: 2,
+    title: "Business Operations Trainee",
+    company: "MercuryOps",
+    location: "Pune, IN",
+    tags: ["Excel", "Communication", "CRM"],
+    posted: "New",
+    type: "Apprenticeship",
+    experiance: "Fresher",
+  },
+  {
+    id: 3,
+    title: "Junior Data Analyst",
+    company: "QuantLeaf",
+    location: "Bengaluru, IN",
+    tags: ["SQL", "Excel", "Tableau"],
+    posted: "2h ago",
+    type: "Full-time",
+    experiance: "0-2 yrs",
+  },
+  {
+    id: 4,
+    title: "Software Engineer Intern",
+    company: "CloudMints",
+    location: "Remote (IN)",
+    tags: ["JavaScript", "React", "API"],
+    posted: "Today",
+    type: "Internship",
+    experiance: "Student",
+  },
 ];
-
-function Header() {
-  return (
-    <header className="border-b border-slate-800 bg-slate-900 text-white">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-orange-500 text-white grid place-items-center">
-            <Sparkles size={18} />
-          </div>
-          <b className="text-lg">HireSpark</b>
-        </div>
-
-        <nav className="hidden md:flex items-center gap-6 text-sm text-slate-300">
-          <Link to="/" className="hover:text-white">Home</Link>
-          <Link to="/jobs" className="hover:text-white">Jobs</Link>
-          <Link to="/companies" className="hover:text-white">Companies</Link>
-          <Link to="/career-kit" className="hover:text-white">Career Kit</Link>
-          <Link to="/why" className="hover:text-white">Why HireSpark</Link>
-        </nav>
-
-        <div className="flex gap-3">
-          <Link to="/sign-in"><Button variant="ghost" className="text-slate-300 text-white hover:bg-slate-800">Sign in</Button></Link>
-          <Link to="/sign-up"><Button className="bg-orange-500 hover:bg-orange-600 text-white">Get Job Alerts</Button></Link>
-        </div>
-      </div>
-    </header>
-  );
-}
 
 function Hero() {
   return (
-    <section className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8 items-center">
+    <section className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8 items-center mb-14">
       <div>
-        <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm mb-6">Early-career only: Students & 0-2 yrs</div>
         <h1 className="text-5xl leading-tight font-extrabold text-slate-900 mb-6">
-          Find legit internships & entry-level jobs — <span className="text-orange-600">no spam</span>, just opportunities
+          Find legit internships & entry-level jobs —{" "}
+          <span className="text-orange-600">no spam</span>, just opportunities
         </h1>
-        <p className="text-slate-600 mb-6">Discover remote, hybrid, and in-office roles curated for students and freshers. Apply fast with a smart profile and skill-based search.</p>
+        <p className="text-slate-600 mb-6">
+          Discover remote, hybrid, and in-office roles curated for students and
+          freshers. Apply fast with a smart profile and skill-based search.
+        </p>
         <div className="flex gap-4">
-          <Link to="/jobs"><Button className="shadow">Find Your First Job</Button></Link>
-          <Link to="/sign-up"><Button variant="secondary">Create Free Profile</Button></Link>
-        </div>
-
-        <div className="mt-8 flex gap-3 flex-wrap text-sm text-slate-600">
-          <span className="px-3 py-1 rounded-full bg-slate-50">Remote</span>
-          <span className="px-3 py-1 rounded-full bg-slate-50">Hybrid</span>
-          <span className="px-3 py-1 rounded-full bg-slate-50">Office</span>
+          <Link to="/jobs">
+            <Button className="shadow">Find Your First Job</Button>
+          </Link>
+          <Link to="/sign-up">
+            <Button variant="secondary">Create Free Profile</Button>
+          </Link>
         </div>
       </div>
 
@@ -68,18 +83,12 @@ function Hero() {
             <div className="flex gap-2 items-center">
               <div className="flex items-center gap-2 border rounded-md px-3 py-2 w-full">
                 <Search size={16} />
-                <input className="outline-none w-full text-sm" placeholder="Role, skill or company" />
+                <input
+                  className="outline-none w-full text-sm"
+                  placeholder="Role, skill or company"
+                />
               </div>
               <Button>Search</Button>
-            </div>
-
-            <div className="mt-4 text-sm text-slate-600 grid grid-cols-3 gap-2">
-              <button className="text-left underline">Software</button>
-              <button className="text-left underline">Data</button>
-              <button className="text-left underline">Design</button>
-              <button className="text-left underline">Marketing</button>
-              <button className="text-left underline">Operations</button>
-              <button className="text-left underline">Finance</button>
             </div>
           </CardContent>
         </Card>
@@ -93,28 +102,45 @@ function WhyHireSpark() {
     <section className="max-w-6xl mx-auto px-4 py-12">
       <div className="grid md:grid-cols-2 gap-8 items-start">
         <div>
-          <h2 className="text-4xl font-extrabold mb-4">How HireSpark is different</h2>
-          <p className="text-slate-600 mb-6">We focus only on students & freshers—and we verify listings to keep out spam. Career resources help you apply smarter and get hired faster.</p>
+          <h2 className="text-4xl font-extrabold mb-4">
+            How HireSpark is different
+          </h2>
+          <p className="text-slate-600 mb-6">
+            We focus only on students & freshers—and we verify listings to keep
+            out spam. Career resources help you apply smarter and get hired
+            faster.
+          </p>
 
           <div className="space-y-4">
-            <Card className="rounded-2xl bg-slate-900 text-white">
-              <CardContent className="bg-slate-900 text-white rounded-2xl">
-                <div className="font-semibold">Higher-quality early-career listings</div>
-                <div className="text-sm text-slate-200 opacity-90 mt-1">Only internships and 0–2 year roles, hand-checked to reduce junk.</div>
+            <Card className="rounded-2xl">
+              <CardContent className=" rounded-2xl shadow-lg">
+                <div className="font-semibold">
+                  Higher-quality early-career listings
+                </div>
+                <div className="opacity-90 mt-1 text-gray-500">
+                  Only internships and 0–2 year roles, hand-checked to reduce
+                  junk.
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl bg-slate-900 text-white">
-              <CardContent className="bg-slate-900 text-white rounded-2xl">
+            <Card className="rounded-2xl">
+              <CardContent className="rounded-2xl shadow-lg">
                 <div className="font-semibold">Unlimited career resources</div>
-                <div className="text-sm text-slate-200 opacity-90 mt-1">Resume templates, interview prep, and skill guides tailored for freshers.</div>
+                <div className="opacity-90 mt-1">
+                  Resume templates, interview prep, and skill guides tailored
+                  for freshers.
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl bg-slate-900 text-white">
-              <CardContent className="bg-slate-900 text-white rounded-2xl">
+            <Card className="rounded-2xl">
+              <CardContent className="shadow-xl rounded-2xl">
                 <div className="font-semibold">Save time with smart apply</div>
-                <div className="text-sm text-slate-200 opacity-90 mt-1">Skill-based profiles, alerts, and one-click apply on select roles.</div>
+                <div className="opacity-90 mt-1">
+                  Skill-based profiles, alerts, and one-click apply on select
+                  roles.
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -144,48 +170,84 @@ function WhyHireSpark() {
   );
 }
 
-function JobCard({ job }) {
+function JobsTableRow({ job }) {
   return (
-    <div className="border rounded-2xl p-6 bg-white shadow-sm">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="text-lg font-semibold">{job.title}</div>
-          <div className="text-sm text-slate-500">{job.company} • {job.location}</div>
+    <tr className="border-b">
+      <td className="px-4 py-3 font-semibold">{job.title}</td>
+      <td className="px-4 py-3">{job.company}</td>
+      <td className="px-4 py-3">{job.location}</td>
+      <td className="px-4 py-3">{job.type}</td>
+      <td className="px-4 py-3">{job.experiance}</td>
+      <td className="px-4 py-3">
+        <div className="flex gap-2 flex-wrap">
+          {job.tags.map((t, i) => (
+            <span
+              key={i}
+              className="px-2 py-1 text-xs rounded border bg-slate-50"
+            >
+              {t}
+            </span>
+          ))}
         </div>
-        <div className="text-sm text-orange-600">{job.posted}</div>
-      </div>
-
-      <div className="mt-4 flex gap-3 flex-wrap">
-        <span className="px-3 py-1 bg-slate-50 rounded-full text-sm">{job.type}</span>
-        <span className="px-3 py-1 bg-slate-50 rounded-full text-sm">{job.experiance}</span>
-      </div>
-
-      <div className="mt-4 flex items-center gap-2 flex-wrap">
-        {job.tags.map((t, i) => <span key={i} className="px-2 py-1 text-xs rounded-md border">{t}</span>)}
-      </div>
-
-      <div className="mt-6 flex items-center justify-between">
-        <Button className="px-6">Quick Apply</Button>
-        <Link to={`/jobs/${job.id}`} className="text-slate-900 hover:text-orange-600">View Details</Link>
-      </div>
-    </div>
+      </td>
+      <td className="px-4 py-3 text-orange-600">{job.posted}</td>
+      <td className="px-4 py-3">
+        <div className="flex flex-col gap-2">
+          <Button className="px-4 py-2">Quick Apply</Button>
+          {/* <Link
+            to={`/jobs/${job.id}`}
+            className="text-slate-900 hover:text-orange-600 text-sm"
+          >
+            View
+          </Link> */}
+        </div>
+      </td>
+    </tr>
   );
 }
 
 function JobsListing() {
   return (
-    <main className="max-w-6xl mx-auto px-4 py-12">
+    <main className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Featuring fresh internships & entry-level jobs</h2>
-        <Link to="/jobs" className="px-4 py-2 border border-orange-500 text-orange-600 rounded-full hover:bg-orange-50">Browse all jobs</Link>
+        <h2 className="text-2xl font-bold">
+          Featuring fresh internships & entry-level jobs
+        </h2>
+        <Link
+          to="/jobs"
+          className="px-4 py-2 border border-orange-500 text-orange-600 rounded-full hover:bg-orange-50"
+        >
+          Browse all jobs
+        </Link>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {sampleJobs.map(j => <JobCard key={j.id} job={j} />)}
+      <div className="overflow-x-auto">
+        <table className="w-full border rounded-xl bg-white shadow-sm">
+          <thead className="bg-slate-100 border-b">
+            <tr>
+              <th className="px-4 py-3 text-left">Job Title</th>
+              <th className="px-4 py-3 text-left">Company</th>
+              <th className="px-4 py-3 text-left">Location</th>
+              <th className="px-4 py-3 text-left">Type</th>
+              <th className="px-4 py-3 text-left">Experience</th>
+              <th className="px-4 py-3 text-left">Tags</th>
+              <th className="px-4 py-3 text-left">Posted</th>
+              <th className="px-4 py-3 text-left">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {sampleJobs.map((job) => (
+              <JobsTableRow key={job.id} job={job} />
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div className="mt-10 flex justify-center">
-        <Button className="px-8 bg-orange-500 hover:bg-orange-600 text-white">Find Your Next Role</Button>
+        <Button className="px-8 bg-orange-500 hover:bg-orange-600 text-white">
+          Find Your Next Role
+        </Button>
       </div>
     </main>
   );
@@ -197,24 +259,38 @@ function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-6">
         <div>
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-9 w-9 rounded-xl bg-orange-500 text-white grid place-items-center"><Sparkles size={18} /></div>
+            <div className="h-9 w-9 rounded-xl bg-orange-500 text-white grid place-items-center">
+              <Sparkles size={18} />
+            </div>
             <div className="font-bold">HireSpark</div>
           </div>
-          <div className="text-sm text-slate-400">Helping students & freshers find early-career roles.</div>
+          <div className="text-sm text-slate-400">
+            Helping students & freshers find early-career roles.
+          </div>
         </div>
 
         <div>
           <div className="font-semibold mb-2">Product</div>
-          <ul className="text-sm text-slate-400 space-y-1"><li>Jobs</li><li>Companies</li><li>Career Kit</li></ul>
+          <ul className="text-sm text-slate-400 space-y-1">
+            <li>Jobs</li>
+            <li>Companies</li>
+            <li>Career Kit</li>
+          </ul>
         </div>
 
         <div>
           <div className="font-semibold mb-2">Company</div>
-          <ul className="text-sm text-slate-600 space-y-1"><li>About</li><li>Blog</li><li>Contact</li></ul>
+          <ul className="text-sm text-slate-600 space-y-1">
+            <li>About</li>
+            <li>Blog</li>
+            <li>Contact</li>
+          </ul>
         </div>
       </div>
 
-      <div className="border-t border-slate-800 py-6 text-center text-sm text-slate-400">© {new Date().getFullYear()} HireSpark — Built with ❤️</div>
+      <div className="border-t border-slate-800 py-6 text-center text-sm text-slate-400">
+        © {new Date().getFullYear()} HireSpark — Built with ❤️
+      </div>
     </footer>
   );
 }
@@ -222,10 +298,10 @@ function Footer() {
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <Header />
+      <nav />
       <Hero />
-      <WhyHireSpark />
       <JobsListing />
+      <WhyHireSpark />
       <Footer />
     </div>
   );
