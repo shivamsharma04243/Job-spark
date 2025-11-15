@@ -117,7 +117,7 @@ function WhyHireSpark() {
                 <div className="font-semibold">
                   Higher-quality early-career listings
                 </div>
-                <div className="opacity-90 mt-1 text-gray-500">
+                <div className="opacity-90 mt-1 text-gray-600">
                   Only internships and 0–2 year roles, hand-checked to reduce
                   junk.
                 </div>
@@ -127,7 +127,7 @@ function WhyHireSpark() {
             <Card className="rounded-2xl">
               <CardContent className="rounded-2xl shadow-lg">
                 <div className="font-semibold">Unlimited career resources</div>
-                <div className="opacity-90 mt-1">
+                <div className="opacity-90 mt-1 text-gray-600">
                   Resume templates, interview prep, and skill guides tailored
                   for freshers.
                 </div>
@@ -137,7 +137,7 @@ function WhyHireSpark() {
             <Card className="rounded-2xl">
               <CardContent className="shadow-xl rounded-2xl">
                 <div className="font-semibold">Save time with smart apply</div>
-                <div className="opacity-90 mt-1">
+                <div className="opacity-90 mt-1 text-gray-600">
                   Skill-based profiles, alerts, and one-click apply on select
                   roles.
                 </div>
@@ -192,11 +192,11 @@ function JobsTableRow({ job }) {
       </td>
       <td className="px-4 py-3 text-orange-600">{job.posted}</td>
       <td className="px-4 py-3">
-        <div className="flex flex-row gap-6">
-          <Button className="px-4 py-2">Quick Apply</Button>
+        <div className="flex flex-row gap-2 items-center">
+          <Button className="px-4 py-2 whitespace-nowrap">Quick Apply</Button>
           <Link
             to={`/jobs/${job.id}`}
-            className="text-slate-900 hover:text-orange-600 text-sm"
+            className="text-slate-900 hover:text-orange-600 text-sm border px-3 py-2 rounded-xl bg-slate-100 hover:bg-"
           >
             View
           </Link>
@@ -208,8 +208,8 @@ function JobsTableRow({ job }) {
 
 function JobsListing() {
   return (
-    <main className="max-w-6xl mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-6">
+    <main className="max-w-7xl mx-auto px-10 py-12">
+      <div className="flex items-center justify-between mb-8">
         <h2 className="text-2xl font-bold">
           Featuring fresh internships & entry-level jobs
         </h2>
@@ -221,8 +221,8 @@ function JobsListing() {
         </Link>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border rounded-xl bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-xl shadow-sm border">
+        <table className="w-full border bg-white ">
           <thead className="bg-slate-100 border-b">
             <tr>
               <th className="px-4 py-3 text-left">Job Title</th>
@@ -245,7 +245,7 @@ function JobsListing() {
       </div>
 
       <div className="mt-10 flex justify-center">
-        <Button className="px-8 bg-orange-500 hover:bg-orange-600 text-white">
+        <Button className="px-6 bg-orange-500 hover:bg-orange-600 text-white">
           Find Your Next Role
         </Button>
       </div>

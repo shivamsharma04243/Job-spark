@@ -339,6 +339,7 @@ export default function Jobs() {
         {/* PAGINATION */}
         <div className="flex justify-center items-center gap-3 mt-6">
           <Button
+            className="bg-white border-2 text-gray-800 shadow-sm "
             variant="outline"
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
@@ -348,6 +349,7 @@ export default function Jobs() {
 
           {[...Array(totalPages)].map((_, i) => (
             <Button
+              className="bg-white border-2 text-gray-800 shadow-sm "
               key={i}
               variant={page === i + 1 ? "default" : "outline"}
               onClick={() => setPage(i + 1)}
@@ -357,6 +359,7 @@ export default function Jobs() {
           ))}
 
           <Button
+            className="bg-white border-2 text-gray-800 shadow-sm "
             variant="outline"
             disabled={page === totalPages}
             onClick={() => setPage(page + 1)}
