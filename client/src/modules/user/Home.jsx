@@ -179,7 +179,7 @@ function JobsTableRow({ job }) {
       <td className="px-4 py-3">{job.type}</td>
       <td className="px-4 py-3">{job.experiance}</td>
       <td className="px-4 py-3">
-        <div className="flex flex-wrap gap-2 max-w-[180px]">
+        <div className="flex flex-wrap gap-2 max-w-[170px]">
           {job.tags.map((t, i) => (
             <span
               key={i}
@@ -192,7 +192,7 @@ function JobsTableRow({ job }) {
       </td>
       <td className="px-4 py-3 text-orange-600">{job.posted}</td>
       <td className="px-4 py-3">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-row gap-6">
           <Button className="px-4 py-2">Quick Apply</Button>
           <Link
             to={`/jobs/${job.id}`}
@@ -208,7 +208,7 @@ function JobsTableRow({ job }) {
 
 function JobsListing() {
   return (
-    <main className="max-w-7xl mx-auto px-4 py-12">
+    <main className="max-w-6xl mx-auto px-4 py-12">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">
           Featuring fresh internships & entry-level jobs
