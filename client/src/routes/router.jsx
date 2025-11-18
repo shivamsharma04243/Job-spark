@@ -7,7 +7,7 @@ import CareerKit from "../modules/user/CareerKit.jsx";
 import Alerts from "../modules/user/alerts.jsx";
 import Jobs from "../modules/user/jobs/job-Index.jsx";
 import JobDetail from "../modules/user/jobs/job-details.jsx";
-import Footer from "../components/footer.jsx";
+import Footer from "../components/ui/footer.jsx";
 // recruiter pages 
 import RecruiterCreateJob  from "../modules/recruiter/hire-jobs/create-job.jsx";
 import RecruiterProfile from "../modules/recruiter/dashboard/recruiter-profile.jsx";

@@ -5,7 +5,7 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-import Navbar from "../../components/Navbar";
+import Navbar from "../../components/ui/Navbar";
 
 export default function CareerKit() {
   const items = [

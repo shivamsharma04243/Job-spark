@@ -9,7 +9,7 @@ import {
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import Navbar from "../../../components/Navbar";
+import Navbar from "../../../components/ui/Navbar";
 
 export default function Jobs() {
   // ---------- ALL JOBS ----------

@@ -9,8 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/footer";
+import Navbar from "../../components/ui/Navbar";
+import Footer from "../../components/ui/footer";
 
 const sampleJobs = [
   {
