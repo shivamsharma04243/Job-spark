@@ -16,16 +16,12 @@ export default function Navbar() {
         </div>
 
         {/* Navigation Menu */}
-        <nav className="hidden md:flex items-center gap-6 text-sm text-slate-300">
+        <nav className="hidden md:flex items-center gap-10 text-sm text-slate-300">
           <Link to="/" className="hover:text-white">Home</Link>
           <Link to="/jobs" className="hover:text-white">Jobs</Link>
           <Link to="/companies" className="hover:text-white">Companies</Link>
           <Link to="/career-kit" className="hover:text-white">Career Kit</Link>
           <Link to="/why" className="hover:text-white">Why HireSpark</Link>
-          <Link to="/talent-hire" className="hover:text-white">Talent Hire</Link>
-          <Link to="/alerts" className="hover:text-white">Job Alerts</Link>
-          <Link to="/create-job" className="hover:text-white">Create Job</Link>
-          <Link to="/recruiter-profile" className="hover:text-white">Recruiter Profile</Link>
         </nav>
 
         {/* Buttons */}

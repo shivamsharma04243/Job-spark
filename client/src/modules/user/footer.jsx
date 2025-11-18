@@ -18,19 +18,29 @@ function Footer() {
 
         <div>
           <div className="font-semibold mb-2">Product</div>
-          <ul className="text-sm text-slate-400 space-y-1">
-            <li><Link to="/jobs">Jobs</Link></li>
-            <li><Link to="/companies">Companies</Link></li>
-            <li><Link to="/career-kit">Career Kit</Link></li>
+          <ul className="text-sm text-slate-400 text-white space-y-1">
+            <li><Link to="/jobs"className="hover:text-orange-500">Jobs</Link></li>
+            <li><Link to="/companies"className="hover:text-orange-500">Companies</Link></li>
+            <li><Link to="/career-kit"className="hover:text-orange-500">Career Kit</Link></li>
+            <li><Link to="dashboard/profile"className="hover:text-orange-500"> user-profile</Link></li>
+            <li><Link to="dashboard/saved"className="hover:text-orange-500"> user-saved</Link></li>
+            <li><Link to="dashboard/applied"className="hover:text-orange-500"> user-applied</Link></li>
+            <li><Link to="dashboard/alerts"className="hover:text-orange-500"> user-alerts</Link></li>
           </ul>
         </div>
 
         <div>
-          <div className="font-semibold mb-2">Company</div>
-          <ul className="text-sm text-slate-400 space-y-1">
-            <li><Link to="/about">About</Link></li>
-            <li><Link to="/blog">Blog</Link></li>
-            <li><Link to="/contact">Contact</Link></li>
+          <div className="font-semibold mb-2 text-white">Company</div>
+          <ul className="text-sm text-slate-400 text-white space-y-1">
+            <li><Link to="/"className="hover:text-orange-500">home  </Link></li>
+            <li><Link to="/alerts"className="hover:text-orange-500">alerts</Link></li>
+            <li><Link to="/contact"className="hover:text-orange-500">Contact</Link></li>
+            <li><Link to="jobs/:id"className="hover:text-orange-500">JobDetail</Link></li>
+            <li><Link to="recruiter-profile"className="hover:text-orange-500">recruiter-profile</Link></li>
+            <li><Link to="talent-hire"className="hover:text-orange-500">talent-hire</Link></li>
+            <li><Link to="create-job"className="hover:text-orange-500">create-job</Link></li>
+            <li><Link to="dashboard"className="hover:text-orange-500"> user-dashboard</Link></li>
+            
           </ul>
         </div>
       </div>
