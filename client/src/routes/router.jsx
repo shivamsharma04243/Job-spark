@@ -10,16 +10,16 @@ import JobDetail from "../modules/user/jobs/job-details.jsx";
 import Footer from "../components/ui/footer.jsx";
 // recruiter pages 
 import RecruiterCreateJob  from "../modules/recruiter/hire-jobs/create-job.jsx";
-import RecruiterProfile from "../modules/recruiter/dashboard/recruiter-profile.jsx";
 import TalentHire from "../modules/recruiter/recruter-premier/talent-hire.jsx";
-import JobPosted from "../modules/recruiter/dashboard/job-posted.jsx";
-import RecruiterDashboard from "../modules/recruiter/dashboard/recruiter-index.jsx";
+import RecruiterProfile from "../modules/recruiter/recruiter-dashboard/recruiter-profile.jsx";
+import JobPosted from "../modules/recruiter/recruiter-dashboard/job-posted.jsx";
+import RecruiterDashboard from "../modules/recruiter/recruiter-dashboard/recruiter-index.jsx";
 // auth
 import SignIn from "../modules/auth/SignIn.jsx";
 import SignUp from "../modules/auth/SignUp.jsx";
 import Forgot from "../modules/auth/Forgot.jsx";
 
-// dashboard (protected)
+//  users dashboard (protected)
 import Dashboard from "../modules/user/User-Dashboard/user-Index.jsx";
 import UserProfile from "../modules/user/User-Dashboard/user-Profile.jsx";
 import Saved from "../modules/user/User-Dashboard/user-Saved.jsx";
@@ -41,11 +41,10 @@ const router = createBrowserRouter([
   { path: "/sign-up", element: <SignUp /> },
   { path: "/forgot", element: <Forgot /> },
 // recruiter
-  {path: "/recruiter-profile", element: <RecruiterProfile />},
-  {path: "/create-job", element: <RecruiterCreateJob />},
-  { path: "/dashboard", element: <Dashboard /> },
-  {path: "/job-posted", element: <JobPosted />},
-  {path: "/recruiter-dashboard", element: <RecruiterDashboard />},
+  {path: "dashboard/recruiter-profile", element: <RecruiterProfile />},
+  {path: "dashboard/create-job", element: <RecruiterCreateJob />},
+  {path: "dashboard/job-posted", element: <JobPosted />},
+  {path: "dashboard/recruiter-dashboard", element: <RecruiterDashboard />},
   // premier talent hire
   {path: "/talent-hire", element: <TalentHire />},
   // user dashboard
@@ -53,7 +52,7 @@ const router = createBrowserRouter([
   {path: "/dashboard/saved", element: <Saved />},
   {path: "/dashboard/applied", element: <Applied />},
   {path: "/dashboard/alerts", element: <AlertsManage />},
-  
+ 
 {
     path: "/dashboard",
     element: (
@@ -94,6 +93,15 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  {
+    path: "dashboard/job-posted",
+    element: (
+      <ProtectedRoute>
+        <JobPosted />
+      </ProtectedRoute>
+    ),
+  },
+ 
 ]);
 
 export default router;
