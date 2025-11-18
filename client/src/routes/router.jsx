@@ -41,10 +41,10 @@ const router = createBrowserRouter([
   { path: "/sign-up", element: <SignUp /> },
   { path: "/forgot", element: <Forgot /> },
 // recruiter
-  {path: "dashboard/recruiter-profile", element: <RecruiterProfile />},
-  {path: "dashboard/create-job", element: <RecruiterCreateJob />},
-  {path: "dashboard/job-posted", element: <JobPosted />},
-  {path: "dashboard/recruiter-dashboard", element: <RecruiterDashboard />},
+  {path: "recruiter-profile", element: <RecruiterProfile />},
+  {path: "create-job", element: <RecruiterCreateJob />},
+  {path: "job-posted", element: <JobPosted />},
+  {path: "recruiter-dashboard", element: <RecruiterDashboard />},
   // premier talent hire
   {path: "/talent-hire", element: <TalentHire />},
   // user dashboard
@@ -93,14 +93,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-  {
-    path: "dashboard/job-posted",
-    element: (
-      <ProtectedRoute>
-        <JobPosted />
-      </ProtectedRoute>
-    ),
-  },
+  
  
 ]);
 
