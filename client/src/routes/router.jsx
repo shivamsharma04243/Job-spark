@@ -7,6 +7,7 @@ import CareerKit from "../modules/user/CareerKit.jsx";
 import Alerts from "../modules/user/alerts.jsx";
 import Jobs from "../modules/user/jobs/job-Index.jsx";
 import JobDetail from "../modules/user/jobs/job-details.jsx";
+import Footer from "../modules/user/footer.jsx";
 // recruiter pages 
 import RecruiterCreateJob  from "../modules/recruiter/hire-jobs/create-job.jsx";
 import RecruiterProfile from "../modules/recruiter/dashboard/recruiter-profile.jsx";
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
   { path: "/alerts", element: <Alerts /> },
   { path: "/jobs", element: <Jobs /> },
   { path: "/jobs/:id", element: <JobDetail /> },
+  { path: "/footer", element: <Footer /> },
 // auth
   { path: "/sign-in", element: <SignIn /> },
   { path: "/sign-up", element: <SignUp /> },

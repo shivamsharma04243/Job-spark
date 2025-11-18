@@ -22,6 +22,10 @@ export default function Navbar() {
           <Link to="/companies" className="hover:text-white">Companies</Link>
           <Link to="/career-kit" className="hover:text-white">Career Kit</Link>
           <Link to="/why" className="hover:text-white">Why HireSpark</Link>
+          <Link to="/talent-hire" className="hover:text-white">Talent Hire</Link>
+          <Link to="/alerts" className="hover:text-white">Job Alerts</Link>
+          <Link to="/create-job" className="hover:text-white">Create Job</Link>
+          <Link to="/recruiter-profile" className="hover:text-white">Recruiter Profile</Link>
         </nav>
 
         {/* Buttons */}
