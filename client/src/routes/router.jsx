@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 // user pages
 import Home from "../modules/user/Home.jsx";
@@ -29,31 +29,62 @@ import ProtectedRoute from "../protected/ProtectedRoute.jsx";
 
 
 const router = createBrowserRouter([
-  { path: "/", element: <Home /> },
+  // default: go to sign-in first
+  { path: "/", element: <Navigate to="/home" replace /> },
+
+  // public pages (optional: accessible after sign-in via direct URL)
+  { path: "/home", element: <Home /> },
   { path: "/companies", element: <Companies /> },
   { path: "/career-kit", element: <CareerKit /> },
   { path: "/alerts", element: <Alerts /> },
   { path: "/jobs", element: <Jobs /> },
   { path: "/jobs/:id", element: <JobDetail /> },
   { path: "/footer", element: <Footer /> },
-// auth
+
+  // auth
   { path: "/sign-in", element: <SignIn /> },
   { path: "/sign-up", element: <SignUp /> },
   { path: "/forgot", element: <Forgot /> },
-// recruiter
-  {path: "recruiter-profile", element: <RecruiterProfile />},
-  {path: "create-job", element: <RecruiterCreateJob />},
-  {path: "job-posted", element: <JobPosted />},
-  {path: "recruiter-dashboard", element: <RecruiterDashboard />},
-  // premier talent hire
-  {path: "/talent-hire", element: <TalentHire />},
-  // user dashboard
-  {path: "/dashboard/profile", element: <UserProfile />},
-  {path: "/dashboard/saved", element: <Saved />},
-  {path: "/dashboard/applied", element: <Applied />},
-  {path: "/dashboard/alerts", element: <AlertsManage />},
- 
-{
+
+  // recruiter (protected + role)
+  {
+    path: "recruiter-profile",
+    element: (
+      <ProtectedRoute roles={["recruiter"]}>
+        <RecruiterProfile />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "create-job",
+    element: (
+      <ProtectedRoute roles={["recruiter"]}>
+        <RecruiterCreateJob />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "job-posted",
+    element: (
+      <ProtectedRoute roles={["recruiter"]}>
+        <JobPosted />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "recruiter-dashboard",
+    element: (
+      <ProtectedRoute roles={["recruiter"]}>
+        <RecruiterDashboard />
+      </ProtectedRoute>
+    ),
+  },
+
+  // premier talent hire (public for now)
+  { path: "/talent-hire", element: <TalentHire /> },
+
+  // user dashboard (protected)
+  {
     path: "/dashboard",
     element: (
       <ProtectedRoute>
@@ -93,8 +124,9 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-  
- 
+
+  // catch-all -> sign-in
+  { path: "*", element: <Navigate to="/sign-in" replace /> },
 ]);
 
 export default router;
