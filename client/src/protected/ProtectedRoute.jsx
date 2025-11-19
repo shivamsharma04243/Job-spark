@@ -11,7 +11,7 @@ export default function ProtectedRoute({ children, roles }) {
     let alive = true;
     (async () => {
       try {
-        const { data } = await api.get("/auth/me");
+        const { data } = await api.get("/auth/authcheck");
         if (alive) setUser(data?.user || null);
       } catch (e) {
         if (alive) setUser(null);

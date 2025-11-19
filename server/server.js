@@ -1,14 +1,31 @@
 require('dotenv').config();
 const express = require('express');
-const applyMiddlewares = require('./src/middlewares/auth');
-
 const app = express();
 
-// Enable CORS globally (this covers preflight OPTIONS too)
-applyMiddlewares(app);
+// configure CORS and cookie parser
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+function applyMiddlewares(app) {
+  const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+  const allowlist = new Set([CLIENT_ORIGIN]);
+  const corsOptions = {
+    origin(origin, callback) {
+      if (!origin || allowlist.has(origin)) return callback(null, true);
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    optionsSuccessStatus: 204,
+  };
 
-// If you still want an explicit options handler, use '/*' instead of '*'
-// app.options('/*', cors(corsOptions));
+  // CORS + parsers
+  app.use(cors(corsOptions));
+  app.use(cookieParser());
+  app.use(express.json());
+}
+// Apply middlewares
+applyMiddlewares(app);
 
 
 app.get('/health', (req, res) => {

@@ -1,25 +1,25 @@
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const express = require('express');
 
-function applyMiddlewares(app) {
-  const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
-  const allowlist = new Set([CLIENT_ORIGIN]);
-  const corsOptions = {
-    origin(origin, callback) {
-      if (!origin || allowlist.has(origin)) return callback(null, true);
-      return callback(new Error('Not allowed by CORS'));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-    optionsSuccessStatus: 204,
-  };
 
-  // CORS + parsers
-  app.use(cors(corsOptions));
-  app.use(cookieParser());
-  app.use(express.json());
+// GET /api/auth/me - validate cookie and return user info from JWT
+const jwt = require('jsonwebtoken');
+
+// Middleware to require a valid JWT cookie and attach `req.user`
+function requireAuth(req, res, next) {
+  try {
+    const token = req.cookies?.token;
+    if (!token) return res.status(401).json({ message: 'Unauthorized' });
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = { id: payload.sub, username: payload.username, role: payload.role };
+    return next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
 }
 
-module.exports = applyMiddlewares;
+// Handler to return current authenticated user (for a route like GET /api/auth/authcheck)
+function authCheck(req, res) {
+  if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
+  return res.json({ user: req.user });
+}
+
+module.exports = { requireAuth, authCheck };
