@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
-import api from "../../components/apiconfig/apiconfig.jsx";
 
 export default function SignIn() {
   const [identifier, setIdentifier] = useState("");
@@ -11,7 +9,6 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -19,14 +16,19 @@ export default function SignIn() {
     setMessage("");
     setError("");
     try {
-      const { data } = await api.post("/auth/login", { identifier, password });
+      const res = await fetch("http://localhost:5174/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ identifier, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "Login failed");
       setMessage(data?.message || "Login successful");
-
-      // backend should set an HTTP-only cookie; no localStorage usage
-      navigate("/home", { replace: true });
+      const role = data?.user?.role || "user";
+      window.location.href = role === "recruiter" ? "/recruiter-profile" : "/dashboard";
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Login failed";
-      setError(msg);
+      setError(err.message);
     } finally {
       setLoading(false);
     }

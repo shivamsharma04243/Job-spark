@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import api from "../components/apiconfig/apiconfig.jsx";
 
+<<<<<<< HEAD
 /**
  * ProtectedRoute Component
  * -------------------------
@@ -79,5 +78,12 @@ export default function ProtectedRoute({ children, roles }) {
   }
 
   // Authenticated + allowed role → Show protected content
+=======
+export default function ProtectedRoute({ children }) {
+  // TODO: replace with your real auth check (context/redux/cookie)
+  const token = localStorage.getItem("hs_token");
+  const location = useLocation();
+  if (!token) return <Navigate to="/sign-in" replace state={{ from: location }} />;
+>>>>>>> SURAJ
   return children;
 }
