@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
+import api from "../../../components/apiconfig/apiconfig";
 
 export default function AdminPostJob() {
   const [form, setForm] = useState({
@@ -67,18 +68,9 @@ export default function AdminPostJob() {
         }
       });
 
-      // TODO: replace with your API path & headers
-      const res = await fetch("/api/admin/jobs", {
-        method: "POST",
-        body: payload,
-      });
-
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({}));
-        throw new Error(json.message || "Failed to create job");
-      }
-
-      setSuccess("Job posted successfully.");
+      // send to backend using axios instance (handles baseURL + cookies)
+      const { data } = await api.post("/recruiter/jobs/create", payload);
+      setSuccess(data?.message || "Job posted successfully.");
       // clear form or navigate to job list
       setForm({
         title: "",

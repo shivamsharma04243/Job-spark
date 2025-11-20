@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
+import api from "../../components/apiconfig/apiconfig";
 
 export default function SignIn() {
   const [identifier, setIdentifier] = useState("");
@@ -16,19 +17,13 @@ export default function SignIn() {
     setMessage("");
     setError("");
     try {
-      const res = await fetch("http://localhost:5174/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ identifier, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Login failed");
+      const { data } = await api.post("/auth/login", { identifier, password });
       setMessage(data?.message || "Login successful");
       const role = data?.user?.role || "user";
       window.location.href = role === "recruiter" ? "/recruiter-profile" : "/dashboard";
     } catch (err) {
-      setError(err.message);
+      const msg = err?.response?.data?.message || err?.message || "Login failed";
+      setError(msg);
     } finally {
       setLoading(false);
     }
