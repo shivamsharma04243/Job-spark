@@ -41,7 +41,6 @@ router.post('/signup', signUp);
 // Login user and issue JWT cookie
 router.post('/login', signIn);
 
-<<<<<<< HEAD
 // Validate token + return currently authenticated user
 router.get('/authcheck', requireAuth, authCheck);
 
@@ -49,6 +48,3 @@ router.get('/authcheck', requireAuth, authCheck);
 // router.get('/me', requireAuth, authCheck);
 
 module.exports = router;
-=======
-module.exports = router;
->>>>>>> SURAJ
