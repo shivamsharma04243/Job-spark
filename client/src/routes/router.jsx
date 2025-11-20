@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 // ------------------------------
 // User (public) pages
@@ -48,7 +48,6 @@ import ProtectedRoute from "../protected/ProtectedRoute.jsx";
  * - Catch-all route: redirect unknown URLs to /sign-in.
  */
 const router = createBrowserRouter([
-<<<<<<< HEAD
 
   /**
    * Default route
@@ -63,9 +62,6 @@ const router = createBrowserRouter([
    * These pages are accessible without login.
    */
   { path: "/home", element: <Home /> },
-=======
-  { path: "/", element: <Home /> },
->>>>>>> SURAJ
   { path: "/companies", element: <Companies /> },
   { path: "/career-kit", element: <CareerKit /> },
   { path: "/alerts", element: <Alerts /> },
@@ -81,7 +77,6 @@ const router = createBrowserRouter([
   { path: "/sign-in", element: <SignIn /> },
   { path: "/sign-up", element: <SignUp /> },
   { path: "/forgot", element: <Forgot /> },
-<<<<<<< HEAD
 
   /**
    * Recruiter-Only Routes (Protected + Role Restricted)
@@ -137,22 +132,6 @@ const router = createBrowserRouter([
    * These pages require login but do not require a recruiter role.
    */
   {
-=======
-// recruiter
-  {path: "recruiter-profile", element: <RecruiterProfile />},
-  {path: "create-job", element: <RecruiterCreateJob />},
-  {path: "job-posted", element: <JobPosted />},
-  {path: "recruiter-dashboard", element: <RecruiterDashboard />},
-  // premier talent hire
-  {path: "/talent-hire", element: <TalentHire />},
-  // user dashboard
-  {path: "/dashboard/profile", element: <UserProfile />},
-  {path: "/dashboard/saved", element: <Saved />},
-  {path: "/dashboard/applied", element: <Applied />},
-  {path: "/dashboard/alerts", element: <AlertsManage />},
- 
-{
->>>>>>> SURAJ
     path: "/dashboard",
     element: (
       <ProtectedRoute>
@@ -192,7 +171,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-<<<<<<< HEAD
 
   /**
    * Catch-all Route
@@ -200,10 +178,6 @@ const router = createBrowserRouter([
    * For any unknown path, redirect to login page.
    */
   { path: "*", element: <Navigate to="/sign-in" replace /> },
-=======
-  
- 
->>>>>>> SURAJ
 ]);
 
 export default router;
