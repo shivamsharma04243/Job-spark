@@ -26,6 +26,7 @@ import RecruiterDashboard from "../modules/recruiter/recruiter-dashboard/recruit
 import SignIn from "../modules/auth/SignIn.jsx";
 import SignUp from "../modules/auth/SignUp.jsx";
 import Forgot from "../modules/auth/Forgot.jsx";
+import Profile from "../components/profile/profile.jsx";
 
 // ------------------------------
 // User dashboard (protected)
@@ -77,6 +78,16 @@ const router = createBrowserRouter([
   { path: "/sign-in", element: <SignIn /> },
   { path: "/sign-up", element: <SignUp /> },
   { path: "/forgot", element: <Forgot /> },
+
+  // Simple protected profile page (view-only)
+  {
+    path: "/profile",
+    element: (
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    ),
+  },
 
   /**
    * Recruiter-Only Routes (Protected + Role Restricted)

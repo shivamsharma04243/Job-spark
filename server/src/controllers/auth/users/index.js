@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-
+const logout = require('../../../api/auth/users/logout');
+const updateProfile = require('../../../api/auth/users/update');
 /**
  * Import Auth Handlers
  * ---------------------
@@ -46,5 +47,9 @@ router.get('/authcheck', requireAuth, authCheck);
 
 // Alias if you want cleaner endpoint:
 router.get('/me', requireAuth, authCheck);
+// Update profile (authenticated)
+router.put('/me', requireAuth, updateProfile);
+// Logout user by clearing the cookie
+router.post('/logout', logout);
 
 module.exports = router;

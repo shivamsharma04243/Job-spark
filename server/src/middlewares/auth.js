@@ -29,10 +29,12 @@ function requireAuth(req, res, next) {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
 
     // Attach essential user details to req.user for use in next handlers
+    // Include token issuance time (iat) as loginAt so frontend can show login time
     req.user = {
       id: payload.sub,
       username: payload.username,
-      role: payload.role
+      role: payload.role,
+      loginAt: payload.iat ? new Date(payload.iat * 1000).toISOString() : undefined,
     };
 
     return next(); // Move to the next middleware/controller
