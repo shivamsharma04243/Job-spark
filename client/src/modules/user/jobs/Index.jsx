@@ -15,6 +15,14 @@ export default function Jobs() {
   const [jobList, setJobList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // ---------- FILTER STATES (must be declared before useEffect) ----------
+  const [role, setRole] = useState("");
+  const [location, setLocation] = useState("");
+  const [exp, setExp] = useState("");
+  const [mode, setMode] = useState("");
+  const [filtered, setFiltered] = useState([]);
+  
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -24,7 +32,7 @@ export default function Jobs() {
         const { data } = await api.get('/jobs', { params: { limit: 100 } });
         if (!alive) return;
         if (data.ok && Array.isArray(data.jobs)) {
-          setJobList(data.jobs.map(j => ({
+          const jobs = data.jobs.map(j => ({
             id: j.id,
             title: j.title,
             company: j.company,
@@ -33,9 +41,12 @@ export default function Jobs() {
             exp: j.experiance,
             type: j.type,
             tags: j.tags || [],
-          })));
+          }));
+          setJobList(jobs);
+          setFiltered(jobs); // Initialize filtered list with all jobs
         } else {
           setJobList([]);
+          setFiltered([]);
         }
       } catch (err) {
         console.error('Failed to load jobs:', err);
@@ -45,38 +56,43 @@ export default function Jobs() {
     return () => { alive = false; };
   }, []);
 
-  // ---------- FILTER STATES ----------
-  const [role, setRole] = useState("");
-  const [location, setLocation] = useState("");
-  const [exp, setExp] = useState("");
-  const [mode, setMode] = useState("");
-  const [filtered, setFiltered] = useState(jobList);
-
   // ---------- SEARCH FUNCTION ----------
   const handleSearch = () => {
     let data = jobList;
 
+    // Filter by role/skill (search in title and tags)
     if (role.trim() !== "")
       data = data.filter(
         (job) =>
           job.title.toLowerCase().includes(role.toLowerCase()) ||
-          job.tags.join(" ").toLowerCase().includes(role.toLowerCase())
+          job.tags.some(tag => tag.toLowerCase().includes(role.toLowerCase()))
       );
 
+    // Filter by location
     if (location.trim() !== "")
       data = data.filter((job) =>
         job.loc.toLowerCase().includes(location.toLowerCase())
       );
 
-    if (exp && exp !== "Experience")
-      data = data.filter((job) =>
-        job.exp.toLowerCase().includes(exp.toLowerCase())
-      );
+    // Filter by experience (match any part of the experience string)
+    if (exp && exp !== "") {
+      data = data.filter((job) => {
+        const expLower = job.exp.toLowerCase();
+        const filterLower = exp.toLowerCase();
+        // Check if filter matches the job's experience level
+        if (exp === "Fresher") return expLower.includes("fresher");
+        if (exp === "1–2 yrs") return expLower.includes("1") || expLower.includes("2");
+        if (exp === "All") return true; // show all
+        return expLower.includes(filterLower);
+      });
+    }
 
-    if (mode && mode !== "Work mode")
+    // Filter by job type (Full-time, Part-time, etc.)
+    if (mode && mode !== "Job type") {
       data = data.filter((job) =>
-        job.mode.toLowerCase().includes(mode.toLowerCase())
+        job.type && job.type.toLowerCase().includes(mode.toLowerCase())
       );
+    }
 
     setFiltered(data);
     setPage(1); // reset pagination
@@ -118,10 +134,10 @@ export default function Jobs() {
             value={exp}
             onChange={(e) => setExp(e.target.value)}
           >
-            <option>Experience</option>
-            <option>Student</option>
-            <option>Fresher (0 yrs)</option>
-            <option>1–2 yrs</option>
+            <option value="">Experience</option>
+            <option value="Fresher">Fresher</option>
+            <option value="1–2 yrs">1–2 yrs</option>
+            <option value="Not specified">All</option>
           </select>
 
           <select
@@ -129,16 +145,30 @@ export default function Jobs() {
             value={mode}
             onChange={(e) => setMode(e.target.value)}
           >
-            <option>Work mode</option>
-            <option>Remote</option>
-            <option>Hybrid</option>
-            <option>Office</option>
+            <option value="">Job type</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
           </select>
 
           <Button onClick={handleSearch}>Search</Button>
         </div>
 
+        {/* LOADING / ERROR STATE */}
+        {loading && (
+          <div className="text-center py-10 text-slate-500">
+            Loading jobs...
+          </div>
+        )}
+        {error && !loading && (
+          <div className="text-center py-10 text-red-500">
+            Error: {error}
+          </div>
+        )}
+
         {/* TABLE */}
+        {!loading && !error && (
         <div className="overflow-x-auto rounded-2xl border bg-white">
           <table className="w-full text-sm">
             <thead className="bg-slate-100 text-slate-700">
@@ -244,6 +274,7 @@ export default function Jobs() {
             </tbody>
           </table>
         </div>
+        )}
 
         {/* PAGINATION */}
         <div className="flex justify-center items-center gap-3 mt-6">

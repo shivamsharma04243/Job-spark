@@ -40,7 +40,6 @@ async function createJobHandler(req, res) {
         jobType = "Full-time",
         city = "",
         locality = "",
-        skills = "",
         minExperience = null,
         maxExperience = null,
         salary = "",
@@ -70,14 +69,15 @@ async function createJobHandler(req, res) {
       const vacanciesNum = vacancies ? Math.max(1, parseInt(vacancies, 10) || 1) : 1;
 
       // Insert into DB (use placeholders)
+      // Note: 'jobs' table columns - skills column doesn't exist, use job_tag_map for tags
       const sql = `
-        INSERT INTO recruiter_jobs
-          (title, company, job_type, city, locality, skills, min_experience, max_experience, salary, vacancies, description, interview_address, contact_email, contact_phone, logo_path, created_by)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO jobs
+          (title, company, job_type, city, locality, min_experience, max_experience, salary, vacancies, description, interview_address, contact_email, contact_phone, logo_path, recruiter_id, posted_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
       `;
 
-      // If you have auth, replace created_by with actual user id. currently null.
-      const createdBy = null;
+      // recruiter_id would come from auth; for now use null
+      const recruiterId = null;
 
       const params = [
         title,
@@ -85,7 +85,6 @@ async function createJobHandler(req, res) {
         jobType,
         city,
         locality || null,
-        skills || null,
         minExpNum,
         maxExpNum,
         salary || null,
@@ -95,14 +94,35 @@ async function createJobHandler(req, res) {
         contactEmail || null,
         contactPhone || null,
         logoPath,
-        createdBy,
+        recruiterId,
       ];
 
       const [result] = await pool.query(sql, params);
+      const jobId = result.insertId;
+
+      // Insert skills as tags if provided
+      if (req.body.skills && typeof req.body.skills === 'string' && req.body.skills.trim()) {
+        try {
+          const skillList = req.body.skills.split(',').map(s => s.trim()).filter(Boolean);
+          for (const skillName of skillList) {
+            // Insert tag if not exists, get its ID
+            const [tagRows] = await pool.query(
+              `INSERT INTO job_tags (name) VALUES (?) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)`,
+              [skillName]
+            );
+            const tagId = tagRows.insertId || (await pool.query(`SELECT id FROM job_tags WHERE name = ?`, [skillName]))[0][0].id;
+            // Link job to tag
+            await pool.query(`INSERT IGNORE INTO job_tag_map (job_id, tag_id) VALUES (?, ?)`, [jobId, tagId]);
+          }
+        } catch (e) {
+          // if tag insertion fails, still return success (job was created)
+          console.error('Error saving skills as tags:', e.message);
+        }
+      }
 
       return res.status(201).json({
         ok: true,
-        id: result.insertId,
+        id: jobId,
         message: "Job created",
         logoPath,
       });

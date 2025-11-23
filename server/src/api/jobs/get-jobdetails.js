@@ -16,7 +16,6 @@ async function getjobdetails(req, res)  {
         job_type,
         city,
         locality,
-        skills,
         min_experience,
         max_experience,
         salary,
@@ -27,7 +26,7 @@ async function getjobdetails(req, res)  {
         contact_email,
         contact_phone,
         interview_address
-      FROM recruiter_jobs
+      FROM jobs
       WHERE id = ?
       LIMIT 1
     `;
@@ -41,13 +40,25 @@ async function getjobdetails(req, res)  {
     else if (r.min_experience == null && r.max_experience != null) experiance = `Up to ${r.max_experience} yrs`;
     else experiance = `${r.min_experience}-${r.max_experience} yrs`;
 
+    // fetch tags from tag tables if available (silent fallback)
+    let tags = [];
+    try {
+      const [tagRows] = await pool.query(
+        `SELECT jtm.job_id, jt.name as tag FROM job_tag_map jtm JOIN job_tags jt ON jt.id = jtm.tag_id WHERE jtm.job_id = ?`,
+        [id]
+      );
+      tags = tagRows.map(tr => tr.tag);
+    } catch (e) {
+      // ignore if tag tables aren't present
+    }
+
     const job = {
       id: r.id,
       title: r.title,
       company: r.company,
       type: r.job_type || 'Full-time',
       location: r.city + (r.locality ? `, ${r.locality}` : ''),
-      tags: (r.skills || '').split(',').map(s => s.trim()).filter(Boolean),
+      tags: tags.length ? tags : (r.skills || '').split(',').map(s => s.trim()).filter(Boolean),
       salary: r.salary || null,
       vacancies: r.vacancies,
       description: r.description,
