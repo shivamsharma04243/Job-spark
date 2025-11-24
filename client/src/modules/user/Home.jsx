@@ -10,8 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import Navbar from "../../components/ui/Navbar";
-import Footer from "../../components/ui/footer";
+
 
 // fallback sample while loading or in case of error (small)
 const fallbackJobs = [
@@ -331,11 +330,11 @@ function JobsListing() {
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <Navbar />
+    
       <Hero />
       <JobsListing />
       <WhyHireSpark />
-      <Footer />
+   
     </div>
   );
 }

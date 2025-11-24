@@ -1,6 +1,6 @@
 import { Card, CardContent } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
-import Navbar from "../../../components/ui/Navbar";
+
 
 export default function jobPosted() {
   const saved = [
@@ -8,9 +8,7 @@ export default function jobPosted() {
     { id: 2, title: "Associate Product Designer", company: "PixelPath", loc: "Gurugram", mode: "Office" },
   ];
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 🟦 Navbar at the top */}
-      <Navbar />
+   
       <div className="max-w-6xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-extrabold mb-4">posted jobs </h1>
         <div className="space-y-3">
@@ -30,6 +28,6 @@ export default function jobPosted() {
           ))}
         </div>
       </div>
-    </div>
+    
   );
 }

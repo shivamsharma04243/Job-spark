@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import Navbar from "../../../components/ui/Navbar";
+
 // Sample student data only for testing purposes
 const SAMPLE_STUDENTS = [
   {
@@ -71,9 +71,6 @@ export default function TalentHire() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 🟦 Navbar at the top */}
-      <Navbar />
       <main className="max-w-6xl mx-auto px-4 py-8">
         <header className="mb-6">
           <h1 className="text-2xl md:text-3xl font-bold">Hire-Talent </h1>
@@ -151,6 +148,6 @@ export default function TalentHire() {
           )}
         </section>
       </main>
-    </div>
+    
   );
 }

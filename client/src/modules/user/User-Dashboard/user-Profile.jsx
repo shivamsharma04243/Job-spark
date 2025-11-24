@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
-import Navbar from "../../../components/ui/Navbar";
+
 
 export default function Profile() {
   // Step: 1..4
@@ -161,261 +161,259 @@ export default function Profile() {
   const percent = completion >= 100 ? 100 : completion;
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 🟦 Navbar at the top */}
-      <Navbar />
-      <div className="max-w-6xl mx-auto px-4 py-10">
-        {/* Top progress & completion */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-extrabold">Make your profile</h1>
-            <div className="text-sm text-slate-700">
-              Profile completion:{" "}
-              <span className="font-semibold text-emerald-600">{percent}%</span>
-            </div>
-          </div>
 
-          {/* segmented progress bar */}
-          <div className="mt-4 grid grid-cols-4 gap-3">
-            {Array.from({ length: 4 }).map((_, i) => {
-              const segmentIndex = i + 1;
-              const filled = step > segmentIndex || (step === segmentIndex && percent >= (segmentIndex - 1) * 25 + 1);
-              return (
-                <div key={i} className="h-2 rounded-full w-full bg-slate-200 overflow-hidden">
-                  <div
-                    className={`h-2 rounded-full transition-all duration-300`}
-                    style={{
-                      width: `${Math.min(Math.max((percent - (segmentIndex - 1) * 25) / 25 * 100, 0), 100)}%`,
-                      background: filled ? "linear-gradient(90deg,#0ea5a4,#34d399)" : "#dbeafe",
-                    }}
-                  />
-                </div>
-              );
-            })}
+    <div className="max-w-6xl mx-auto px-4 py-10">
+      {/* Top progress & completion */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-extrabold">Make your profile</h1>
+          <div className="text-sm text-slate-700">
+            Profile completion:{" "}
+            <span className="font-semibold text-emerald-600">{percent}%</span>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Left column: step indicator + summary */}
-          <div className="lg:col-span-1">
-            <Card className="rounded-2xl p-4">
-              <CardHeader>
-                <CardTitle className="text-lg">Progress</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  {stepTitles.map((t, idx) => {
-                    const idx1 = idx + 1;
-                    return (
-                      <li key={t} className="flex items-center gap-3">
-                        <div
-                          className={`w-8 h-8 rounded-full grid place-items-center text-sm font-medium ${step === idx1 ? "bg-emerald-600 text-white" : step > idx1 ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-500"
-                            }`}
-                        >
-                          {idx1}
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium">{t}</div>
-                          <div className="text-xs text-slate-500">
-                            {idx1 === step ? "In progress" : idx1 < step ? "Completed" : "Pending"}
-                          </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+        {/* segmented progress bar */}
+        <div className="mt-4 grid grid-cols-4 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => {
+            const segmentIndex = i + 1;
+            const filled = step > segmentIndex || (step === segmentIndex && percent >= (segmentIndex - 1) * 25 + 1);
+            return (
+              <div key={i} className="h-2 rounded-full w-full bg-slate-200 overflow-hidden">
+                <div
+                  className={`h-2 rounded-full transition-all duration-300`}
+                  style={{
+                    width: `${Math.min(Math.max((percent - (segmentIndex - 1) * 25) / 25 * 100, 0), 100)}%`,
+                    background: filled ? "linear-gradient(90deg,#0ea5a4,#34d399)" : "#dbeafe",
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
-                {/* completion banner */}
-                {percent >= 100 ? (
-                  <div className="mt-6 rounded-lg bg-emerald-50 border border-emerald-100 p-4 text-emerald-700">
-                    🎉 Your profile is 100% updated
-                  </div>
-                ) : (
-                  <div className="mt-6 rounded-lg bg-slate-50 border border-slate-100 p-4 text-slate-700">
-                    Complete all steps to reach 100%
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right column: form steps */}
-          <div className="lg:col-span-2">
-            <Card className="rounded-2xl">
-              <CardHeader>
-                <CardTitle className="text-xl">{stepTitles[step - 1]}</CardTitle>
-              </CardHeader>
-
-              <CardContent className="p-6">
-                {/* Step 1: Basics */}
-                {step === 1 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Full Name</label>
-                      <Input value={form.fullName} onChange={(e) => updateField("fullName", e.target.value)} placeholder="Enter full name" />
-                      {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Mobile Number</label>
-                      <Input value={form.mobile} onChange={(e) => updateField("mobile", e.target.value)} placeholder="Enter mobile number" />
-                      {errors.mobile && <p className="text-xs text-red-500 mt-1">{errors.mobile}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Email</label>
-                      <Input value={form.email} onChange={(e) => updateField("email", e.target.value)} placeholder="Enter email" />
-                      {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Gender</label>
-                      <div className="flex gap-3">
-                        {["Male", "Female", "Other"].map((g) => (
-                          <button
-                            key={g}
-                            type="button"
-                            onClick={() => updateField("gender", g)}
-                            className={`px-3 py-1.5 rounded-full border text-sm ${form.gender === g ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-slate-700 border-slate-200"}`}
-                          >
-                            {g}
-                          </button>
-                        ))}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Left column: step indicator + summary */}
+        <div className="lg:col-span-1">
+          <Card className="rounded-2xl p-4">
+            <CardHeader>
+              <CardTitle className="text-lg">Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {stepTitles.map((t, idx) => {
+                  const idx1 = idx + 1;
+                  return (
+                    <li key={t} className="flex items-center gap-3">
+                      <div
+                        className={`w-8 h-8 rounded-full grid place-items-center text-sm font-medium ${step === idx1 ? "bg-emerald-600 text-white" : step > idx1 ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-500"
+                          }`}
+                      >
+                        {idx1}
                       </div>
-                      {errors.gender && <p className="text-xs text-red-500 mt-1">{errors.gender}</p>}
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 2: Education */}
-                {step === 2 && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Highest Qualification</label>
-                      <select value={form.highestQualification} onChange={(e) => updateField("highestQualification", e.target.value)} className="rounded-xl border p-3 w-full text-sm">
-                        <option value="">Select qualification</option>
-                        <option>Below 10th</option>
-                        <option>10th Pass</option>
-                        <option>12th Pass</option>
-                        <option>Diploma</option>
-                        <option>Graduate</option>
-                        <option>Post Graduate</option>
-                      </select>
-                      {errors.highestQualification && <p className="text-xs text-red-500 mt-1">{errors.highestQualification}</p>}
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium mb-1">College / University</label>
-                        <Input value={form.college} onChange={(e) => updateField("college", e.target.value)} placeholder="Enter college or university" />
-                        {errors.college && <p className="text-xs text-red-500 mt-1">{errors.college}</p>}
+                        <div className="text-sm font-medium">{t}</div>
+                        <div className="text-xs text-slate-500">
+                          {idx1 === step ? "In progress" : idx1 < step ? "Completed" : "Pending"}
+                        </div>
                       </div>
+                    </li>
+                  );
+                })}
+              </ul>
 
-                      <div>
-                        <label className="block text-sm font-medium mb-1">Passing Year</label>
-                        <Input value={form.passingYear} onChange={(e) => updateField("passingYear", e.target.value)} placeholder="e.g., 2023" />
-                        {errors.passingYear && <p className="text-xs text-red-500 mt-1">{errors.passingYear}</p>}
-                      </div>
-                    </div>
+              {/* completion banner */}
+              {percent >= 100 ? (
+                <div className="mt-6 rounded-lg bg-emerald-50 border border-emerald-100 p-4 text-emerald-700">
+                  🎉 Your profile is 100% updated
+                </div>
+              ) : (
+                <div className="mt-6 rounded-lg bg-slate-50 border border-slate-100 p-4 text-slate-700">
+                  Complete all steps to reach 100%
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Skills / Technologies</label>
-                      <Input value={form.skills} onChange={(e) => updateField("skills", e.target.value)} placeholder="Comma separated: React, Node.js, SQL" />
-                      {errors.skills && <p className="text-xs text-red-500 mt-1">{errors.skills}</p>}
-                    </div>
-                  </div>
-                )}
+        {/* Right column: form steps */}
+        <div className="lg:col-span-2">
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <CardTitle className="text-xl">{stepTitles[step - 1]}</CardTitle>
+            </CardHeader>
 
-                {/* Step 3: Resume & Experience */}
-                {step === 3 && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Upload Resume</label>
-                      <input type="file" accept=".pdf,.doc,.docx" onChange={onResumeFileChange} className="block w-full text-sm" />
-                      {form.resumeFile && <p className="text-xs text-slate-600 mt-1">Uploaded: {form.resumeFile.name}</p>}
-                      {errors.resumeFile && <p className="text-xs text-red-500 mt-1">{errors.resumeFile}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Work Experience</label>
-                      <Input value={form.experience} onChange={(e) => updateField("experience", e.target.value)} placeholder="Years or short description (e.g., 2 yrs in frontend)" />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Projects / Key Achievements</label>
-                      <textarea value={form.projects} onChange={(e) => updateField("projects", e.target.value)} className="w-full rounded-xl border p-3 text-sm min-h-[90px]" placeholder="Briefly list projects or achievements" />
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 4: Job Preferences */}
-                {step === 4 && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Which city do you want to work in?</label>
-                      <Input value={form.preferredCity} onChange={(e) => updateField("preferredCity", e.target.value)} placeholder="Select City" />
-                      {errors.preferredCity && <p className="text-xs text-red-500 mt-1">{errors.preferredCity}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Select Locality</label>
-                      <Input value={form.preferredLocality} onChange={(e) => updateField("preferredLocality", e.target.value)} placeholder="Select Locality" />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Work mode preference</label>
-                      <div className="flex gap-3">
-                        {["Remote", "Hybrid", "Office"].map((m) => (
-                          <button
-                            key={m}
-                            type="button"
-                            onClick={() => updateField("workMode", m)}
-                            className={`px-3 py-1.5 rounded-full border text-sm ${form.workMode === m ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-slate-700 border-slate-200"}`}
-                          >
-                            {m}
-                          </button>
-                        ))}
-                      </div>
-                      {errors.workMode && <p className="text-xs text-red-500 mt-1">{errors.workMode}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Salary expectation</label>
-                      <Input value={form.salaryExpectation} onChange={(e) => updateField("salaryExpectation", e.target.value)} placeholder="e.g., 3 LPA" />
-                    </div>
-
-                    <div className="flex items-center gap-3 mt-3 bg-slate-50 border border-slate-100 p-3 rounded-lg">
-                      <input id="whatsapp" type="checkbox" className="h-4 w-4 rounded border-slate-300" />
-                      <label htmlFor="whatsapp" className="text-sm text-slate-700">Get me job updates on WhatsApp</label>
-                    </div>
-                  </div>
-                )}
-
-                {/* actions */}
-                <div className="mt-6 flex items-center justify-between gap-4">
+            <CardContent className="p-6">
+              {/* Step 1: Basics */}
+              {step === 1 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Button variant="ghost" onClick={onBack} className="mr-2" disabled={step === 1}>
-                      Back
-                    </Button>
+                    <label className="block text-sm font-medium mb-1">Full Name</label>
+                    <Input value={form.fullName} onChange={(e) => updateField("fullName", e.target.value)} placeholder="Enter full name" />
+                    {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    {step < 4 ? (
-                      <Button className="rounded-full py-2 px-6" onClick={onNext}>
-                        Next &raquo;
-                      </Button>
-                    ) : (
-                      <Button className="rounded-full py-2 px-6" onClick={onFinish}>
-                        Save & Finish
-                      </Button>
-                    )}
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Mobile Number</label>
+                    <Input value={form.mobile} onChange={(e) => updateField("mobile", e.target.value)} placeholder="Enter mobile number" />
+                    {errors.mobile && <p className="text-xs text-red-500 mt-1">{errors.mobile}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Email</label>
+                    <Input value={form.email} onChange={(e) => updateField("email", e.target.value)} placeholder="Enter email" />
+                    {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Gender</label>
+                    <div className="flex gap-3">
+                      {["Male", "Female", "Other"].map((g) => (
+                        <button
+                          key={g}
+                          type="button"
+                          onClick={() => updateField("gender", g)}
+                          className={`px-3 py-1.5 rounded-full border text-sm ${form.gender === g ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-slate-700 border-slate-200"}`}
+                        >
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                    {errors.gender && <p className="text-xs text-red-500 mt-1">{errors.gender}</p>}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              )}
+
+              {/* Step 2: Education */}
+              {step === 2 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Highest Qualification</label>
+                    <select value={form.highestQualification} onChange={(e) => updateField("highestQualification", e.target.value)} className="rounded-xl border p-3 w-full text-sm">
+                      <option value="">Select qualification</option>
+                      <option>Below 10th</option>
+                      <option>10th Pass</option>
+                      <option>12th Pass</option>
+                      <option>Diploma</option>
+                      <option>Graduate</option>
+                      <option>Post Graduate</option>
+                    </select>
+                    {errors.highestQualification && <p className="text-xs text-red-500 mt-1">{errors.highestQualification}</p>}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">College / University</label>
+                      <Input value={form.college} onChange={(e) => updateField("college", e.target.value)} placeholder="Enter college or university" />
+                      {errors.college && <p className="text-xs text-red-500 mt-1">{errors.college}</p>}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Passing Year</label>
+                      <Input value={form.passingYear} onChange={(e) => updateField("passingYear", e.target.value)} placeholder="e.g., 2023" />
+                      {errors.passingYear && <p className="text-xs text-red-500 mt-1">{errors.passingYear}</p>}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Skills / Technologies</label>
+                    <Input value={form.skills} onChange={(e) => updateField("skills", e.target.value)} placeholder="Comma separated: React, Node.js, SQL" />
+                    {errors.skills && <p className="text-xs text-red-500 mt-1">{errors.skills}</p>}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: Resume & Experience */}
+              {step === 3 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Upload Resume</label>
+                    <input type="file" accept=".pdf,.doc,.docx" onChange={onResumeFileChange} className="block w-full text-sm" />
+                    {form.resumeFile && <p className="text-xs text-slate-600 mt-1">Uploaded: {form.resumeFile.name}</p>}
+                    {errors.resumeFile && <p className="text-xs text-red-500 mt-1">{errors.resumeFile}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Work Experience</label>
+                    <Input value={form.experience} onChange={(e) => updateField("experience", e.target.value)} placeholder="Years or short description (e.g., 2 yrs in frontend)" />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Projects / Key Achievements</label>
+                    <textarea value={form.projects} onChange={(e) => updateField("projects", e.target.value)} className="w-full rounded-xl border p-3 text-sm min-h-[90px]" placeholder="Briefly list projects or achievements" />
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Job Preferences */}
+              {step === 4 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Which city do you want to work in?</label>
+                    <Input value={form.preferredCity} onChange={(e) => updateField("preferredCity", e.target.value)} placeholder="Select City" />
+                    {errors.preferredCity && <p className="text-xs text-red-500 mt-1">{errors.preferredCity}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Select Locality</label>
+                    <Input value={form.preferredLocality} onChange={(e) => updateField("preferredLocality", e.target.value)} placeholder="Select Locality" />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Work mode preference</label>
+                    <div className="flex gap-3">
+                      {["Remote", "Hybrid", "Office"].map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => updateField("workMode", m)}
+                          className={`px-3 py-1.5 rounded-full border text-sm ${form.workMode === m ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-slate-700 border-slate-200"}`}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                    {errors.workMode && <p className="text-xs text-red-500 mt-1">{errors.workMode}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Salary expectation</label>
+                    <Input value={form.salaryExpectation} onChange={(e) => updateField("salaryExpectation", e.target.value)} placeholder="e.g., 3 LPA" />
+                  </div>
+
+                  <div className="flex items-center gap-3 mt-3 bg-slate-50 border border-slate-100 p-3 rounded-lg">
+                    <input id="whatsapp" type="checkbox" className="h-4 w-4 rounded border-slate-300" />
+                    <label htmlFor="whatsapp" className="text-sm text-slate-700">Get me job updates on WhatsApp</label>
+                  </div>
+                </div>
+              )}
+
+              {/* actions */}
+              <div className="mt-6 flex items-center justify-between gap-4">
+                <div>
+                  <Button variant="ghost" onClick={onBack} className="mr-2" disabled={step === 1}>
+                    Back
+                  </Button>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {step < 4 ? (
+                    <Button className="rounded-full py-2 px-6" onClick={onNext}>
+                      Next &raquo;
+                    </Button>
+                  ) : (
+                    <Button className="rounded-full py-2 px-6" onClick={onFinish}>
+                      Save & Finish
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
+
   );
 }

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import api from "../../../components/apiconfig/apiconfig";
-import Navbar from "../../../components/ui/Navbar";
+
 
 export default function AdminPostJob() {
   const [form, setForm] = useState({
@@ -102,9 +102,7 @@ export default function AdminPostJob() {
   const logoPreview = form.logoFile ? URL.createObjectURL(form.logoFile) : null;
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 🟦 Navbar at the top */}
-      <Navbar />
+   
       <div className="max-w-6xl mx-auto px-6 py-10">
         <h1 className="text-2xl font-bold mb-6">Post a Job</h1>
 
@@ -286,6 +284,6 @@ export default function AdminPostJob() {
           </div>
         </div>
       </div>
-    </div>
+    
   );
 }

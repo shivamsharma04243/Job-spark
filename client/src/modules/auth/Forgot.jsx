@@ -1,12 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
-import Navbar from "../../components/ui/Navbar";
+
 export default function Forgot() {
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 🟦 Navbar at the top */}
-      <Navbar />
+   
       <div className="min-h-[80vh] grid place-items-center px-4">
         <Card className="w-full max-w-md rounded-2xl">
           <CardHeader>
@@ -19,6 +17,6 @@ export default function Forgot() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    
   );
 }

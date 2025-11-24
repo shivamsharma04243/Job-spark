@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Navbar from "../../../components/ui/Navbar";
+
 export default function BasicProfileForm() {
   const [hiringFor, setHiringFor] = useState("own"); // "own" | "client" | "both"
   const [form, setForm] = useState({
@@ -48,9 +48,7 @@ export default function BasicProfileForm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 🟦 Navbar at the top */}
-      <Navbar />
+   
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-lg font-semibold mb-6">Basic Profile</h2>
@@ -247,6 +245,6 @@ export default function BasicProfileForm() {
           </form>
         </div>
       </div>
-    </div>
+    
   );
 }

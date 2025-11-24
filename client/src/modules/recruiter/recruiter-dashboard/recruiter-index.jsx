@@ -1,11 +1,9 @@
 import { Card, CardContent } from "../../../components/ui/card";
-import Navbar from "../../../components/ui/Navbar";
+
 
 export default function RecruiterDashboard() {
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 🟦 Navbar at the top */}
-      <Navbar />
+    
       <div className="max-w-6xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-extrabold mb-4">Recruiter Dashboard</h1>
         <div className="flex flex-wrap gap-2 mb-6">
@@ -39,6 +37,6 @@ export default function RecruiterDashboard() {
           </Card>
         </div>
       </div>
-    </div>
+    
   );
 }

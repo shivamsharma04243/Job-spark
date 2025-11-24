@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import api from "../../components/apiconfig/apiconfig";
-import Navbar from "../../components/ui/Navbar";
+
 
 export default function SignIn() {
   const [identifier, setIdentifier] = useState("");
@@ -31,9 +31,7 @@ export default function SignIn() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-          {/* 🟦 Navbar at the top */}
-          <Navbar />
+   
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-12">
       <div className="w-full max-w-6xl rounded-2xl bg-[#eefcfb] p-8 md:p-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -112,6 +110,6 @@ export default function SignIn() {
         </div>
       </div>
     </div>
-    </div>
+   
   );
 }
