@@ -11,8 +11,6 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 
-
-// fallback sample while loading or in case of error (small)
 const fallbackJobs = [
   {
     id: "s1",
@@ -30,7 +28,7 @@ function timeAgo(iso) {
   if (!iso) return "";
   const created = new Date(iso);
   const now = new Date();
-  const diff = Math.floor((now - created) / 1000); // seconds
+  const diff = Math.floor((now - created) / 1000);
 
   if (diff < 60) return `${diff}s ago`;
   const mins = Math.floor(diff / 60);
@@ -164,26 +162,15 @@ function WhyHireSpark() {
 function JobsTableRow({ job }) {
   return (
     <tr className="border-b">
-      <td className="px-4 py-3 font-semibold">
+      <td className="px-4 py-3">
         <div className="flex items-center gap-3">
-          {job.logoPath ? (
-            // adjust public URL path if needed (e.g. /uploads/logos/xxx)
-            <img
-              src={job.logoPath.startsWith("http") ? job.logoPath : `/${job.logoPath}`}
-              alt={`${job.company} logo`}
-              className="w-10 h-10 rounded-md object-cover"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center text-xs">
-              {job.company?.[0] || "C"}
-            </div>
-          )}
-          <div>
-            <div className="font-semibold">{job.title}</div>
-            <div className="text-xs text-slate-500">{job.company}</div>
+          <div className="text-sm">
+            {job.title.charAt(0).toUpperCase() + job.title.slice(1)}
           </div>
+
         </div>
       </td>
+
       <td className="px-4 py-3">{job.company}</td>
       <td className="px-4 py-3">{job.location}</td>
       <td className="px-4 py-3">{job.type}</td>
@@ -204,6 +191,7 @@ function JobsTableRow({ job }) {
           )}
         </div>
       </td>
+
       <td className="px-4 py-3 text-orange-600">{job.posted}</td>
       <td className="px-4 py-3">
         <div className="flex flex-row gap-2 items-center">
@@ -227,11 +215,14 @@ function JobsListing() {
 
   useEffect(() => {
     let mounted = true;
+
     async function fetchJobs() {
       try {
         setLoading(true);
         const { data } = await api.get("/jobs", { params: { limit: 8 } });
+
         if (!mounted) return;
+
         if (data.ok && Array.isArray(data.jobs)) {
           const mapped = data.jobs.map((j) => ({
             id: j.id,
@@ -241,7 +232,7 @@ function JobsListing() {
             tags: j.tags || [],
             posted: timeAgo(j.createdAt),
             type: j.type,
-            experiance: j.experiance || j.experience || j.experiance,
+            experiance: j.experiance || j.experience,
             logoPath: j.logoPath,
           }));
           setJobs(mapped);
@@ -249,11 +240,10 @@ function JobsListing() {
           setJobs(fallbackJobs);
         }
       } catch (err) {
-        console.error("Failed to fetch jobs:", err);
-        setError(err.message || "Failed to fetch jobs");
+        setError(err.message);
         setJobs(fallbackJobs);
       } finally {
-        if (mounted) setLoading(false);
+        setLoading(false);
       }
     }
 
@@ -330,11 +320,9 @@ function JobsListing() {
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-    
       <Hero />
       <JobsListing />
       <WhyHireSpark />
-   
     </div>
   );
 }

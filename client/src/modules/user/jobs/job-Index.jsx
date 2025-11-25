@@ -12,10 +12,8 @@ import { Input } from "../../../components/ui/input";
 import api from "../../../components/apiconfig/apiconfig";
 
 export default function Jobs() {
-  // Jobs from backend
   const [jobList, setJobList] = useState([]);
 
-  // ---------- FILTER STATES ----------
   const [role, setRole] = useState("");
   const [location, setLocation] = useState("");
   const [exp, setExp] = useState("");
@@ -26,13 +24,16 @@ export default function Jobs() {
 
   useEffect(() => {
     let alive = true;
+
     (async () => {
       try {
         setLoading(true);
-        const { data } = await api.get('/jobs', { params: { limit: 100 } });
+        const { data } = await api.get("/jobs", { params: { limit: 100 } });
+
         if (!alive) return;
+
         if (data.ok && Array.isArray(data.jobs)) {
-          setJobList(data.jobs.map(j => ({
+          const mapped = data.jobs.map((j) => ({
             id: j.id,
             title: j.title,
             company: j.company,
@@ -41,32 +42,22 @@ export default function Jobs() {
             exp: j.experiance,
             type: j.type,
             tags: j.tags || [],
-          })));
-          setFiltered(data.jobs.map(j => ({
-            id: j.id,
-            title: j.title,
-            company: j.company,
-            loc: j.location,
-            mode: j.type,
-            exp: j.experiance,
-            type: j.type,
-            tags: j.tags || [],
-          })));
-        } else {
-          setJobList([]);
-          setFiltered([]);
+          }));
+          setJobList(mapped);
+          setFiltered(mapped);
         }
       } catch (err) {
-        console.error('Failed to load jobs:', err);
-        setError(err.message || 'Failed to load jobs');
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     })();
-    return () => { alive = false; };
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
-  // ---------- SEARCH FUNCTION ----------
   const handleSearch = () => {
     let data = jobList;
 
@@ -74,9 +65,10 @@ export default function Jobs() {
     const locationTrim = location.trim().toLowerCase();
 
     if (roleTrim !== "")
-      data = data.filter((job) =>
-        job.title.toLowerCase().includes(roleTrim) ||
-        job.tags.join(" ").toLowerCase().includes(roleTrim)
+      data = data.filter(
+        (job) =>
+          job.title.toLowerCase().includes(roleTrim) ||
+          job.tags.join(" ").toLowerCase().includes(roleTrim)
       );
 
     if (locationTrim !== "")
@@ -85,35 +77,32 @@ export default function Jobs() {
       );
 
     if (exp && exp !== "Experience")
-      data = data.filter((job) => job.exp.toLowerCase().includes(exp.toLowerCase()));
+      data = data.filter((job) =>
+        job.exp.toLowerCase().includes(exp.toLowerCase())
+      );
 
     if (mode && mode !== "Work mode")
-      data = data.filter((job) => job.mode.toLowerCase().includes(mode.toLowerCase()));
+      data = data.filter((job) =>
+        job.mode.toLowerCase().includes(mode.toLowerCase())
+      );
 
     setFiltered(data);
-    setPage(1); // reset pagination to first page on new filter
+    setPage(1);
   };
 
-  // run search automatically whenever any filter changes
   useEffect(() => {
     handleSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, location, exp, mode]); // no jobList dependency since it's static here
+  }, [role, location, exp, mode]);
 
-  // ---------- PAGINATION ----------
   const pageSize = 4;
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(filtered.length / pageSize);
 
-  // clamp page if filtered changes (prevents out-of-range page)
   useEffect(() => {
     if (page > totalPages) setPage(totalPages || 1);
   }, [filtered, totalPages, page]);
 
-  const paginated = filtered.slice(
-    (page - 1) * pageSize,
-    page * pageSize
-  );
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
@@ -122,7 +111,6 @@ export default function Jobs() {
         Internships and entry-level roles for students & 0–2 yrs.
       </p>
 
-      {/* FILTERS (more compact) */}
       <div className="grid md:grid-cols-6 gap-2 bg-white p-3 rounded-2xl border mb-4">
         <Input
           placeholder="Role or skill"
@@ -159,25 +147,23 @@ export default function Jobs() {
           <option>Office</option>
         </select>
 
-        {/* optional: keep a visible Search button but it's not required */}
         <Button onClick={handleSearch} className="hidden md:inline-flex">
           Search
         </Button>
       </div>
 
-      {/* TABLE (compact paddings) */}
       <div className="overflow-x-auto rounded-2xl border bg-white">
         <table className="w-full text-sm">
           <thead className="bg-slate-100 text-slate-700">
             <tr>
-              <th className="px-3 py-2 text-left whitespace-nowrap">Job Title</th>
-              <th className="px-3 py-2 text-left whitespace-nowrap">Company</th>
-              <th className="px-3 py-2 text-left whitespace-nowrap">Location</th>
-              <th className="px-3 py-2 text-left whitespace-nowrap">Type</th>
-              <th className="px-3 py-2 text-left whitespace-nowrap">Mode</th>
-              <th className="px-3 py-2 text-left whitespace-nowrap">Experience</th>
-              <th className="px-3 py-2 text-left whitespace-nowrap">Tags</th>
-              <th className="px-3 py-2 text-left whitespace-nowrap">Actions</th>
+              <th className="px-3 py-2 text-left">Job Title</th>
+              <th className="px-3 py-2 text-left">Company</th>
+              <th className="px-3 py-2 text-left">Location</th>
+              <th className="px-3 py-2 text-left">Type</th>
+              <th className="px-3 py-2 text-left">Mode</th>
+              <th className="px-3 py-2 text-left">Experience</th>
+              <th className="px-3 py-2 text-left">Tags</th>
+              <th className="px-3 py-2 text-left">Actions</th>
             </tr>
           </thead>
 
@@ -190,11 +176,8 @@ export default function Jobs() {
               </tr>
             ) : (
               paginated.map((r) => (
-                <tr
-                  key={r.id}
-                  className="border-b hover:bg-slate-50 transition"
-                >
-                  <td className="px-3 py-2 font-medium align-middle whitespace-nowrap">
+                <tr key={r.id} className="border-b hover:bg-slate-50 transition">
+                  <td className="px-3 py-2 align-middle whitespace-nowrap">
                     {r.title}
                   </td>
 
@@ -259,7 +242,6 @@ export default function Jobs() {
         </table>
       </div>
 
-      {/* PAGINATION (compact) */}
       <div className="flex justify-center items-center gap-2 mt-4">
         <button
           className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
@@ -269,28 +251,23 @@ export default function Jobs() {
           Previous
         </button>
 
-        {/* page numbers */}
-        {totalPages > 0 ? (
-          Array.from({ length: totalPages }).map((_, i) => {
-            const pageNum = i + 1;
-            const isActive = page === pageNum;
-            return (
-              <button
-                key={pageNum}
-                onClick={() => setPage(pageNum)}
-                className={`px-3 py-1 text-sm rounded-md border focus:outline-none ${
-                  isActive
-                    ? "bg-slate-800 text-white border-slate-800"
-                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                }`}
-              >
-                {pageNum}
-              </button>
-            );
-          })
-        ) : (
-          <span className="text-sm text-slate-500">0</span>
-        )}
+        {Array.from({ length: totalPages }).map((_, i) => {
+          const pageNum = i + 1;
+          const active = page === pageNum;
+          return (
+            <button
+              key={pageNum}
+              onClick={() => setPage(pageNum)}
+              className={`px-3 py-1 text-sm rounded-md border ${
+                active
+                  ? "bg-slate-800 text-white border-slate-800"
+                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+              }`}
+            >
+              {pageNum}
+            </button>
+          );
+        })}
 
         <button
           className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
