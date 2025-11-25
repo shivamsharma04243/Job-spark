@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const logout = require('../../../api/auth/users/logout');
-const updateProfile = require('../../../api/auth/users/update');
+const logout = require('../../../api/auth/logout');
+const updateProfile = require('../../../api/auth/update');
 /**
  * Import Auth Handlers
  * ---------------------
@@ -11,8 +11,8 @@ const updateProfile = require('../../../api/auth/users/update');
  * signUp  → Creates new user, hashes password, saves to DB, sets cookie.
  * signIn  → Validates credentials, checks DB, issues JWT cookie.
  */
-const signUp = require('../../../api/auth/users/sign-up');
-const signIn = require('../../../api/auth/users/sign-in');
+const signUp = require('../../../api/auth/sign-up');
+const signIn = require('../../../api/auth/sign-in');
 
 /**
  * Auth Middleware

@@ -3,35 +3,45 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 
+/**
+ * Updated Profile form to match this schema:
+ * {
+ *   "user_id": 0,
+ *   "full_name": "string",
+ *   "phone": "string",
+ *   "city": "string",
+ *   "state": "string",
+ *   "country": "string",
+ *   "experience_years": 0,
+ *   "highest_education": "string",
+ *   "resume_path": "string",
+ *   "linkedin_url": "string",
+ *   "portfolio_url": "string"
+ * }
+ *
+ * Notes:
+ * - resumeFile is kept as a File object for upload; resume_path stores the filename (or URL returned from backend).
+ * - onFinish builds a payload using the schema keys.
+ * - Replace the fake upload / fetch parts with your real API endpoints.
+ */
 
 export default function Profile() {
-  // Step: 1..4
   const [step, setStep] = useState(1);
 
-  // form state
+  // form state mapped to the schema fields (plus resumeFile for upload)
   const [form, setForm] = useState({
-    // Step 1 - Basics
-    fullName: "",
-    mobile: "",
-    email: "",
-    gender: "",
-
-    // Step 2 - Education
-    highestQualification: "",
-    college: "",
-    passingYear: "",
-    skills: "", // comma separated
-
-    // Step 3 - Experience & Resume
-    resumeFile: null, // File object
-    experience: "", // text or years
-    projects: "",
-
-    // Step 4 - Job Preferences
-    preferredCity: "",
-    preferredLocality: "",
-    workMode: "",
-    salaryExpectation: "",
+    user_id: null,
+    full_name: "",
+    phone: "",
+    city: "",
+    state: "",
+    country: "",
+    experience_years: "", // keep as string input, convert to number on submit
+    highest_education: "",
+    resumeFile: null, // actual File object (not part of schema; used for upload)
+    resume_path: "", // schema field (file name or URL after upload)
+    linkedin_url: "",
+    portfolio_url: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -39,67 +49,60 @@ export default function Profile() {
   // helper to update fields
   function updateField(name, value) {
     setForm((s) => ({ ...s, [name]: value }));
-    // clear error for field
     setErrors((e) => ({ ...e, [name]: "" }));
   }
 
-  // List of all tracked fields for percent calculation
+  // tracked fields for completion percent
   const trackedFields = [
-    "fullName",
-    "mobile",
-    "email",
-    "gender",
-    "highestQualification",
-    "college",
-    "passingYear",
-    "skills",
-    "resumeFile",
-    "experience",
-    "projects",
-    "preferredCity",
-    "preferredLocality",
-    "workMode",
-    "salaryExpectation",
+    "full_name",
+    "phone",
+    "city",
+    "state",
+    "country",
+    "experience_years",
+    "highest_education",
+    "resume_path",
+    "linkedin_url",
+    "portfolio_url",
   ];
 
-  // compute completion percent
   const completion = useMemo(() => {
     const total = trackedFields.length;
     let done = 0;
     for (const k of trackedFields) {
       const v = form[k];
-      if (k === "resumeFile") {
-        if (v) done += 1;
-      } else if (typeof v === "string" && v.trim() !== "") {
+      if (typeof v === "string") {
+        if (v.trim() !== "") done += 1;
+      } else if (v !== null && v !== undefined) {
         done += 1;
       }
     }
-    // if user has visited and completed all 4 steps we can treat as 100%
-    // but by default compute from fields
     return Math.round((done / total) * 100);
   }, [form]);
 
-  // validation for each step
+  // validation per step
   function validateStep(currentStep) {
     const newErrors = {};
     if (currentStep === 1) {
-      if (!form.fullName.trim()) newErrors.fullName = "Enter full name";
-      if (!form.mobile.trim()) newErrors.mobile = "Enter mobile number";
-      if (!form.email.trim()) newErrors.email = "Enter email";
-      if (!form.gender.trim()) newErrors.gender = "Select gender";
+      if (!form.full_name.trim()) newErrors.full_name = "Enter full name";
+      if (!form.phone.trim()) newErrors.phone = "Enter phone number";
     } else if (currentStep === 2) {
-      if (!form.highestQualification.trim()) newErrors.highestQualification = "Select qualification";
-      if (!form.college.trim()) newErrors.college = "Enter college/university";
-      if (!form.passingYear.trim()) newErrors.passingYear = "Enter passing year";
-      if (!form.skills.trim()) newErrors.skills = "Add at least one skill";
+      if (!form.city.trim()) newErrors.city = "Enter city";
+      if (!form.state.trim()) newErrors.state = "Enter state";
+      if (!form.country.trim()) newErrors.country = "Enter country";
+      if (!form.highest_education.trim()) newErrors.highest_education = "Select highest education";
     } else if (currentStep === 3) {
-      // resume optional but encourage
-      // no hard validation here; you can require resumeFile if you want
-      // if (!form.resumeFile) newErrors.resumeFile = "Upload resume";
-      // experience/project optional
-    } else if (currentStep === 4) {
-      if (!form.preferredCity.trim()) newErrors.preferredCity = "Select preferred city";
-      if (!form.workMode.trim()) newErrors.workMode = "Select work mode";
+      // Experience/links: ensure numeric experience_years (optional but validated if provided)
+      if (form.experience_years && isNaN(Number(form.experience_years))) {
+        newErrors.experience_years = "Enter a valid number of years (e.g., 2)";
+      }
+      // linkedin & portfolio are optional, but if provided do a simple pattern check
+      if (form.linkedin_url && !/^https?:\/\//i.test(form.linkedin_url)) {
+        newErrors.linkedin_url = "Use full URL (include https://)";
+      }
+      if (form.portfolio_url && !/^https?:\/\//i.test(form.portfolio_url)) {
+        newErrors.portfolio_url = "Use full URL (include https://)";
+      }
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -107,37 +110,51 @@ export default function Profile() {
 
   function onNext() {
     if (!validateStep(step)) return;
-    if (step < 4) setStep((s) => s + 1);
+    if (step < 3) setStep((s) => s + 1);
   }
   function onBack() {
     if (step > 1) setStep((s) => s - 1);
   }
 
-  function onFinish() {
-    // run full validation across steps
+  // handle resume selection
+  function onResumeFileChange(e) {
+    const file = e.target.files?.[0] ?? null;
+    updateField("resumeFile", file);
+    // set resume_path to filename as placeholder; ideally, on upload your backend returns a URL which you should save.
+    updateField("resume_path", file ? file.name : "");
+  }
+
+  // Simulated upload function (replace with actual upload API)
+  async function uploadResume(file) {
+    if (!file) return "";
+    // Example: implement actual upload here; for now return filename after a short "fake" delay
+    // IMPORTANT: Replace this simulated behavior with real upload code.
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(file.name), 400); // returns filename as "path"
+    });
+  }
+
+  async function onFinish() {
+    // validate all steps
     let ok = true;
-    for (let s = 1; s <= 4; s++) {
+    for (let s = 1; s <= 3; s++) {
       if (!validateStep(s)) ok = false;
     }
     if (!ok) {
-      // jump to first invalid step
-      for (let s = 1; s <= 4; s++) {
-        const tmpErrors = {};
+      for (let s = 1; s <= 3; s++) {
+        const tmp = {};
         if (s === 1) {
-          if (!form.fullName.trim()) tmpErrors.fullName = true;
-          if (!form.mobile.trim()) tmpErrors.mobile = true;
-          if (!form.email.trim()) tmpErrors.email = true;
-          if (!form.gender.trim()) tmpErrors.gender = true;
+          if (!form.full_name.trim()) tmp.full_name = true;
+          if (!form.phone.trim()) tmp.phone = true;
         } else if (s === 2) {
-          if (!form.highestQualification.trim()) tmpErrors.highestQualification = true;
-          if (!form.college.trim()) tmpErrors.college = true;
-          if (!form.passingYear.trim()) tmpErrors.passingYear = true;
-          if (!form.skills.trim()) tmpErrors.skills = true;
-        } else if (s === 4) {
-          if (!form.preferredCity.trim()) tmpErrors.preferredCity = true;
-          if (!form.workMode.trim()) tmpErrors.workMode = true;
+          if (!form.city.trim()) tmp.city = true;
+          if (!form.state.trim()) tmp.state = true;
+          if (!form.country.trim()) tmp.country = true;
+          if (!form.highest_education.trim()) tmp.highest_education = true;
+        } else if (s === 3) {
+          if (form.experience_years && isNaN(Number(form.experience_years))) tmp.experience_years = true;
         }
-        if (Object.keys(tmpErrors).length > 0) {
+        if (Object.keys(tmp).length > 0) {
           setStep(s);
           break;
         }
@@ -145,45 +162,81 @@ export default function Profile() {
       return;
     }
 
-    // final submit: here you would send form to backend
-    // For demo, mark percent 100 (it already will be if all fields filled)
-    alert("Profile saved — nice! Your profile is " + completion + "% complete.");
+    // If a resume file is present, upload it first (replace with your API)
+    let resumePath = form.resume_path;
+    if (form.resumeFile) {
+      try {
+        resumePath = await uploadResume(form.resumeFile);
+        // set returned path into state (if backend returns a URL, set that)
+        updateField("resume_path", resumePath);
+      } catch (err) {
+        // handle upload failure
+        setErrors((e) => ({ ...e, resumeFile: "Failed to upload resume" }));
+        return;
+      }
+    }
+
+    // build payload matching the schema exactly
+    const payload = {
+      user_id: form.user_id ?? 0, // or null depending on your backend
+      full_name: form.full_name.trim(),
+      phone: form.phone.trim(),
+      city: form.city.trim(),
+      state: form.state.trim(),
+      country: form.country.trim(),
+      experience_years: form.experience_years === "" ? 0 : Number(form.experience_years),
+      highest_education: form.highest_education.trim(),
+      resume_path: resumePath || "",
+      linkedin_url: form.linkedin_url.trim(),
+      portfolio_url: form.portfolio_url.trim(),
+    };
+
+    // Submit to backend (example)
+    // Replace the fetch URL and method according to your API.
+    /*
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      const data = await res.json();
+      // handle success (e.g., navigate, toast)
+    } catch (err) {
+      // handle error (show toast or setErrors)
+    }
+    */
+
+    // For demo: log payload and show alert
+    // Remove alert in production
+    console.log("Submitting payload:", payload);
+    alert("Profile saved — payload printed to console.");
   }
 
-  // shortcut to handle resume file selection
-  function onResumeFileChange(e) {
-    const file = e.target.files?.[0];
-    updateField("resumeFile", file || null);
-  }
-
-  // UI for the left progress area
-  const stepTitles = ["Basics", "Education", "Experience", "Job Preferences"];
+  const stepTitles = ["Basics", "Location & Education", "Experience & Links"];
   const percent = completion >= 100 ? 100 : completion;
 
   return (
-
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      {/* Top progress & completion */}
+    <div className="max-w-4xl mx-auto px-4 py-10">
       <div className="mb-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-extrabold">Make your profile</h1>
+          <h1 className="text-2xl font-extrabold">Create / Update Profile</h1>
           <div className="text-sm text-slate-700">
-            Profile completion:{" "}
-            <span className="font-semibold text-emerald-600">{percent}%</span>
+            Profile completion: <span className="font-semibold text-emerald-600">{percent}%</span>
           </div>
         </div>
 
-        {/* segmented progress bar */}
-        <div className="mt-4 grid grid-cols-4 gap-3">
-          {Array.from({ length: 4 }).map((_, i) => {
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          {Array.from({ length: 3 }).map((_, i) => {
             const segmentIndex = i + 1;
-            const filled = step > segmentIndex || (step === segmentIndex && percent >= (segmentIndex - 1) * 25 + 1);
+            const filled = step > segmentIndex || (step === segmentIndex && percent >= (segmentIndex - 1) * Math.round(100 / 3) + 1);
             return (
               <div key={i} className="h-2 rounded-full w-full bg-slate-200 overflow-hidden">
                 <div
                   className={`h-2 rounded-full transition-all duration-300`}
                   style={{
-                    width: `${Math.min(Math.max((percent - (segmentIndex - 1) * 25) / 25 * 100, 0), 100)}%`,
+                    width: `${Math.min(Math.max((percent - (segmentIndex - 1) * (100 / 3)) / (100 / 3) * 100, 0), 100)}%`,
                     background: filled ? "linear-gradient(90deg,#0ea5a4,#34d399)" : "#dbeafe",
                   }}
                 />
@@ -194,7 +247,6 @@ export default function Profile() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Left column: step indicator + summary */}
         <div className="lg:col-span-1">
           <Card className="rounded-2xl p-4">
             <CardHeader>
@@ -223,10 +275,9 @@ export default function Profile() {
                 })}
               </ul>
 
-              {/* completion banner */}
               {percent >= 100 ? (
                 <div className="mt-6 rounded-lg bg-emerald-50 border border-emerald-100 p-4 text-emerald-700">
-                  🎉 Your profile is 100% updated
+                  Your profile looks complete
                 </div>
               ) : (
                 <div className="mt-6 rounded-lg bg-slate-50 border border-slate-100 p-4 text-slate-700">
@@ -237,7 +288,6 @@ export default function Profile() {
           </Card>
         </div>
 
-        {/* Right column: form steps */}
         <div className="lg:col-span-2">
           <Card className="rounded-2xl">
             <CardHeader>
@@ -245,53 +295,25 @@ export default function Profile() {
             </CardHeader>
 
             <CardContent className="p-6">
-              {/* Step 1: Basics */}
+              {/* Step 1 - Basics */}
               {step === 1 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Full Name</label>
-                    <Input value={form.fullName} onChange={(e) => updateField("fullName", e.target.value)} placeholder="Enter full name" />
-                    {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
+                    <label className="block text-sm font-medium mb-1">Full name</label>
+                    <Input value={form.full_name} onChange={(e) => updateField("full_name", e.target.value)} placeholder="Full name" />
+                    {errors.full_name && <p className="text-xs text-red-500 mt-1">{errors.full_name}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">Mobile Number</label>
-                    <Input value={form.mobile} onChange={(e) => updateField("mobile", e.target.value)} placeholder="Enter mobile number" />
-                    {errors.mobile && <p className="text-xs text-red-500 mt-1">{errors.mobile}</p>}
+                    <label className="block text-sm font-medium mb-1">Phone</label>
+                    <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} placeholder="Phone number" />
+                    {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">Email</label>
-                    <Input value={form.email} onChange={(e) => updateField("email", e.target.value)} placeholder="Enter email" />
-                    {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Gender</label>
-                    <div className="flex gap-3">
-                      {["Male", "Female", "Other"].map((g) => (
-                        <button
-                          key={g}
-                          type="button"
-                          onClick={() => updateField("gender", g)}
-                          className={`px-3 py-1.5 rounded-full border text-sm ${form.gender === g ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-slate-700 border-slate-200"}`}
-                        >
-                          {g}
-                        </button>
-                      ))}
-                    </div>
-                    {errors.gender && <p className="text-xs text-red-500 mt-1">{errors.gender}</p>}
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2: Education */}
-              {step === 2 && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Highest Qualification</label>
-                    <select value={form.highestQualification} onChange={(e) => updateField("highestQualification", e.target.value)} className="rounded-xl border p-3 w-full text-sm">
-                      <option value="">Select qualification</option>
+                    <label className="block text-sm font-medium mb-1">Highest education</label>
+                    <select value={form.highest_education} onChange={(e) => updateField("highest_education", e.target.value)} className="rounded-xl border p-3 w-full text-sm">
+                      <option value="">Select</option>
                       <option>Below 10th</option>
                       <option>10th Pass</option>
                       <option>12th Pass</option>
@@ -299,92 +321,64 @@ export default function Profile() {
                       <option>Graduate</option>
                       <option>Post Graduate</option>
                     </select>
-                    {errors.highestQualification && <p className="text-xs text-red-500 mt-1">{errors.highestQualification}</p>}
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">College / University</label>
-                      <Input value={form.college} onChange={(e) => updateField("college", e.target.value)} placeholder="Enter college or university" />
-                      {errors.college && <p className="text-xs text-red-500 mt-1">{errors.college}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Passing Year</label>
-                      <Input value={form.passingYear} onChange={(e) => updateField("passingYear", e.target.value)} placeholder="e.g., 2023" />
-                      {errors.passingYear && <p className="text-xs text-red-500 mt-1">{errors.passingYear}</p>}
-                    </div>
+                    {errors.highest_education && <p className="text-xs text-red-500 mt-1">{errors.highest_education}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">Skills / Technologies</label>
-                    <Input value={form.skills} onChange={(e) => updateField("skills", e.target.value)} placeholder="Comma separated: React, Node.js, SQL" />
-                    {errors.skills && <p className="text-xs text-red-500 mt-1">{errors.skills}</p>}
+                    <label className="block text-sm font-medium mb-1">Experience (years)</label>
+                    <Input value={form.experience_years} onChange={(e) => updateField("experience_years", e.target.value)} placeholder="e.g., 2" />
+                    {errors.experience_years && <p className="text-xs text-red-500 mt-1">{errors.experience_years}</p>}
                   </div>
                 </div>
               )}
 
-              {/* Step 3: Resume & Experience */}
+              {/* Step 2 - Location & Resume */}
+              {step === 2 && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">City</label>
+                      <Input value={form.city} onChange={(e) => updateField("city", e.target.value)} placeholder="City" />
+                      {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">State</label>
+                      <Input value={form.state} onChange={(e) => updateField("state", e.target.value)} placeholder="State" />
+                      {errors.state && <p className="text-xs text-red-500 mt-1">{errors.state}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Country</label>
+                      <Input value={form.country} onChange={(e) => updateField("country", e.target.value)} placeholder="Country" />
+                      {errors.country && <p className="text-xs text-red-500 mt-1">{errors.country}</p>}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Upload resume (pdf/doc)</label>
+                    <input type="file" accept=".pdf,.doc,.docx" onChange={onResumeFileChange} className="block w-full text-sm" />
+                    {form.resume_path && <p className="text-xs text-slate-600 mt-1">Resume: {form.resume_path}</p>}
+                    {errors.resumeFile && <p className="text-xs text-red-500 mt-1">{errors.resumeFile}</p>}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3 - Links & Finish */}
               {step === 3 && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Upload Resume</label>
-                    <input type="file" accept=".pdf,.doc,.docx" onChange={onResumeFileChange} className="block w-full text-sm" />
-                    {form.resumeFile && <p className="text-xs text-slate-600 mt-1">Uploaded: {form.resumeFile.name}</p>}
-                    {errors.resumeFile && <p className="text-xs text-red-500 mt-1">{errors.resumeFile}</p>}
+                    <label className="block text-sm font-medium mb-1">LinkedIn URL</label>
+                    <Input value={form.linkedin_url} onChange={(e) => updateField("linkedin_url", e.target.value)} placeholder="https://linkedin.com/in/yourname" />
+                    {errors.linkedin_url && <p className="text-xs text-red-500 mt-1">{errors.linkedin_url}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">Work Experience</label>
-                    <Input value={form.experience} onChange={(e) => updateField("experience", e.target.value)} placeholder="Years or short description (e.g., 2 yrs in frontend)" />
+                    <label className="block text-sm font-medium mb-1">Portfolio / Website</label>
+                    <Input value={form.portfolio_url} onChange={(e) => updateField("portfolio_url", e.target.value)} placeholder="https://your-portfolio.com" />
+                    {errors.portfolio_url && <p className="text-xs text-red-500 mt-1">{errors.portfolio_url}</p>}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Projects / Key Achievements</label>
-                    <textarea value={form.projects} onChange={(e) => updateField("projects", e.target.value)} className="w-full rounded-xl border p-3 text-sm min-h-[90px]" placeholder="Briefly list projects or achievements" />
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Job Preferences */}
-              {step === 4 && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Which city do you want to work in?</label>
-                    <Input value={form.preferredCity} onChange={(e) => updateField("preferredCity", e.target.value)} placeholder="Select City" />
-                    {errors.preferredCity && <p className="text-xs text-red-500 mt-1">{errors.preferredCity}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Select Locality</label>
-                    <Input value={form.preferredLocality} onChange={(e) => updateField("preferredLocality", e.target.value)} placeholder="Select Locality" />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Work mode preference</label>
-                    <div className="flex gap-3">
-                      {["Remote", "Hybrid", "Office"].map((m) => (
-                        <button
-                          key={m}
-                          type="button"
-                          onClick={() => updateField("workMode", m)}
-                          className={`px-3 py-1.5 rounded-full border text-sm ${form.workMode === m ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-slate-700 border-slate-200"}`}
-                        >
-                          {m}
-                        </button>
-                      ))}
-                    </div>
-                    {errors.workMode && <p className="text-xs text-red-500 mt-1">{errors.workMode}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Salary expectation</label>
-                    <Input value={form.salaryExpectation} onChange={(e) => updateField("salaryExpectation", e.target.value)} placeholder="e.g., 3 LPA" />
-                  </div>
-
-                  <div className="flex items-center gap-3 mt-3 bg-slate-50 border border-slate-100 p-3 rounded-lg">
-                    <input id="whatsapp" type="checkbox" className="h-4 w-4 rounded border-slate-300" />
-                    <label htmlFor="whatsapp" className="text-sm text-slate-700">Get me job updates on WhatsApp</label>
+                  <div className="text-sm text-slate-500">
+                    When you click <strong>Save & Finish</strong>, the component constructs a payload that matches your schema and (optionally) uploads the resume file first.
                   </div>
                 </div>
               )}
@@ -398,7 +392,7 @@ export default function Profile() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {step < 4 ? (
+                  {step < 3 ? (
                     <Button className="rounded-full py-2 px-6" onClick={onNext}>
                       Next &raquo;
                     </Button>
@@ -414,6 +408,5 @@ export default function Profile() {
         </div>
       </div>
     </div>
-
   );
 }
