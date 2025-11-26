@@ -7,13 +7,13 @@ const authRoutes = require('../controllers/auth/users/index');
 
 
 
-
 // Auth routes
 router.use('/auth', authRoutes);
 // Recruiter jobs
 router.use('/recruiter/jobs', recruiterJobRoutes);
 // Jobs
 router.use('/jobs', jobsRouter);
+// (No dedicated /applications controller - applications are mounted under /jobs/apply)
 // Profile
 router.use('/profile', profileRoutes);
 
