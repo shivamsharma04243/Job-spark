@@ -1,6 +1,5 @@
 // Load environment variables from .env into process.env
 require('dotenv').config();
-
 const express = require('express');
 const app = express();
 
@@ -8,21 +7,8 @@ const app = express();
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
-/**
- * applyMiddlewares(app)
- *
- * Purpose:
- *  - Centralize HTTP middleware configuration (CORS, cookie parsing, JSON body parsing).
- *  - Keeps app bootstrap tidy and makes middleware changes easy to manage.
- *
- * Behavior:
- *  - Uses CLIENT_ORIGIN environment variable as the allowed origin (fallback to http://localhost:5173).
- *  - Only allows requests from the allowlist or from tools with no origin (e.g., server-to-server or curl).
- *  - Enables credentials so cookies (HttpOnly cookies) can be sent cross-origin.
- *  - Configures allowed methods and headers for preflight responses.
- */
 function applyMiddlewares(app) {
-  // Where the frontend is expected to be served from
+  
   const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
   // Use a Set for O(1) lookups (makes it easy to add more allowed origins later)
@@ -74,7 +60,7 @@ app.get('/health', (req, res) => {
  * In production you may want to fail fast instead of continuing to listen.
  */
 try {
-  const router = require('./src/routes/router');
+  const router = require("./src/routes/router");
   app.use('/api', router);
 } catch (e) {
   // Helpful development log — includes the error message so you know why require failed

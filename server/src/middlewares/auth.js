@@ -1,22 +1,7 @@
 // GET /api/auth/me - Validate cookie and return user info from JWT
 const jwt = require('jsonwebtoken');
 
-/**
- * Middleware: requireAuth
- * -----------------------
- * Purpose:
- *   - Check if a JWT token exists in cookies.
- *   - Verify the token using JWT_SECRET.
- *   - Attach decoded user information to req.user.
- *   - If token is missing or invalid → block request with 401 Unauthorized.
- *
- * Flow:
- *   1. Read token from req.cookies.token.
- *   2. If token not found → return 401.
- *   3. Verify token → decode payload.
- *   4. Store user information in req.user.
- *   5. Call next() to continue to protected route.
- */
+
 function requireAuth(req, res, next) {
   try {
     // Extract token from cookies
