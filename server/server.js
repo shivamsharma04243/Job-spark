@@ -1,74 +1,125 @@
-// Load environment variables from .env into process.env
-require('dotenv').config();
-const express = require('express');
-const app = express();
+// server.clean.structured.js
+// Clean, modular and defensive Express server bootstrap
 
-// CORS and cookie parsing dependencies
+require('dotenv').config();
+
+const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
-function applyMiddlewares(app) {
-  
-  const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+// App-level configuration object (single place to change values)
+const config = {
+  port: Number(process.env.PORT) || 5000,
+  env: process.env.NODE_ENV || 'development',
+  clientOrigins: [
+    process.env.CLIENT_ORIGIN,
+    'http://localhost:3000',
+    'http://localhost:5173'
+  ].filter(Boolean),
+  jsonLimit: '10mb'
+};
 
-  // Use a Set for O(1) lookups (makes it easy to add more allowed origins later)
-  const allowlist = new Set([CLIENT_ORIGIN]);
+// Create express app factory so this file can be tested/imported
+function createApp() {
+  const app = express();
 
-  // CORS options object passed to cors()
-  const corsOptions = {
-    // origin is a function so we can dynamically allow certain origins
-    origin(origin, callback) {
-      // If origin is falsy (e.g., same-origin requests or tools like curl) allow it.
-      // Otherwise only allow origins explicitly in the allowlist.
-      if (!origin || allowlist.has(origin)) return callback(null, true);
-      // Reject others — the error will surface as CORS failure in the browser.
+  // --- Middlewares ---
+  // CORS with dynamic origin validation
+  app.use(cors({
+    origin: (origin, callback) => {
+      // allow non-browser requests like curl, mobile apps
+      if (!origin) return callback(null, true);
+      if (config.clientOrigins.includes(origin)) return callback(null, true);
       return callback(new Error('Not allowed by CORS'));
     },
-
-    // Allow cookies to be included in cross-origin requests (frontend must use fetch/axios with credentials)
     credentials: true,
-
-    // Allowed HTTP methods for CORS preflight
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+  }));
 
-    // Allowed headers for cross-origin requests
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  app.use(cookieParser());
+  app.use(express.json({ limit: config.jsonLimit }));
+  app.use(express.urlencoded({ extended: true }));
 
-    // Status to return for successful OPTIONS requests in some legacy browsers
-    optionsSuccessStatus: 204,
+  // --- Health check ---
+  app.get('/health', (req, res) => {
+    res.status(200).json({
+      status: 'OK',
+      environment: config.env,
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  // --- API routes: attempt to load and mount user router ---
+  const routes = require('./src/routes/routes');
+  app.use('/api', routes);
+
+  // --- API 404 handler ---
+  // Avoid using path patterns like '/api/*' which may break with certain path-to-regexp versions.
+  // Instead detect requests whose path starts with '/api/' and return 404.
+  app.use((req, res, next) => {
+    if (req.path && req.path.startsWith('/api/')) {
+      return res.status(404).json({ error: 'Endpoint not found', path: req.originalUrl });
+    }
+    return next();
+  });
+
+  // --- Static assets (optional) ---
+  // Uncomment and update the build path if you serve a frontend from the same server
+  // const clientBuildPath = path.join(__dirname, 'client', 'build');
+  // app.use(express.static(clientBuildPath));
+
+  // --- Error handling ---
+  // This error handler should be last - it catches errors forwarded via next(err)
+  app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err && err.stack ? err.stack : err);
+
+    if (err && err.message === 'Not allowed by CORS') {
+      return res.status(403).json({ error: 'CORS policy violation', message: 'Origin not allowed' });
+    }
+
+    const payload = {
+      error: 'Internal server error'
+    };
+
+    if (config.env === 'development' && err) {
+      payload.details = err.message || String(err);
+      payload.stack = err.stack;
+    }
+
+    res.status(err && err.status ? err.status : 500).json(payload);
+  });
+
+  return app;
+}
+
+// Start server only when run directly. Export app for tests.
+if (require.main === module) {
+  const app = createApp();
+  const server = app.listen(config.port, () => {
+    console.log('\n🚀 Server running successfully!');
+    console.log(`📍 Port: ${config.port}`);
+    console.log(`🌍 Environment: ${config.env}`);
+    console.log(`📊 Health check: http://localhost:${config.port}/health\n`);
+  });
+
+  // Graceful shutdown
+  const shutdown = () => {
+    console.log('\n🛑 Received shutdown signal, closing server...');
+    server.close(() => {
+      console.log('✅ Server closed successfully');
+      process.exit(0);
+    });
+
+    setTimeout(() => {
+      console.log('⚠️ Forcing server closure');
+      process.exit(1);
+    }, 10000);
   };
 
-  // Attach configured middleware to the express app
-  app.use(cors(corsOptions));   // handle CORS
-  app.use(cookieParser());      // parse cookies (populates req.cookies)
-  app.use(express.json());      // parse JSON request bodies (populates req.body)
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
 
-// Install middleware
-applyMiddlewares(app);
-
-// Health-check endpoint for load balancers / uptime checks
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
-/**
- * Mount application routes.
- * The router is required inside a try/catch so the server can still start
- * even if router fails to load during development (helps debugging).
- *
- * In production you may want to fail fast instead of continuing to listen.
- */
-try {
-  const router = require("./src/routes/router");
-  app.use('/api', router);
-} catch (e) {
-  // Helpful development log — includes the error message so you know why require failed
-  console.error('Failed to load router:', e.message || e);
-}
-
-// Listen on the configured port
-const PORT = process.env.PORT || 5174;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+module.exports = { createApp, config };

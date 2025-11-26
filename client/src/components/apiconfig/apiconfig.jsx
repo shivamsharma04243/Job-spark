@@ -17,7 +17,7 @@ import axios from "axios";
  *   - Required for protected routes and auth middleware.
  */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || "http://localhost:5174/api",
+  baseURL: import.meta.env.VITE_API_BASE || "http://localhost:5000/api",
   withCredentials: true, // allow sending cookies
 });
 

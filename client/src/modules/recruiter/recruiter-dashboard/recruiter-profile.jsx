@@ -1,250 +1,329 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-export default function BasicProfileForm() {
-  const [hiringFor, setHiringFor] = useState("own"); // "own" | "client" | "both"
+/**
+ * RecruiterProfileForm
+ * - GETs existing profile from /api/recruiter/profile (if available)
+ * - PUTs updates to /api/recruiter/profile
+ *
+ * Note:
+ * - The server should protect these endpoints with requireAuth middleware
+ *   which sets req.user from the JWT cookie.
+ * - fetch uses credentials:'include' to send cookies for same-origin auth.
+ */
+export default function RecruiterProfileForm() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState(null); // { type: 'success'|'error', text }
   const [form, setForm] = useState({
-    fullName: "",
-    companyName: "",
-    companyCity: "",
-    companyLocality: "",
-    companyAddress: "",
-    interviewDifferent: false,
-    interviewAddress: "",
-    consultancyName: "",
-    consultancyCity: "",
-    consultancyLocality: "",
-    consultancyAddress: "",
-    clientForWhich: "",
+    company_name: "",
+    company_website: "",
+    company_type: "company", // company | consultancy | startup
+    address_line1: "",
+    address_line2: "",
+    city: "",
+    state: "",
+    country: "",
+    pincode: ""
   });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((s) => ({ ...s, [name]: type === "checkbox" ? checked : value }));
+  // Basic client-side validation
+  const validate = () => {
+    const errs = [];
+    if (!form.company_name || form.company_name.trim().length < 2) errs.push("Company name is required.");
+    if (form.company_website && !/^https?:\/\//i.test(form.company_website) && !/^[\w-]+\.[\w-.]+/.test(form.company_website)) {
+      // allow plain domains or full urls, but don't be strict
+      errs.push("Please provide a valid company website or leave it blank.");
+    }
+    if (!form.city) errs.push("City is required.");
+    if (!form.address_line1) errs.push("Address line 1 is required.");
+    return errs;
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    // handle submit (send to server)
-    console.log("Submit payload:", { hiringFor, ...form });
-    alert("Form data printed to console (see devtools).");
-  };
+  useEffect(() => {
+    let mounted = true;
+    async function fetchProfile() {
+      try {
+        // GET existing recruiter profile (server route)
+        const res = await fetch("/api/recruiter/profile", {
+          method: "GET",
+          credentials: "include",
+          headers: { "Accept": "application/json" }
+        });
 
-  const Pill = ({ id, label, selectedValue }) => {
-    const active = hiringFor === id;
-    return (
-      <button
-        type="button"
-        onClick={() => setHiringFor(id)}
-        className={
-          "text-sm font-medium px-4 py-2 rounded-full border transition-shadow focus:outline-none " +
-          (active
-            ? "bg-red-50 border-red-200 text-red-700 shadow-sm"
-            : "bg-white border-gray-200 text-gray-600 hover:shadow-sm")
+        if (!mounted) return;
+        if (res.ok) {
+          const data = await res.json();
+          // expect data.recruiter or data.profile based on your API; handle both
+          const recruiter = data.recruiter || data.profile || data;
+          if (recruiter) {
+            setForm((f) => ({
+              ...f,
+              company_name: recruiter.company_name ?? "",
+              company_website: recruiter.company_website ?? "",
+              company_type: recruiter.company_type ?? "company",
+              address_line1: recruiter.address_line1 ?? "",
+              address_line2: recruiter.address_line2 ?? "",
+              city: recruiter.city ?? "",
+              state: recruiter.state ?? "",
+              country: recruiter.country ?? "",
+              pincode: recruiter.pincode ?? ""
+            }));
+          }
+        } else if (res.status === 401) {
+          // not authenticated — you may want to redirect or show message
+          setMessage({ type: "error", text: "You must be signed in to edit your recruiter profile." });
+        } else {
+          // no profile yet or other error — keep defaults
         }
-      >
-        {label}
-      </button>
-    );
+      } catch (err) {
+        console.error("Fetch recruiter profile error:", err);
+        setMessage({ type: "error", text: "Failed to load profile." });
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    fetchProfile();
+    return () => { mounted = false; };
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((s) => ({ ...s, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage(null);
+
+    const errors = validate();
+    if (errors.length > 0) {
+      setMessage({ type: "error", text: errors.join(" ") });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const res = await fetch("/api/recruiter/profile", {
+        method: "PUT",
+        credentials: "include", // send cookies for jwt auth
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(form)
+      });
+
+      const payload = await res.json();
+
+      if (res.ok) {
+        setMessage({ type: "success", text: payload.message || "Profile saved successfully." });
+        // If API returns recruiter object, update form with any normalized values
+        if (payload.recruiter) {
+          const r = payload.recruiter;
+          setForm((f) => ({
+            ...f,
+            company_name: r.company_name ?? f.company_name,
+            company_website: r.company_website ?? f.company_website,
+            company_type: r.company_type ?? f.company_type,
+            address_line1: r.address_line1 ?? f.address_line1,
+            address_line2: r.address_line2 ?? f.address_line2,
+            city: r.city ?? f.city,
+            state: r.state ?? f.state,
+            country: r.country ?? f.country,
+            pincode: r.pincode ?? f.pincode
+          }));
+        }
+      } else {
+        // server responded with an error
+        setMessage({ type: "error", text: payload.message || "Failed to save profile." });
+      }
+    } catch (err) {
+      console.error("Save recruiter profile error:", err);
+      setMessage({ type: "error", text: "Network or server error while saving profile." });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-   
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-lg font-semibold mb-6">Basic Profile</h2>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-lg font-semibold mb-4">Recruiter - Company Profile</h2>
 
-          <form
-            onSubmit={onSubmit}
-            className="bg-white rounded-xl shadow-md border border-gray-100 p-8 relative"
-          >
-            {/* header */}
-            <div className="mb-6">
-              <div className="text-sm text-blue-300">Your job details are saved...</div>
-              <h1 className="text-2xl font-extrabold mt-1">Now create your basic profile</h1>
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-xl shadow-md border border-gray-100 p-6"
+        >
+          {message && (
+            <div
+              className={
+                "mb-4 px-4 py-2 rounded " +
+                (message.type === "success" ? "bg-green-50 border border-green-200 text-green-700" :
+                  "bg-red-50 border border-red-200 text-red-700")
+              }
+            >
+              {message.text}
             </div>
+          )}
 
-            {/* Full name */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold mb-2">
-                Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                name="fullName"
-                value={form.fullName}
-                onChange={handleChange}
-                placeholder="Your First and Last Name"
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-100"
-              />
-            </div>
-
-            {/* pills */}
-            <div className="mb-8">
-              <label className="block text-sm font-semibold mb-3">
-                Are you hiring for: <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-3">
-                <Pill id="own" label="Your own company" />
-                <Pill id="client" label="Your client's company" />
-                <Pill id="both" label="Both" />
-              </div>
-            </div>
-
-            {/* Company details (shown for own or both) */}
-            {(hiringFor === "own" || hiringFor === "both") && (
-              <section className="mb-8">
-                <h3 className="text-xl font-bold mb-4">Company details</h3>
-
-                <label className="block text-sm font-medium mb-2">Company Name *</label>
+          {loading ? (
+            <div className="py-6 text-center text-gray-500">Loading profile...</div>
+          ) : (
+            <>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Company Name <span className="text-red-500">*</span>
+                </label>
                 <input
-                  name="companyName"
-                  value={form.companyName}
+                  name="company_name"
+                  value={form.company_name}
                   onChange={handleChange}
                   placeholder="Name of your company"
-                  className="w-full px-4 py-3 rounded-md border border-gray-200 mb-4"
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      City in which company is located *
-                    </label>
-                    <input
-                      name="companyCity"
-                      value={form.companyCity}
-                      onChange={handleChange}
-                      placeholder="Try Delhi, Mumbai, Bangalore etc."
-                      className="w-full px-4 py-3 rounded-md border border-gray-200"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Locality in which company is located *
-                    </label>
-                    <input
-                      name="companyLocality"
-                      value={form.companyLocality}
-                      onChange={handleChange}
-                      placeholder="Try sector 132, etc."
-                      className="w-full px-4 py-3 rounded-md border border-gray-200"
-                    />
-                  </div>
-                </div>
-
-                <label className="block text-sm font-medium mb-2">Full Company Address *</label>
-                <input
-                  name="companyAddress"
-                  value={form.companyAddress}
-                  onChange={handleChange}
-                  placeholder="Shop/Building no., Locality, Landmark..."
                   className="w-full px-4 py-3 rounded-md border border-gray-200"
                 />
+              </div>
 
-                <div className="mt-3 flex items-center gap-2">
-                  <input
-                    id="interviewDifferent"
-                    name="interviewDifferent"
-                    type="checkbox"
-                    checked={form.interviewDifferent}
-                    onChange={handleChange}
-                    className="w-4 h-4 rounded border-gray-300"
-                  />
-                  <label htmlFor="interviewDifferent" className="text-sm text-gray-600">
-                    Interview Address is different from Company Address
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Company Website</label>
+                <input
+                  name="company_website"
+                  value={form.company_website}
+                  onChange={handleChange}
+                  placeholder="https://example.com (optional)"
+                  className="w-full px-4 py-3 rounded-md border border-gray-200"
+                />
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium mb-2">Company Type</label>
+                <div className="flex gap-3 items-center">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="company_type"
+                      value="company"
+                      checked={form.company_type === "company"}
+                      onChange={handleChange}
+                      className="form-radio"
+                    />
+                    <span className="ml-2 text-sm">Company</span>
+                  </label>
+
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="company_type"
+                      value="consultancy"
+                      checked={form.company_type === "consultancy"}
+                      onChange={handleChange}
+                      className="form-radio"
+                    />
+                    <span className="ml-2 text-sm">Consultancy</span>
+                  </label>
+
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="company_type"
+                      value="startup"
+                      checked={form.company_type === "startup"}
+                      onChange={handleChange}
+                      className="form-radio"
+                    />
+                    <span className="ml-2 text-sm">Startup</span>
                   </label>
                 </div>
+              </div>
 
-                {form.interviewDifferent && (
-                  <div className="mt-3">
-                    <label className="block text-sm font-medium mb-2">Full Interview Address *</label>
-                    <input
-                      name="interviewAddress"
-                      value={form.interviewAddress}
-                      onChange={handleChange}
-                      placeholder="Shop/Building no., Locality, Landmark..."
-                      className="w-full px-4 py-3 rounded-md border border-gray-200"
-                    />
-                  </div>
-                )}
-              </section>
-            )}
-
-            {/* Consultancy/client details (shown for client or both) */}
-            {(hiringFor === "client" || hiringFor === "both") && (
-              <section className="mb-8">
-                <h3 className="text-xl font-bold mb-4">Consultancy / Client details</h3>
-
-                <label className="block text-sm font-medium mb-2">Client for which you are hiring *</label>
-                <input
-                  name="clientForWhich"
-                  value={form.clientForWhich}
-                  onChange={handleChange}
-                  placeholder="Name of client for which you are hiring"
-                  className="w-full px-4 py-3 rounded-md border border-gray-200 mb-4"
-                />
-
-                <label className="block text-sm font-medium mb-2">Consultancy Name *</label>
-                <input
-                  name="consultancyName"
-                  value={form.consultancyName}
-                  onChange={handleChange}
-                  placeholder="Name of your consultancy"
-                  className="w-full px-4 py-3 rounded-md border border-gray-200 mb-4"
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      City in which consultancy is located *
-                    </label>
-                    <input
-                      name="consultancyCity"
-                      value={form.consultancyCity}
-                      onChange={handleChange}
-                      placeholder="Try Delhi, Mumbai, Bangalore etc."
-                      className="w-full px-4 py-3 rounded-md border border-gray-200"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Locality in which consultancy is located *
-                    </label>
-                    <input
-                      name="consultancyLocality"
-                      value={form.consultancyLocality}
-                      onChange={handleChange}
-                      placeholder="Try sector 132, etc."
-                      className="w-full px-4 py-3 rounded-md border border-gray-200"
-                    />
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">City <span className="text-red-500">*</span></label>
+                  <input
+                    name="city"
+                    value={form.city}
+                    onChange={handleChange}
+                    placeholder="City"
+                    className="w-full px-4 py-3 rounded-md border border-gray-200"
+                  />
                 </div>
 
-                <label className="block text-sm font-medium mb-2">Full Consultancy Address *</label>
+                <div>
+                  <label className="block text-sm font-medium mb-2">State</label>
+                  <input
+                    name="state"
+                    value={form.state}
+                    onChange={handleChange}
+                    placeholder="State"
+                    className="w-full px-4 py-3 rounded-md border border-gray-200"
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Address line 1 <span className="text-red-500">*</span></label>
                 <input
-                  name="consultancyAddress"
-                  value={form.consultancyAddress}
+                  name="address_line1"
+                  value={form.address_line1}
                   onChange={handleChange}
-                  placeholder="Shop/Building no., Locality, Landmark..."
+                  placeholder="Shop/Building no., Street, Landmark..."
                   className="w-full px-4 py-3 rounded-md border border-gray-200"
                 />
-              </section>
-            )}
+              </div>
 
-            {/* bottom area */}
-            <div className="h-px bg-gray-100 my-6" />
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Address line 2 (optional)</label>
+                <input
+                  name="address_line2"
+                  value={form.address_line2}
+                  onChange={handleChange}
+                  placeholder="Locality / Area / Additional info"
+                  className="w-full px-4 py-3 rounded-md border border-gray-200"
+                />
+              </div>
 
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-6 py-2 rounded-full shadow hover:brightness-95 focus:outline-none"
-              >
-                Next
-              </button>
-            </div>
-          </form>
-        </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Country</label>
+                  <input
+                    name="country"
+                    value={form.country}
+                    onChange={handleChange}
+                    placeholder="Country"
+                    className="w-full px-4 py-3 rounded-md border border-gray-200"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Pincode</label>
+                  <input
+                    name="pincode"
+                    value={form.pincode}
+                    onChange={handleChange}
+                    placeholder="Postal code"
+                    className="w-full px-4 py-3 rounded-md border border-gray-200"
+                  />
+                </div>
+              </div>
+
+              <div className="h-px bg-gray-100 my-6" />
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className={
+                    "px-6 py-2 rounded-full shadow text-white " +
+                    (saving ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:brightness-95")
+                  }
+                >
+                  {saving ? "Saving..." : "Save Profile"}
+                </button>
+              </div>
+            </>
+          )}
+        </form>
       </div>
-    
+    </div>
   );
 }
