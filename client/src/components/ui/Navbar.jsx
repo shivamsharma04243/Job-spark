@@ -81,11 +81,13 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
 
         {/* Logo */}
-        <div className="flex items-center gap-3">
+        <div >
+          <Link to="/" className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-xl bg-orange-500 text-white grid place-items-center">
             <Sparkles size={18} />
           </div>
           <b className="text-lg">HireSpark</b>
+          </Link>
         </div>
 
         {/* Navigation Menu */}
