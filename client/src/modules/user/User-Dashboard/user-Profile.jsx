@@ -1,412 +1,320 @@
-import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import { Input } from "../../../components/ui/input";
-import { Button } from "../../../components/ui/button";
+import React, { useEffect, useState } from "react";
+// Adjust this import to match where your apiconfig file lives in the frontend project
+// Example: import api from "../../components/apiconfig/apiconfig";
+import api from "../../../components/apiconfig/apiconfig";
 
-/**
- * Updated Profile form to match this schema:
- * {
- *   "user_id": 0,
- *   "full_name": "string",
- *   "phone": "string",
- *   "city": "string",
- *   "state": "string",
- *   "country": "string",
- *   "experience_years": 0,
- *   "highest_education": "string",
- *   "resume_path": "string",
- *   "linkedin_url": "string",
- *   "portfolio_url": "string"
- * }
- *
- * Notes:
- * - resumeFile is kept as a File object for upload; resume_path stores the filename (or URL returned from backend).
- * - onFinish builds a payload using the schema keys.
- * - Replace the fake upload / fetch parts with your real API endpoints.
- */
+export default function ProfilePage() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
-export default function Profile() {
-  const [step, setStep] = useState(1);
-
-  // form state mapped to the schema fields (plus resumeFile for upload)
+  // form state
   const [form, setForm] = useState({
-    user_id: null,
+    user_id: "",
     full_name: "",
     phone: "",
     city: "",
     state: "",
     country: "",
-    experience_years: "", // keep as string input, convert to number on submit
+    experience_years: "",
     highest_education: "",
-    resumeFile: null, // actual File object (not part of schema; used for upload)
-    resume_path: "", // schema field (file name or URL after upload)
+    resume_path: "",
     linkedin_url: "",
     portfolio_url: "",
   });
 
-  const [errors, setErrors] = useState({});
+  // local file selection for user convenience (not automatically uploaded)
+  const [selectedResumeFile, setSelectedResumeFile] = useState(null);
 
-  // helper to update fields
-  function updateField(name, value) {
-    setForm((s) => ({ ...s, [name]: value }));
-    setErrors((e) => ({ ...e, [name]: "" }));
-  }
+  useEffect(() => {
+    loadProfile();
+  }, []);
 
-  // tracked fields for completion percent
-  const trackedFields = [
-    "full_name",
-    "phone",
-    "city",
-    "state",
-    "country",
-    "experience_years",
-    "highest_education",
-    "resume_path",
-    "linkedin_url",
-    "portfolio_url",
-  ];
-
-  const completion = useMemo(() => {
-    const total = trackedFields.length;
-    let done = 0;
-    for (const k of trackedFields) {
-      const v = form[k];
-      if (typeof v === "string") {
-        if (v.trim() !== "") done += 1;
-      } else if (v !== null && v !== undefined) {
-        done += 1;
-      }
-    }
-    return Math.round((done / total) * 100);
-  }, [form]);
-
-  // validation per step
-  function validateStep(currentStep) {
-    const newErrors = {};
-    if (currentStep === 1) {
-      if (!form.full_name.trim()) newErrors.full_name = "Enter full name";
-      if (!form.phone.trim()) newErrors.phone = "Enter phone number";
-    } else if (currentStep === 2) {
-      if (!form.city.trim()) newErrors.city = "Enter city";
-      if (!form.state.trim()) newErrors.state = "Enter state";
-      if (!form.country.trim()) newErrors.country = "Enter country";
-      if (!form.highest_education.trim()) newErrors.highest_education = "Select highest education";
-    } else if (currentStep === 3) {
-      // Experience/links: ensure numeric experience_years (optional but validated if provided)
-      if (form.experience_years && isNaN(Number(form.experience_years))) {
-        newErrors.experience_years = "Enter a valid number of years (e.g., 2)";
-      }
-      // linkedin & portfolio are optional, but if provided do a simple pattern check
-      if (form.linkedin_url && !/^https?:\/\//i.test(form.linkedin_url)) {
-        newErrors.linkedin_url = "Use full URL (include https://)";
-      }
-      if (form.portfolio_url && !/^https?:\/\//i.test(form.portfolio_url)) {
-        newErrors.portfolio_url = "Use full URL (include https://)";
-      }
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }
-
-  function onNext() {
-    if (!validateStep(step)) return;
-    if (step < 3) setStep((s) => s + 1);
-  }
-  function onBack() {
-    if (step > 1) setStep((s) => s - 1);
-  }
-
-  // handle resume selection
-  function onResumeFileChange(e) {
-    const file = e.target.files?.[0] ?? null;
-    updateField("resumeFile", file);
-    // set resume_path to filename as placeholder; ideally, on upload your backend returns a URL which you should save.
-    updateField("resume_path", file ? file.name : "");
-  }
-
-  // Simulated upload function (replace with actual upload API)
-  async function uploadResume(file) {
-    if (!file) return "";
-    // Example: implement actual upload here; for now return filename after a short "fake" delay
-    // IMPORTANT: Replace this simulated behavior with real upload code.
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(file.name), 400); // returns filename as "path"
-    });
-  }
-
-  async function onFinish() {
-    // validate all steps
-    let ok = true;
-    for (let s = 1; s <= 3; s++) {
-      if (!validateStep(s)) ok = false;
-    }
-    if (!ok) {
-      for (let s = 1; s <= 3; s++) {
-        const tmp = {};
-        if (s === 1) {
-          if (!form.full_name.trim()) tmp.full_name = true;
-          if (!form.phone.trim()) tmp.phone = true;
-        } else if (s === 2) {
-          if (!form.city.trim()) tmp.city = true;
-          if (!form.state.trim()) tmp.state = true;
-          if (!form.country.trim()) tmp.country = true;
-          if (!form.highest_education.trim()) tmp.highest_education = true;
-        } else if (s === 3) {
-          if (form.experience_years && isNaN(Number(form.experience_years))) tmp.experience_years = true;
-        }
-        if (Object.keys(tmp).length > 0) {
-          setStep(s);
-          break;
-        }
-      }
-      return;
-    }
-
-    // If a resume file is present, upload it first (replace with your API)
-    let resumePath = form.resume_path;
-    if (form.resumeFile) {
-      try {
-        resumePath = await uploadResume(form.resumeFile);
-        // set returned path into state (if backend returns a URL, set that)
-        updateField("resume_path", resumePath);
-      } catch (err) {
-        // handle upload failure
-        setErrors((e) => ({ ...e, resumeFile: "Failed to upload resume" }));
-        return;
-      }
-    }
-
-    // build payload matching the schema exactly
-    const payload = {
-      user_id: form.user_id ?? 0, // or null depending on your backend
-      full_name: form.full_name.trim(),
-      phone: form.phone.trim(),
-      city: form.city.trim(),
-      state: form.state.trim(),
-      country: form.country.trim(),
-      experience_years: form.experience_years === "" ? 0 : Number(form.experience_years),
-      highest_education: form.highest_education.trim(),
-      resume_path: resumePath || "",
-      linkedin_url: form.linkedin_url.trim(),
-      portfolio_url: form.portfolio_url.trim(),
-    };
-
-    // Submit to backend (example)
-    // Replace the fetch URL and method according to your API.
-    /*
+  async function loadProfile() {
+    setLoading(true);
+    setError(null);
+    // Try to fetch existing profile (optional)
     try {
-      const res = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error("Failed to save");
-      const data = await res.json();
-      // handle success (e.g., navigate, toast)
-    } catch (err) {
-      // handle error (show toast or setErrors)
-    }
-    */
+      const res = await api.get("/profile/user");
 
-    // For demo: log payload and show alert
-    // Remove alert in production
-    console.log("Submitting payload:", payload);
-    alert("Profile saved — payload printed to console.");
+      if (res?.data?.success && res.data.user) {
+        setUser(res.data.user);
+        setForm(mapUserToForm(res.data.user));
+      }
+    } catch (err) {
+      // Non-fatal: keep user as null so frontend can create profile via PUT
+      console.warn("Could not load profile (GET /api/profile/user) — continuing:", err?.response?.status || err.message);
+    } finally {
+      // After attempting profile fetch, always try authcheck to populate user_id
+      try {
+        const auth = await api.get('/auth/authcheck');
+        const authUser = auth?.data?.user;
+        if (authUser) {
+          setForm((s) => (s.user_id ? s : { ...s, user_id: authUser.id || authUser.sub || s.user_id }));
+        }
+      } catch (ignore) {
+        // Non-fatal: authcheck may fail if session expired; it's okay to proceed.
+      }
+
+      setLoading(false);
+    }
   }
 
-  const stepTitles = ["Basics", "Location & Education", "Experience & Links"];
-  const percent = completion >= 100 ? 100 : completion;
+  function mapUserToForm(u) {
+    return {
+      user_id: u.user_id || u.id || "",
+      full_name: u.full_name || "",
+      phone: u.phone || "",
+      city: u.city || "",
+      state: u.state || "",
+      country: u.country || "",
+      experience_years: u.experience_years ?? "",
+      highest_education: u.highest_education || "",
+      resume_path: u.resume_path || "",
+      linkedin_url: u.linkedin_url || "",
+      portfolio_url: u.portfolio_url || "",
+    };
+  }
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm((s) => ({ ...s, [name]: value }));
+  }
+
+  function handleFileSelect(e) {
+    const file = e.target.files?.[0] || null;
+    setSelectedResumeFile(file);
+    // show filename in the resume_path field as a hint; actual upload depends on your backend
+    setForm((s) => ({ ...s, resume_path: file ? file.name : s.resume_path }));
+  }
+
+  async function uploadResume(file) {
+    // Placeholder helper. By default your API expects `resume_path` string.
+    // If you implement a resume upload endpoint, send FormData here and return the uploaded file path/url.
+    // Example implementation (requires backend /api/profile/upload handling):
+    // const fd = new FormData(); fd.append('resume', file);
+    // const r = await api.post('/profile/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+    // return r.data?.path;
+
+    // For now, return the filename so your backend can store that string.
+    return file ? file.name : null;
+  }
+
+  async function handleSave(e) {
+    e?.preventDefault();
+    setSaving(true);
+    setError(null);
+
+    try {
+      // If we don't have a user_id yet, do a final auth-check before attempting to save.
+      let payloadUserId = form.user_id;
+      if (!payloadUserId) {
+        try {
+          const auth = await api.get('/auth/authcheck');
+          const authUser = auth?.data?.user;
+          if (authUser) {
+            payloadUserId = authUser.id || authUser.sub || payloadUserId;
+            // Update the form as well to reflect the auth user id
+            setForm((s) => ({ ...s, user_id: payloadUserId }));
+          } else {
+            setError('Cannot save profile: missing user session. Please sign in again.');
+            setSaving(false);
+            return;
+          }
+        } catch (err) {
+          setError('Cannot save profile: missing user session. Please sign in again.');
+          setSaving(false);
+          return;
+        }
+      }
+      let resumePathToSend = form.resume_path;
+
+      if (selectedResumeFile) {
+        // Attempt to upload if user selected a new file. If your backend doesn't support file uploads,
+        // uploadResume will simply return file.name and we will send that to the API.
+        resumePathToSend = await uploadResume(selectedResumeFile);
+      }
+
+      const payload = {
+        user_id: payloadUserId || undefined,
+        full_name: form.full_name,
+        phone: form.phone,
+        city: form.city || null,
+        state: form.state || null,
+        country: form.country || null,
+        experience_years: form.experience_years ? Number(form.experience_years) : 0,
+        highest_education: form.highest_education || null,
+        resume_path: resumePathToSend || null,
+        linkedin_url: form.linkedin_url || null,
+        portfolio_url: form.portfolio_url || null,
+      };
+
+      const res = await api.put("/profile/user", payload);
+
+      if (res?.data?.success) {
+        setUser(res.data.user || payload);
+        setForm(mapUserToForm(res.data.user || payload));
+        setIsEditing(false);
+      } else {
+        setError(res?.data?.message || "Unknown server response");
+      }
+    } catch (err) {
+      console.error("Save profile error:", err);
+      setError(err?.response?.data?.message || err.message || "Failed to save profile");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function handleEditClick() {
+    setIsEditing(true);
+  }
+
+  function handleCancel() {
+    setIsEditing(false);
+    if (user) setForm(mapUserToForm(user));
+    setSelectedResumeFile(null);
+  }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-extrabold">Create / Update Profile</h1>
-          <div className="text-sm text-slate-700">
-            Profile completion: <span className="font-semibold text-emerald-600">{percent}%</span>
-          </div>
-        </div>
+    <div className="max-w-4xl mx-auto p-6">
+      <header className="mb-6">
+        <h1 className="text-2xl font-semibold">My Profile</h1>
+        <p className="text-sm text-gray-600 mt-1">View and edit your profile information.</p>
+      </header>
 
-        <div className="mt-4 grid grid-cols-3 gap-3">
-          {Array.from({ length: 3 }).map((_, i) => {
-            const segmentIndex = i + 1;
-            const filled = step > segmentIndex || (step === segmentIndex && percent >= (segmentIndex - 1) * Math.round(100 / 3) + 1);
-            return (
-              <div key={i} className="h-2 rounded-full w-full bg-slate-200 overflow-hidden">
-                <div
-                  className={`h-2 rounded-full transition-all duration-300`}
-                  style={{
-                    width: `${Math.min(Math.max((percent - (segmentIndex - 1) * (100 / 3)) / (100 / 3) * 100, 0), 100)}%`,
-                    background: filled ? "linear-gradient(90deg,#0ea5a4,#34d399)" : "#dbeafe",
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      {loading ? (
+        <div className="p-6 bg-white rounded shadow text-center">Loading profile…</div>
+      ) : (
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <div className="p-6">
+            {!isEditing ? (
+              <ProfileView user={user} onEdit={handleEditClick} />
+            ) : (
+              <form onSubmit={handleSave} className="space-y-6">
+                {error && (
+                  <div className="text-sm text-red-600">{error}</div>
+                )}
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <Card className="rounded-2xl p-4">
-            <CardHeader>
-              <CardTitle className="text-lg">Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3">
-                {stepTitles.map((t, idx) => {
-                  const idx1 = idx + 1;
-                  return (
-                    <li key={t} className="flex items-center gap-3">
-                      <div
-                        className={`w-8 h-8 rounded-full grid place-items-center text-sm font-medium ${step === idx1 ? "bg-emerald-600 text-white" : step > idx1 ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-500"
-                          }`}
-                      >
-                        {idx1}
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium">{t}</div>
-                        <div className="text-xs text-slate-500">
-                          {idx1 === step ? "In progress" : idx1 < step ? "Completed" : "Pending"}
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-
-              {percent >= 100 ? (
-                <div className="mt-6 rounded-lg bg-emerald-50 border border-emerald-100 p-4 text-emerald-700">
-                  Your profile looks complete
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input label="Full name" name="full_name" value={form.full_name} onChange={handleChange} required />
+                  <Input label="Phone" name="phone" value={form.phone} onChange={handleChange} required />
+                  <Input label="City" name="city" value={form.city} onChange={handleChange} />
+                  <Input label="State" name="state" value={form.state} onChange={handleChange} />
+                  <Input label="Country" name="country" value={form.country} onChange={handleChange} />
+                  <Input label="Experience (years)" name="experience_years" value={form.experience_years} onChange={handleChange} type="number" min="0" />
+                  <Input label="Highest education" name="highest_education" value={form.highest_education} onChange={handleChange} />
+                  <Input label="LinkedIn URL" name="linkedin_url" value={form.linkedin_url} onChange={handleChange} />
+                  <Input label="Portfolio URL" name="portfolio_url" value={form.portfolio_url} onChange={handleChange} />
                 </div>
-              ) : (
-                <div className="mt-6 rounded-lg bg-slate-50 border border-slate-100 p-4 text-slate-700">
-                  Complete all steps to reach 100%
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
 
-        <div className="lg:col-span-2">
-          <Card className="rounded-2xl">
-            <CardHeader>
-              <CardTitle className="text-xl">{stepTitles[step - 1]}</CardTitle>
-            </CardHeader>
-
-            <CardContent className="p-6">
-              {/* Step 1 - Basics */}
-              {step === 1 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Full name</label>
-                    <Input value={form.full_name} onChange={(e) => updateField("full_name", e.target.value)} placeholder="Full name" />
-                    {errors.full_name && <p className="text-xs text-red-500 mt-1">{errors.full_name}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Phone</label>
-                    <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} placeholder="Phone number" />
-                    {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Highest education</label>
-                    <select value={form.highest_education} onChange={(e) => updateField("highest_education", e.target.value)} className="rounded-xl border p-3 w-full text-sm">
-                      <option value="">Select</option>
-                      <option>Below 10th</option>
-                      <option>10th Pass</option>
-                      <option>12th Pass</option>
-                      <option>Diploma</option>
-                      <option>Graduate</option>
-                      <option>Post Graduate</option>
-                    </select>
-                    {errors.highest_education && <p className="text-xs text-red-500 mt-1">{errors.highest_education}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Experience (years)</label>
-                    <Input value={form.experience_years} onChange={(e) => updateField("experience_years", e.target.value)} placeholder="e.g., 2" />
-                    {errors.experience_years && <p className="text-xs text-red-500 mt-1">{errors.experience_years}</p>}
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2 - Location & Resume */}
-              {step === 2 && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">City</label>
-                      <Input value={form.city} onChange={(e) => updateField("city", e.target.value)} placeholder="City" />
-                      {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city}</p>}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">State</label>
-                      <Input value={form.state} onChange={(e) => updateField("state", e.target.value)} placeholder="State" />
-                      {errors.state && <p className="text-xs text-red-500 mt-1">{errors.state}</p>}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Country</label>
-                      <Input value={form.country} onChange={(e) => updateField("country", e.target.value)} placeholder="Country" />
-                      {errors.country && <p className="text-xs text-red-500 mt-1">{errors.country}</p>}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Upload resume (pdf/doc)</label>
-                    <input type="file" accept=".pdf,.doc,.docx" onChange={onResumeFileChange} className="block w-full text-sm" />
-                    {form.resume_path && <p className="text-xs text-slate-600 mt-1">Resume: {form.resume_path}</p>}
-                    {errors.resumeFile && <p className="text-xs text-red-500 mt-1">{errors.resumeFile}</p>}
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3 - Links & Finish */}
-              {step === 3 && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">LinkedIn URL</label>
-                    <Input value={form.linkedin_url} onChange={(e) => updateField("linkedin_url", e.target.value)} placeholder="https://linkedin.com/in/yourname" />
-                    {errors.linkedin_url && <p className="text-xs text-red-500 mt-1">{errors.linkedin_url}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Portfolio / Website</label>
-                    <Input value={form.portfolio_url} onChange={(e) => updateField("portfolio_url", e.target.value)} placeholder="https://your-portfolio.com" />
-                    {errors.portfolio_url && <p className="text-xs text-red-500 mt-1">{errors.portfolio_url}</p>}
-                  </div>
-
-                  <div className="text-sm text-slate-500">
-                    When you click <strong>Save & Finish</strong>, the component constructs a payload that matches your schema and (optionally) uploads the resume file first.
-                  </div>
-                </div>
-              )}
-
-              {/* actions */}
-              <div className="mt-6 flex items-center justify-between gap-4">
                 <div>
-                  <Button variant="ghost" onClick={onBack} className="mr-2" disabled={step === 1}>
-                    Back
-                  </Button>
+                  <label className="block text-sm font-medium text-gray-700">Resume (optional)</label>
+                  <div className="mt-1 flex items-center gap-4">
+                    <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileSelect} />
+                    <div className="text-sm text-gray-600">{selectedResumeFile ? selectedResumeFile.name : (form.resume_path || 'No resume uploaded')}</div>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {step < 3 ? (
-                    <Button className="rounded-full py-2 px-6" onClick={onNext}>
-                      Next &raquo;
-                    </Button>
-                  ) : (
-                    <Button className="rounded-full py-2 px-6" onClick={onFinish}>
-                      Save & Finish
-                    </Button>
-                  )}
+                  <button type="submit" disabled={saving} className="px-4 py-2 bg-blue-600 text-white rounded shadow-sm hover:bg-blue-700 disabled:opacity-60">
+                    {saving ? 'Saving...' : 'Save profile'}
+                  </button>
+                  <button type="button" onClick={handleCancel} className="px-4 py-2 border rounded">
+                    Cancel
+                  </button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProfileView({ user, onEdit }) {
+  if (!user) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-700 mb-4">No profile found. Create your profile to get started.</p>
+        <button onClick={onEdit} className="px-4 py-2 bg-green-600 text-white rounded">Create profile</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="md:col-span-1">
+        <div className="p-4 border rounded">
+          <h2 className="font-semibold text-lg">{user.full_name}</h2>
+          <p className="text-sm text-gray-600">{user.highest_education || '—'}</p>
+          <p className="mt-3 text-sm text-gray-700">Phone: {user.phone}</p>
+          <p className="text-sm text-gray-700">Experience: {user.experience_years ?? 0} years</p>
+
+          <div className="mt-4 flex gap-2">
+            <button onClick={onEdit} className="px-3 py-1 bg-blue-600 text-white rounded text-sm">Edit</button>
+          </div>
+        </div>
+
+        <div className="mt-4 p-4 border rounded">
+          <h3 className="font-medium text-sm">Resume</h3>
+          {user.resume_path ? (
+            <a href={user.resume_path} target="_blank" rel="noreferrer" className="text-sm text-blue-600 underline">View resume</a>
+          ) : (
+            <p className="text-sm text-gray-600">Not uploaded</p>
+          )}
+        </div>
+      </div>
+
+      <div className="md:col-span-2">
+        <div className="p-4 border rounded mb-4">
+          <h3 className="font-medium">Contact & Location</h3>
+          <p className="text-sm text-gray-700 mt-2">City: {user.city || '—'}</p>
+          <p className="text-sm text-gray-700">State: {user.state || '—'}</p>
+          <p className="text-sm text-gray-700">Country: {user.country || '—'}</p>
+        </div>
+
+        <div className="p-4 border rounded">
+          <h3 className="font-medium">Links</h3>
+          <ul className="mt-2 space-y-2">
+            <li>
+              <strong className="mr-2">LinkedIn:</strong>
+              {user.linkedin_url ? (
+                <a href={user.linkedin_url} target="_blank" rel="noreferrer" className="text-blue-600 underline">{user.linkedin_url}</a>
+              ) : (
+                <span className="text-gray-600">—</span>
+              )}
+            </li>
+            <li>
+              <strong className="mr-2">Portfolio:</strong>
+              {user.portfolio_url ? (
+                <a href={user.portfolio_url} target="_blank" rel="noreferrer" className="text-blue-600 underline">{user.portfolio_url}</a>
+              ) : (
+                <span className="text-gray-600">—</span>
+              )}
+            </li>
+          </ul>
         </div>
       </div>
     </div>
+  );
+}
+
+function Input({ label, name, value, onChange, type = "text", ...rest }) {
+  return (
+    <label className="block">
+      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <input
+        name={name}
+        value={value}
+        onChange={onChange}
+        type={type}
+        {...rest}
+        className="mt-1 block w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-offset-1"
+      />
+    </label>
   );
 }
