@@ -41,7 +41,7 @@ function Footer() {
             <li><Link to="talent-hire"className="hover:text-orange-500">talent-hire</Link></li>
             <li><Link to="create-job"className="hover:text-orange-500">create-job</Link></li>
             <li><Link to="dashboard"className="hover:text-orange-500"> user-dashboard</Link></li>
-            
+            <li><Link to ="/recruiter-dashboard"className="hover:text-orange-500">recruiter-dashboard</Link></li>
           </ul>
         </div>
       </div>
