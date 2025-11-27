@@ -1,12 +1,7 @@
-// src/routes.jsx
-
-// Made all pages accessible without login by removing ProtectedRoute from routes.jsx
-
-// routes now fully public — removed all route protection
-
 import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Layout from "../components/ui/layout.jsx";
+import ProtectedRoute from "../protected/ProtectedRoute.jsx";
 
 import Home from "../modules/user/Home.jsx";
 import Companies from "../modules/user/Companies.jsx";
@@ -17,10 +12,10 @@ import JobDetail from "../modules/user/jobs/job-details.jsx";
 
 import RecruiterCreateJob from "../modules/recruiter/hire-jobs/create-job.jsx";
 import TalentHire from "../modules/recruiter/recruter-premier/talent-hire.jsx";
-import RecruiterProfileform  from "../modules/recruiter/recruiter-dashboard/recruiter-profile-form.jsx";
+import RecruiterProfileform from "../modules/recruiter/recruiter-dashboard/recruiter-profile-form.jsx";
 import JobPosted from "../modules/recruiter/recruiter-dashboard/job-posted.jsx";
 import RecruiterDashboard from "../modules/recruiter/recruiter-dashboard/recruiter-index.jsx";
-import RecruiterProfile  from "../modules/recruiter/recruiter-dashboard/recruiter-profile.jsx";
+import RecruiterProfile from "../modules/recruiter/recruiter-dashboard/recruiter-profile.jsx";
 
 import SignIn from "../modules/auth/SignIn.jsx";
 import SignUp from "../modules/auth/SignUp.jsx";
@@ -40,7 +35,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/home" replace /> },
 
-      // Public pages
+      // Public pages (accessible without login)
       { path: "home", element: <Home /> },
       { path: "companies", element: <Companies /> },
       { path: "career-kit", element: <CareerKit /> },
@@ -48,29 +43,105 @@ const router = createBrowserRouter([
       { path: "jobs", element: <Jobs /> },
       { path: "jobs/:id", element: <JobDetail /> },
 
-      // Auth
+      // Auth pages (accessible without login) - No footer on these
       { path: "sign-in", element: <SignIn /> },
       { path: "sign-up", element: <SignUp /> },
       { path: "forgot", element: <Forgot /> },
 
-      // Profile & Dashboards — now PUBLIC
+      // Profile - Public
       { path: "profile", element: <Profile /> },
 
-      { path: "RecruiterProfileform", element: <RecruiterProfileform /> },
-      { path: "recruiter-profile", element: <RecruiterProfile /> },
-      { path: "create-job", element: <RecruiterCreateJob /> },
-      { path: "job-posted", element: <JobPosted /> },
-      { path: "recruiter-dashboard", element: <RecruiterDashboard /> },
+      // ================= RECRUITER ONLY ROUTES =================
+      {
+        path: "recruiter-profileform",
+        element: (
+          <ProtectedRoute roles={["recruiter"]}>
+            <RecruiterProfileform />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "recruiter-profile",
+        element: (
+          <ProtectedRoute roles={["recruiter"]}>
+            <RecruiterProfile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "create-job",
+        element: (
+          <ProtectedRoute roles={["recruiter"]}>
+            <RecruiterCreateJob />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "job-posted",
+        element: (
+          <ProtectedRoute roles={["recruiter"]}>
+            <JobPosted />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "recruiter-dashboard",
+        element: (
+          <ProtectedRoute roles={["recruiter"]}>
+            <RecruiterDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "talent-hire",
+        element: (
+          <ProtectedRoute roles={["recruiter"]}>
+            <TalentHire />
+          </ProtectedRoute>
+        ),
+      },
 
-      // Premier Talent Hire
-      { path: "talent-hire", element: <TalentHire /> },
-
-      // User Dashboard
-      { path: "dashboard", element: <Dashboard /> },
-      { path: "dashboard/profile", element: <UserProfile /> },
-      { path: "dashboard/saved", element: <Saved /> },
-      { path: "dashboard/applied", element: <Applied /> },
-      { path: "dashboard/alerts", element: <AlertsManage /> },
+      // ================= USER/JOB SEEKER ONLY ROUTES =================
+      {
+        path: "dashboard",
+        element: (
+          <ProtectedRoute roles={["user"]}>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "dashboard/profile",
+        element: (
+          <ProtectedRoute roles={["user"]}>
+            <UserProfile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "dashboard/saved",
+        element: (
+          <ProtectedRoute roles={["user"]}>
+            <Saved />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "dashboard/applied",
+        element: (
+          <ProtectedRoute roles={["user"]}>
+            <Applied />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "dashboard/alerts",
+        element: (
+          <ProtectedRoute roles={["user"]}>
+            <AlertsManage />
+          </ProtectedRoute>
+        ),
+      },
 
       { path: "*", element: <Navigate to="/home" replace /> },
     ],

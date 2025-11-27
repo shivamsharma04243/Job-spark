@@ -4,7 +4,6 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import api from "../../components/apiconfig/apiconfig";
 
-
 export default function SignIn() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +20,15 @@ export default function SignIn() {
       const { data } = await api.post("/auth/login", { identifier, password });
       setMessage(data?.message || "Login successful");
       const role = data?.user?.role || "user";
-      window.location.href = role === "recruiter" ? "/recruiter-profile" : "/dashboard";
+      
+      // Redirect based on role
+      if (role === "recruiter") {
+        // Recruiter goes to recruiter dashboard
+        window.location.href = "/recruiter-dashboard";
+      } else {
+        // Regular user goes to home page
+        window.location.href = "/home";
+      }
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || "Login failed";
       setError(msg);
@@ -31,7 +38,6 @@ export default function SignIn() {
   }
 
   return (
-   
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-12">
       <div className="w-full max-w-6xl rounded-2xl bg-[#eefcfb] p-8 md:p-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -58,6 +64,7 @@ export default function SignIn() {
                     placeholder="Email or Username"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
+                    required
                   />
                   <Input
                     className="rounded-xl border p-3 text-sm"
@@ -65,6 +72,7 @@ export default function SignIn() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                   />
 
                   <div className="flex items-center justify-between text-sm">
@@ -80,7 +88,7 @@ export default function SignIn() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-full py-3 text-white shadow-md bg-emerald-600 "
+                    className="w-full rounded-full py-3 text-white shadow-md bg-emerald-600 hover:bg-emerald-700 transition-colors"
                   >
                     {loading ? "Please wait..." : "Sign In"}
                   </Button>
@@ -110,6 +118,5 @@ export default function SignIn() {
         </div>
       </div>
     </div>
-   
   );
 }
