@@ -17,9 +17,10 @@ import JobDetail from "../modules/user/jobs/job-details.jsx";
 
 import RecruiterCreateJob from "../modules/recruiter/hire-jobs/create-job.jsx";
 import TalentHire from "../modules/recruiter/recruter-premier/talent-hire.jsx";
-import RecruiterProfile from "../modules/recruiter/recruiter-dashboard/recruiter-profile.jsx";
+import RecruiterProfileform  from "../modules/recruiter/recruiter-dashboard/recruiter-profile-form.jsx";
 import JobPosted from "../modules/recruiter/recruiter-dashboard/job-posted.jsx";
 import RecruiterDashboard from "../modules/recruiter/recruiter-dashboard/recruiter-index.jsx";
+import RecruiterProfile  from "../modules/recruiter/recruiter-dashboard/recruiter-profile.jsx";
 
 import SignIn from "../modules/auth/SignIn.jsx";
 import SignUp from "../modules/auth/SignUp.jsx";
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
       // Profile & Dashboards — now PUBLIC
       { path: "profile", element: <Profile /> },
 
+      { path: "RecruiterProfileform", element: <RecruiterProfileform /> },
       { path: "recruiter-profile", element: <RecruiterProfile /> },
       { path: "create-job", element: <RecruiterCreateJob /> },
       { path: "job-posted", element: <JobPosted /> },

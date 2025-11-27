@@ -10,7 +10,7 @@ const path = require('path');
 
 // App-level configuration object (single place to change values)
 const config = {
-  port: Number(process.env.PORT) || 5000,
+  port: Number(process.env.PORT ) || 5000,
   env: process.env.NODE_ENV || 'development',
   clientOrigins: [
     process.env.CLIENT_ORIGIN,
