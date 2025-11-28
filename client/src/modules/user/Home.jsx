@@ -1,6 +1,6 @@
 // Home.jsx
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../../components/apiconfig/apiconfig";
 import { Search } from "lucide-react";
 import { Button } from "../../components/ui/button";
@@ -44,6 +44,17 @@ function timeAgo(iso) {
 }
 
 function Hero() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Navigate to jobs page with search query
+      navigate(`/jobs?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <section className="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-2 gap-8 items-center mb-6">
       <div>
@@ -69,16 +80,18 @@ function Hero() {
         <Card className="rounded-2xl shadow-xl">
           <CardContent className="bg-white rounded-2xl">
             <div className="text-lg font-medium mb-3">Search jobs</div>
-            <div className="flex gap-2 items-center">
+            <form onSubmit={handleSearch} className="flex gap-2 items-center">
               <div className="flex items-center gap-2 border rounded-md px-3 py-2 w-full">
                 <Search size={16} />
                 <input
                   className="outline-none w-full text-sm"
                   placeholder="Role, skill or company"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <Button>Search</Button>
-            </div>
+              <Button type="submit">Search</Button>
+            </form>
           </CardContent>
         </Card>
       </aside>
@@ -167,7 +180,6 @@ function JobsTableRow({ job }) {
           <div className="text-sm">
             {job.title.charAt(0).toUpperCase() + job.title.slice(1)}
           </div>
-
         </div>
       </td>
 
@@ -309,9 +321,11 @@ function JobsListing() {
       </div>
 
       <div className="mt-10 flex justify-center">
-        <Button className="px-6 bg-orange-500 hover:bg-orange-600 text-white">
-          Find Your Next Role
-        </Button>
+        <Link to="/jobs">
+          <Button className="px-6 bg-orange-500 hover:bg-orange-600 text-white">
+            Find Your Next Role
+          </Button>
+        </Link>
       </div>
     </main>
   );

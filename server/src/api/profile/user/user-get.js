@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../../config/db');
 const { requireAuth } = require('../../../middlewares/auth');
 
-router.get('/user', requireAuth, async (req, res) => {
+const getuser = async (req, res) => {
   const connection = await pool.getConnection();
   try {
     const userId = req.user?.id;
@@ -19,5 +19,6 @@ router.get('/user', requireAuth, async (req, res) => {
   } finally {
     connection.release();
   }
-});
-module.exports = router;
+};
+
+module.exports = getuser;

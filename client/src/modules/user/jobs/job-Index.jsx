@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Building2,
   MapPin,
   Briefcase,
-  Clock,
   GraduationCap,
 } from "lucide-react";
 import { Badge } from "../../../components/ui/badge";
@@ -13,14 +13,25 @@ import api from "../../../components/apiconfig/apiconfig";
 
 export default function Jobs() {
   const [jobList, setJobList] = useState([]);
-
   const [role, setRole] = useState("");
   const [location, setLocation] = useState("");
   const [exp, setExp] = useState("");
-  const [mode, setMode] = useState("");
+  const [type, setType] = useState("");
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Get search query from URL parameters
+  const locationHook = useLocation();
+
+  useEffect(() => {
+    // Read search parameter from URL when component loads
+    const searchParams = new URLSearchParams(locationHook.search);
+    const searchQuery = searchParams.get('search') || '';
+    if (searchQuery) {
+      setRole(searchQuery);
+    }
+  }, [locationHook]);
 
   useEffect(() => {
     let alive = true;
@@ -33,20 +44,25 @@ export default function Jobs() {
         if (!alive) return;
 
         if (data.ok && Array.isArray(data.jobs)) {
+          // Use the exact field names from your database response
           const mapped = data.jobs.map((j) => ({
-            id: j.id,
-            title: j.title,
-            company: j.company,
-            loc: j.location,
-            mode: j.type,
-            exp: j.experiance,
-            type: j.type,
-            tags: j.tags || [],
+            id: j._id || j.id,
+            title: j.title || j.jobTitle || "",
+            company: j.company || j.companyName || "",
+            location: j.location || j.jobLocation || "",
+            type: j.type || j.jobType || "",
+            mode: j.mode || j.workMode || j.workType || "",
+            experience: j.experience || j.experiance || j.exp || "",
+            tags: j.tags || j.skills || [],
+            salary: j.salary || "",
+            description: j.description || ""
           }));
           setJobList(mapped);
           setFiltered(mapped);
+          console.log("Jobs loaded:", mapped); // Debug log
         }
       } catch (err) {
+        console.error("Error loading jobs:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -59,64 +75,137 @@ export default function Jobs() {
   }, []);
 
   const handleSearch = () => {
-    let data = jobList;
+    if (jobList.length === 0) return;
+
+    let data = [...jobList];
 
     const roleTrim = role.trim().toLowerCase();
     const locationTrim = location.trim().toLowerCase();
 
-    if (roleTrim !== "")
-      data = data.filter(
-        (job) =>
-          job.title.toLowerCase().includes(roleTrim) ||
-          job.tags.join(" ").toLowerCase().includes(roleTrim)
-      );
+    console.log("Filtering with:", { roleTrim, locationTrim, exp, type }); // Debug log
 
-    if (locationTrim !== "")
+    // Role filter - search in title, company, and tags
+    if (roleTrim !== "") {
+      data = data.filter((job) => {
+        const titleMatch = job.title?.toLowerCase().includes(roleTrim) || false;
+        const companyMatch = job.company?.toLowerCase().includes(roleTrim) || false;
+        const tagsMatch = job.tags?.some(tag => 
+          tag?.toLowerCase().includes(roleTrim)
+        ) || false;
+        const descriptionMatch = job.description?.toLowerCase().includes(roleTrim) || false;
+        
+        return titleMatch || companyMatch || tagsMatch || descriptionMatch;
+      });
+    }
+
+    // Location filter
+    if (locationTrim !== "") {
       data = data.filter((job) =>
-        job.loc.toLowerCase().includes(locationTrim)
+        job.location?.toLowerCase().includes(locationTrim)
       );
+    }
 
-    if (exp && exp !== "Experience")
-      data = data.filter((job) =>
-        job.exp.toLowerCase().includes(exp.toLowerCase())
-      );
+    // Experience filter
+    if (exp && exp !== "Experience") {
+      data = data.filter((job) => {
+        const jobExp = job.experience?.toLowerCase() || "";
+        const filterExp = exp.toLowerCase();
+        
+        // Flexible matching for experience
+        if (filterExp === "student") {
+          return jobExp.includes("student") || jobExp.includes("fresher") || jobExp.includes("intern") || jobExp.includes("0");
+        } else if (filterExp === "fresher (0 yrs)") {
+          return jobExp.includes("fresher") || jobExp.includes("0") || jobExp.includes("entry");
+        } else if (filterExp === "1–2 yrs") {
+          return jobExp.includes("1") || jobExp.includes("2") || jobExp.includes("1-2") || jobExp.includes("1+");
+        }
+        return jobExp.includes(filterExp);
+      });
+    }
 
-    if (mode && mode !== "Work mode")
-      data = data.filter((job) =>
-        job.mode.toLowerCase().includes(mode.toLowerCase())
-      );
+    // Type filter
+    if (type && type !== "Type") {
+      data = data.filter((job) => {
+        const jobType = job.type?.toLowerCase() || "";
+        const filterType = type.toLowerCase();
+        return jobType.includes(filterType);
+      });
+    }
 
+    console.log("Filtered results:", data.length); // Debug log
     setFiltered(data);
     setPage(1);
+    
+    // Update URL with current search parameters
+    const params = new URLSearchParams();
+    if (roleTrim) params.set('search', roleTrim);
+    if (locationTrim) params.set('location', locationTrim);
+    if (exp && exp !== "Experience") params.set('experience', exp);
+    if (type && type !== "Type") params.set('type', type);
+    
+    const newUrl = params.toString() ? `/jobs?${params.toString()}` : '/jobs';
+    window.history.replaceState({}, '', newUrl);
   };
 
+  // Call handleSearch whenever any filter changes
   useEffect(() => {
     handleSearch();
-  }, [role, location, exp, mode]);
+  }, [role, location, exp, type, jobList]);
+
+  const clearFilters = () => {
+    setRole("");
+    setLocation("");
+    setExp("");
+    setType("");
+    window.history.replaceState({}, '', '/jobs');
+  };
 
   const pageSize = 4;
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(filtered.length / pageSize);
 
   useEffect(() => {
-    if (page > totalPages) setPage(totalPages || 1);
+    if (page > totalPages && totalPages > 0) {
+      setPage(totalPages);
+    } else if (totalPages === 0) {
+      setPage(1);
+    }
   }, [filtered, totalPages, page]);
 
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <h1 className="text-2xl md:text-3xl font-extrabold mb-1">Find Jobs</h1>
-      <p className="text-slate-600 mb-4">
-        Internships and entry-level roles for students & 0–2 yrs.
-      </p>
+  // Check if any filters are active
+  const hasActiveFilters = role || location || (exp && exp !== "Experience") || (type && type !== "Type");
 
-      <div className="grid md:grid-cols-6 gap-2 bg-white p-3 rounded-2xl border mb-4">
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-6">                                                                                                                                     
+      <div className="flex justify-between items-center mb-1">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold">
+            {role ? `Search Results for "${role}"` : "Find Jobs"}
+          </h1>
+          <p className="text-slate-600 mb-4">
+            {filtered.length} {filtered.length === 1 ? 'job' : 'jobs'} found
+            {role && ` for "${role}"`}
+          </p>
+        </div>
+        
+        {hasActiveFilters && (
+          <Button 
+            variant="outline" 
+            onClick={clearFilters}
+            className="mb-4"
+          >
+            Clear Filters
+          </Button>
+        )}
+      </div>
+
+      <div className="grid md:grid-cols-4 gap-2 bg-white p-3 rounded-2xl border mb-4">
         <Input
           placeholder="Role or skill"
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="md:col-span-2"
         />
 
         <Input
@@ -130,27 +219,31 @@ export default function Jobs() {
           value={exp}
           onChange={(e) => setExp(e.target.value)}
         >
-          <option>Experience</option>
-          <option>Student</option>
-          <option>Fresher (0 yrs)</option>
-          <option>1–2 yrs</option>
+          <option value="">Experience</option>
+          <option value="Student">Student</option>
+          <option value="Fresher">Fresher (0 yrs)</option>
+          <option value="1-2 years">1–2 yrs</option>
         </select>
 
         <select
           className="rounded-xl border p-2 text-sm"
-          value={mode}
-          onChange={(e) => setMode(e.target.value)}
+          value={type}
+          onChange={(e) => setType(e.target.value)}
         >
-          <option>Work mode</option>
-          <option>Remote</option>
-          <option>Hybrid</option>
-          <option>Office</option>
+          <option value="">Type</option>
+          <option value="Internship">Internship</option>
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Contract">Contract</option>
         </select>
-
-        <Button onClick={handleSearch} className="hidden md:inline-flex">
-          Search
-        </Button>
       </div>
+
+      {/* Debug info - remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="text-xs text-gray-500 mb-2">
+          Showing {filtered.length} of {jobList.length} jobs | Page {page} of {totalPages}
+        </div>
+      )}
 
       <div className="overflow-x-auto rounded-2xl border bg-white">
         <table className="w-full text-sm">
@@ -160,7 +253,6 @@ export default function Jobs() {
               <th className="px-3 py-2 text-left">Company</th>
               <th className="px-3 py-2 text-left">Location</th>
               <th className="px-3 py-2 text-left">Type</th>
-              <th className="px-3 py-2 text-left">Mode</th>
               <th className="px-3 py-2 text-left">Experience</th>
               <th className="px-3 py-2 text-left">Tags</th>
               <th className="px-3 py-2 text-left">Actions</th>
@@ -168,10 +260,19 @@ export default function Jobs() {
           </thead>
 
           <tbody>
-            {paginated.length === 0 ? (
+            {loading ? (
               <tr>
-                <td colSpan="8" className="text-center py-4 text-slate-500">
-                  No jobs found
+                <td colSpan="7" className="text-center py-4 text-slate-500">
+                  Loading jobs...
+                </td>
+              </tr>
+            ) : paginated.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="text-center py-4 text-slate-500">
+                  {hasActiveFilters 
+                    ? "No jobs found matching your criteria. Try adjusting your filters." 
+                    : "No jobs available at the moment."
+                  }
                 </td>
               </tr>
             ) : (
@@ -189,7 +290,7 @@ export default function Jobs() {
 
                   <td className="px-3 py-2 align-middle whitespace-nowrap">
                     <div className="flex items-center gap-1">
-                      <MapPin size={14} /> {r.loc}
+                      <MapPin size={14} /> {r.location}
                     </div>
                   </td>
 
@@ -201,21 +302,15 @@ export default function Jobs() {
 
                   <td className="px-3 py-2 align-middle whitespace-nowrap">
                     <div className="flex items-center gap-1">
-                      <Clock size={14} /> {r.mode}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <GraduationCap size={14} /> {r.exp}
+                      <GraduationCap size={14} /> {r.experience}
                     </div>
                   </td>
 
                   <td className="px-3 py-2 align-middle">
                     <div className="flex flex-wrap gap-1">
-                      {r.tags.map((t) => (
+                      {r.tags && r.tags.map((t, index) => (
                         <Badge
-                          key={t}
+                          key={index}
                           variant="outline"
                           className="rounded-full text-xs"
                         >

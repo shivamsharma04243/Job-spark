@@ -26,6 +26,8 @@ function Footer() {
             <li><Link to="dashboard/saved"className="hover:text-orange-500"> user-saved</Link></li>
             <li><Link to="dashboard/applied"className="hover:text-orange-500"> user-applied</Link></li>
             <li><Link to="dashboard/alerts"className="hover:text-orange-500"> user-alerts</Link></li>
+            <li><Link to ="/RecruiterProfileform"className="hover:text-orange-500">RecruiterProfileform</Link></li>
+            <li><Link to ="JobApplicants"className="hover:text-orange-500">JobApplicants</Link></li>
           </ul>
         </div>
 
@@ -40,7 +42,7 @@ function Footer() {
             <li><Link to="talent-hire"className="hover:text-orange-500">talent-hire</Link></li>
             <li><Link to="create-job"className="hover:text-orange-500">create-job</Link></li>
             <li><Link to="dashboard"className="hover:text-orange-500"> user-dashboard</Link></li>
-            
+            <li><Link to ="/recruiter-dashboard"className="hover:text-orange-500">recruiter-dashboard</Link></li>
           </ul>
         </div>
       </div>
