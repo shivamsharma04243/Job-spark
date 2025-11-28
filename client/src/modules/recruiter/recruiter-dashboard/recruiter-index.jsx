@@ -1,7 +1,44 @@
 import { Card, CardContent } from "../../../components/ui/card";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import api from "../../../components/apiconfig/apiconfig";
 
 export default function RecruiterDashboard() {
+  const [stats, setStats] = useState({
+    totalJobs: 0,
+    recentApplications: 0,
+    recentActivity: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      const { data } = await api.get("/recruiter/stats");
+      if (data.ok) {
+        setStats(data.stats);
+      }
+    } catch (err) {
+      console.error("Error fetching stats:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatTimeAgo = (timestamp) => {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInHours = Math.floor((now - time) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    return `${Math.floor(diffInHours / 168)}w ago`;
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       {/* Header Section */}
@@ -64,7 +101,9 @@ export default function RecruiterDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Posted Jobs</p>
-                <p className="text-2xl font-bold text-gray-900">6</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {loading ? '...' : stats.totalJobs}
+                </p>
                 <p className="text-xs text-gray-500 mt-1">Active positions</p>
               </div>
               <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
@@ -81,7 +120,9 @@ export default function RecruiterDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Applications</p>
-                <p className="text-2xl font-bold text-gray-900">24</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {loading ? '...' : stats.recentApplications}
+                </p>
                 <p className="text-xs text-gray-500 mt-1">New this week</p>
               </div>
               <div className="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center">
@@ -143,27 +184,27 @@ export default function RecruiterDashboard() {
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className="text-sm text-gray-700">New application for Senior Developer</span>
+            {loading ? (
+              <div className="text-center py-4">
+                <p className="text-gray-500">Loading activity...</p>
               </div>
-              <span className="text-xs text-gray-500">2 hours ago</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-gray-700">Job post "Product Manager" published</span>
+            ) : stats.recentActivity.length > 0 ? (
+              stats.recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-sm text-gray-700">{activity.message}</span>
+                  </div>
+                  <span className="text-xs text-gray-500">
+                    {formatTimeAgo(activity.timestamp)}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-gray-500">No recent activity</p>
               </div>
-              <span className="text-xs text-gray-500">1 day ago</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span className="text-sm text-gray-700">Profile completeness improved</span>
-              </div>
-              <span className="text-xs text-gray-500">2 days ago</span>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>

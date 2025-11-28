@@ -1,6 +1,3 @@
-// AdminPostJob.jsx
-// Uploaded image (reference): /mnt/data/3477a11a-8ee3-417d-b230-80564af603db.png
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
@@ -75,24 +72,36 @@ export default function AdminPostJob() {
       // Create formData for file upload
       const payload = new FormData();
 
-      Object.entries(form).forEach(([k, v]) => {
-        if (k === "logoFile") {
-          if (v) payload.append("logo", v);
-        } else if (k === "title") {
-          payload.append("title", normalizedTitle);
-        } else if (k === "company") {
-          payload.append("company", normalizedCompany);
-        } else {
-          // ensure non-file values are appended as strings
-          payload.append(k, v == null ? "" : String(v));
-        }
+      // Append all form fields
+      payload.append("title", normalizedTitle);
+      payload.append("company", normalizedCompany);
+      payload.append("jobType", form.jobType);
+      payload.append("city", form.city);
+      payload.append("locality", form.locality);
+      payload.append("skills", form.skills);
+      payload.append("minExperience", form.minExperience);
+      payload.append("maxExperience", form.maxExperience);
+      payload.append("salary", form.salary);
+      payload.append("vacancies", form.vacancies.toString());
+      payload.append("description", form.description);
+      payload.append("interviewAddress", form.interviewAddress);
+      payload.append("contactEmail", form.contactEmail);
+      payload.append("contactPhone", form.contactPhone);
+      
+      if (form.logoFile) {
+        payload.append("logo", form.logoFile);
+      }
+
+      // send to backend using axios instance
+      const { data } = await api.post("/recruiter/jobs/create", payload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
-      // send to backend using axios instance (handles baseURL + cookies)
-      const { data } = await api.post("/recruiter/jobs/create", payload);
-
       setSuccess(data?.message || "Job posted successfully.");
-      // clear form or navigate to job list
+      
+      // clear form
       setForm({
         title: "",
         company: "",
@@ -113,7 +122,9 @@ export default function AdminPostJob() {
       setErrors({});
     } catch (err) {
       setSuccess(null);
-      setErrors((e) => ({ ...e, submit: err?.response?.data?.message || err.message || "Submit failed" }));
+      const errorMessage = err?.response?.data?.message || err.message || "Submit failed";
+      setErrors((e) => ({ ...e, submit: errorMessage }));
+      console.error("Job creation error:", err);
     } finally {
       setSubmitting(false);
     }
@@ -283,7 +294,7 @@ export default function AdminPostJob() {
                     Reset
                   </Button>
 
-                  <Button type="submit" className="rounded-full px-6 py-2" onClick={handleSubmit} disabled={submitting}>
+                  <Button type="submit" className="rounded-full px-6 py-2" disabled={submitting}>
                     {submitting ? "Publishing..." : "Publish Job"}
                   </Button>
                 </div>

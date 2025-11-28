@@ -33,6 +33,16 @@ async function createJobHandler(req, res) {
       return res.status(400).json({ ok: false, message: err.message });
     }
     try {
+      // Get recruiter_id from authenticated user - use req.user.id from your auth middleware
+      const recruiterId = req.user?.id;
+      
+      console.log("User object:", req.user); // Debug log
+      console.log("Recruiter ID:", recruiterId); // Debug log
+      
+      if (!recruiterId) {
+        return res.status(401).json({ ok: false, message: "Unauthorized - Please log in to post jobs" });
+      }
+
       // fields from your frontend form (camelCase)
       const {
         title = "",
@@ -48,6 +58,7 @@ async function createJobHandler(req, res) {
         interviewAddress = "",
         contactEmail = "",
         contactPhone = "",
+        skills = "", // Added skills here
       } = req.body;
 
       // simple validation
@@ -69,15 +80,11 @@ async function createJobHandler(req, res) {
       const vacanciesNum = vacancies ? Math.max(1, parseInt(vacancies, 10) || 1) : 1;
 
       // Insert into DB (use placeholders)
-      // Note: 'jobs' table columns - skills column doesn't exist, use job_tag_map for tags
       const sql = `
         INSERT INTO jobs
           (title, company, job_type, city, locality, min_experience, max_experience, salary, vacancies, description, interview_address, contact_email, contact_phone, logo_path, recruiter_id, posted_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
       `;
-
-      // recruiter_id would come from auth; for now use null
-      const recruiterId = null;
 
       const params = [
         title,
@@ -101,9 +108,9 @@ async function createJobHandler(req, res) {
       const jobId = result.insertId;
 
       // Insert skills as tags if provided
-      if (req.body.skills && typeof req.body.skills === 'string' && req.body.skills.trim()) {
+      if (skills && typeof skills === 'string' && skills.trim()) {
         try {
-          const skillList = req.body.skills.split(',').map(s => s.trim()).filter(Boolean);
+          const skillList = skills.split(',').map(s => s.trim()).filter(Boolean);
           for (const skillName of skillList) {
             // Insert tag if not exists, get its ID
             const [tagRows] = await pool.query(
@@ -123,12 +130,11 @@ async function createJobHandler(req, res) {
       return res.status(201).json({
         ok: true,
         id: jobId,
-        message: "Job created",
+        message: "Job created successfully",
         logoPath,
       });
     } catch (err) {
       console.error("createJob error:", err);
-      // if multer error, it may be in err.code or err.message
       return res.status(500).json({ ok: false, message: err.message || "Internal Server Error" });
     }
   });

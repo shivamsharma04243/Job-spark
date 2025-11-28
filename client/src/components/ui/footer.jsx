@@ -27,6 +27,7 @@ function Footer() {
             <li><Link to="dashboard/applied"className="hover:text-orange-500"> user-applied</Link></li>
             <li><Link to="dashboard/alerts"className="hover:text-orange-500"> user-alerts</Link></li>
             <li><Link to ="/RecruiterProfileform"className="hover:text-orange-500">RecruiterProfileform</Link></li>
+            <li><Link to ="JobApplicants"className="hover:text-orange-500">JobApplicants</Link></li>
           </ul>
         </div>
 
