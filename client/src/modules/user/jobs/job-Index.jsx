@@ -4,7 +4,6 @@ import {
   Building2,
   MapPin,
   Briefcase,
-  Clock,
   GraduationCap,
 } from "lucide-react";
 import { Badge } from "../../../components/ui/badge";
@@ -17,7 +16,7 @@ export default function Jobs() {
   const [role, setRole] = useState("");
   const [location, setLocation] = useState("");
   const [exp, setExp] = useState("");
-  const [mode, setMode] = useState("");
+  const [type, setType] = useState("");
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -83,7 +82,7 @@ export default function Jobs() {
     const roleTrim = role.trim().toLowerCase();
     const locationTrim = location.trim().toLowerCase();
 
-    console.log("Filtering with:", { roleTrim, locationTrim, exp, mode }); // Debug log
+    console.log("Filtering with:", { roleTrim, locationTrim, exp, type }); // Debug log
 
     // Role filter - search in title, company, and tags
     if (roleTrim !== "") {
@@ -124,12 +123,12 @@ export default function Jobs() {
       });
     }
 
-    // Work mode filter
-    if (mode && mode !== "Work mode") {
+    // Type filter
+    if (type && type !== "Type") {
       data = data.filter((job) => {
-        const jobMode = job.mode?.toLowerCase() || "";
-        const filterMode = mode.toLowerCase();
-        return jobMode.includes(filterMode);
+        const jobType = job.type?.toLowerCase() || "";
+        const filterType = type.toLowerCase();
+        return jobType.includes(filterType);
       });
     }
 
@@ -142,7 +141,7 @@ export default function Jobs() {
     if (roleTrim) params.set('search', roleTrim);
     if (locationTrim) params.set('location', locationTrim);
     if (exp && exp !== "Experience") params.set('experience', exp);
-    if (mode && mode !== "Work mode") params.set('mode', mode);
+    if (type && type !== "Type") params.set('type', type);
     
     const newUrl = params.toString() ? `/jobs?${params.toString()}` : '/jobs';
     window.history.replaceState({}, '', newUrl);
@@ -151,13 +150,13 @@ export default function Jobs() {
   // Call handleSearch whenever any filter changes
   useEffect(() => {
     handleSearch();
-  }, [role, location, exp, mode, jobList]);
+  }, [role, location, exp, type, jobList]);
 
   const clearFilters = () => {
     setRole("");
     setLocation("");
     setExp("");
-    setMode("");
+    setType("");
     window.history.replaceState({}, '', '/jobs');
   };
 
@@ -176,7 +175,7 @@ export default function Jobs() {
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   // Check if any filters are active
-  const hasActiveFilters = role || location || (exp && exp !== "Experience") || (mode && mode !== "Work mode");
+  const hasActiveFilters = role || location || (exp && exp !== "Experience") || (type && type !== "Type");
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">                                                                                                                                     
@@ -202,12 +201,11 @@ export default function Jobs() {
         )}
       </div>
 
-      <div className="grid md:grid-cols-6 gap-2 bg-white p-3 rounded-2xl border mb-4">
+      <div className="grid md:grid-cols-4 gap-2 bg-white p-3 rounded-2xl border mb-4">
         <Input
           placeholder="Role or skill"
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="md:col-span-2"
         />
 
         <Input
@@ -229,18 +227,15 @@ export default function Jobs() {
 
         <select
           className="rounded-xl border p-2 text-sm"
-          value={mode}
-          onChange={(e) => setMode(e.target.value)}
+          value={type}
+          onChange={(e) => setType(e.target.value)}
         >
-          <option value="">Work mode</option>
-          <option value="Remote">Remote</option>
-          <option value="Hybrid">Hybrid</option>
-          <option value="Office">Office</option>
+          <option value="">Type</option>
+          <option value="Internship">Internship</option>
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Contract">Contract</option>
         </select>
-
-        <Button onClick={handleSearch} className="hidden md:inline-flex">
-          Search
-        </Button>
       </div>
 
       {/* Debug info - remove in production */}
@@ -258,7 +253,6 @@ export default function Jobs() {
               <th className="px-3 py-2 text-left">Company</th>
               <th className="px-3 py-2 text-left">Location</th>
               <th className="px-3 py-2 text-left">Type</th>
-              <th className="px-3 py-2 text-left">Mode</th>
               <th className="px-3 py-2 text-left">Experience</th>
               <th className="px-3 py-2 text-left">Tags</th>
               <th className="px-3 py-2 text-left">Actions</th>
@@ -268,13 +262,13 @@ export default function Jobs() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="8" className="text-center py-4 text-slate-500">
+                <td colSpan="7" className="text-center py-4 text-slate-500">
                   Loading jobs...
                 </td>
               </tr>
             ) : paginated.length === 0 ? (
               <tr>
-                <td colSpan="8" className="text-center py-4 text-slate-500">
+                <td colSpan="7" className="text-center py-4 text-slate-500">
                   {hasActiveFilters 
                     ? "No jobs found matching your criteria. Try adjusting your filters." 
                     : "No jobs available at the moment."
@@ -303,12 +297,6 @@ export default function Jobs() {
                   <td className="px-3 py-2 align-middle whitespace-nowrap">
                     <div className="flex items-center gap-1">
                       <Briefcase size={14} /> {r.type}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <Clock size={14} /> {r.mode}
                     </div>
                   </td>
 
