@@ -2,6 +2,7 @@ import { Card, CardContent } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
 import { useState, useEffect } from "react";
 import api from "../../../components/apiconfig/apiconfig";
+import { Link } from "react-router-dom";
 
 export default function JobPosted() {
   const [jobs, setJobs] = useState([]);
@@ -15,7 +16,8 @@ export default function JobPosted() {
   const fetchPostedJobs = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get("/recruiter/jobs");
+   const { data } = await api.get("/recruiter/jobs");
+
       if (data.ok) {
         setJobs(data.jobs);
       } else {
@@ -93,19 +95,6 @@ export default function JobPosted() {
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-start gap-4">
-                      {job.logoPath ? (
-                        <img 
-                          src={`/${job.logoPath}`} 
-                          alt={`${job.company} logo`}
-                          className="w-12 h-12 object-contain rounded-lg border"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <span className="text-xs text-gray-500 font-medium">
-                            {job.company.substring(0, 2).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
                       <div className="flex-1">
                         <h3 className="font-semibold text-lg text-gray-900">{job.title}</h3>
                         <p className="text-gray-600">
@@ -113,52 +102,30 @@ export default function JobPosted() {
                         </p>
                         <div className="flex flex-wrap gap-2 mt-2">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {job.experience}
-                          </span>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {job.salary}
-                          </span>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                             {job.vacancies} vacancy{job.vacancies !== 1 ? 'ies' : ''}
                           </span>
-                          {job.tags.slice(0, 3).map((tag, index) => (
-                            <span 
-                              key={index}
-                              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                          {job.tags.length > 3 && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              +{job.tags.length - 3} more
-                            </span>
-                          )}
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {job.applicationCount} application{job.applicationCount !== 1 ? 's' : ''}
+                          </span>
                         </div>
                         <p className="text-sm text-gray-500 mt-2">
-                          Posted on {formatDate(job.postedAt)}
+                          Posted on {formatDate(job.createdAt)}
                         </p>
                       </div>
                     </div>
                   </div>
                   
                   <div className="flex gap-2 flex-shrink-0">
-                    <Button variant="secondary" size="sm">
-                      View Details
+                    <Button variant="secondary" size="sm" asChild>
+                      <Link to={`/recruiter/jobs/${job.id}/applicants`}>
+                        View Applicants
+                      </Link>
                     </Button>
                     <Button size="sm">
-                      View Applications
+                      Edit Job
                     </Button>
                   </div>
                 </div>
-                
-                {job.description && (
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                      {job.description}
-                    </p>
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))}

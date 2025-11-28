@@ -16,7 +16,7 @@ import RecruiterProfileform from "../modules/recruiter/recruiter-dashboard/recru
 import JobPosted from "../modules/recruiter/recruiter-dashboard/job-posted.jsx";
 import RecruiterDashboard from "../modules/recruiter/recruiter-dashboard/recruiter-index.jsx";
 import RecruiterProfile from "../modules/recruiter/recruiter-dashboard/recruiter-profile.jsx";
-
+import JobApplicants from "../modules/recruiter/recruiter-dashboard/JobApplicants.jsx";
 import SignIn from "../modules/auth/SignIn.jsx";
 import SignUp from "../modules/auth/SignUp.jsx";
 import Forgot from "../modules/auth/Forgot.jsx";
@@ -97,6 +97,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute roles={["recruiter"]}>
             <TalentHire />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "recruiter/jobs/:jobId/applicants",
+        element: (
+          <ProtectedRoute roles={["recruiter"]}>  
+            <JobApplicants />
           </ProtectedRoute>
         ),
       },
