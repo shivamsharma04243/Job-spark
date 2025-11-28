@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Building2,
   MapPin,
@@ -20,6 +21,18 @@ export default function Jobs() {
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Get search query from URL parameters
+  const locationHook = useLocation();
+
+  useEffect(() => {
+    // Read search parameter from URL when component loads
+    const searchParams = new URLSearchParams(locationHook.search);
+    const searchQuery = searchParams.get('search') || '';
+    if (searchQuery) {
+      setRole(searchQuery);
+    }
+  }, [locationHook]);
 
   useEffect(() => {
     let alive = true;
@@ -80,8 +93,9 @@ export default function Jobs() {
         const tagsMatch = job.tags?.some(tag => 
           tag?.toLowerCase().includes(roleTrim)
         ) || false;
+        const descriptionMatch = job.description?.toLowerCase().includes(roleTrim) || false;
         
-        return titleMatch || companyMatch || tagsMatch;
+        return titleMatch || companyMatch || tagsMatch || descriptionMatch;
       });
     }
 
@@ -122,12 +136,30 @@ export default function Jobs() {
     console.log("Filtered results:", data.length); // Debug log
     setFiltered(data);
     setPage(1);
+    
+    // Update URL with current search parameters
+    const params = new URLSearchParams();
+    if (roleTrim) params.set('search', roleTrim);
+    if (locationTrim) params.set('location', locationTrim);
+    if (exp && exp !== "Experience") params.set('experience', exp);
+    if (mode && mode !== "Work mode") params.set('mode', mode);
+    
+    const newUrl = params.toString() ? `/jobs?${params.toString()}` : '/jobs';
+    window.history.replaceState({}, '', newUrl);
   };
 
   // Call handleSearch whenever any filter changes
   useEffect(() => {
     handleSearch();
   }, [role, location, exp, mode, jobList]);
+
+  const clearFilters = () => {
+    setRole("");
+    setLocation("");
+    setExp("");
+    setMode("");
+    window.history.replaceState({}, '', '/jobs');
+  };
 
   const pageSize = 4;
   const [page, setPage] = useState(1);
@@ -143,12 +175,32 @@ export default function Jobs() {
 
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
+  // Check if any filters are active
+  const hasActiveFilters = role || location || (exp && exp !== "Experience") || (mode && mode !== "Work mode");
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">                                                                                                                                     
-      <h1 className="text-2xl md:text-3xl font-extrabold mb-1">Find Jobs</h1>
-      <p className="text-slate-600 mb-4">
-        Internships and entry-level roles for students & 0–2 yrs.
-      </p>
+      <div className="flex justify-between items-center mb-1">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold">
+            {role ? `Search Results for "${role}"` : "Find Jobs"}
+          </h1>
+          <p className="text-slate-600 mb-4">
+            {filtered.length} {filtered.length === 1 ? 'job' : 'jobs'} found
+            {role && ` for "${role}"`}
+          </p>
+        </div>
+        
+        {hasActiveFilters && (
+          <Button 
+            variant="outline" 
+            onClick={clearFilters}
+            className="mb-4"
+          >
+            Clear Filters
+          </Button>
+        )}
+      </div>
 
       <div className="grid md:grid-cols-6 gap-2 bg-white p-3 rounded-2xl border mb-4">
         <Input
@@ -223,7 +275,10 @@ export default function Jobs() {
             ) : paginated.length === 0 ? (
               <tr>
                 <td colSpan="8" className="text-center py-4 text-slate-500">
-                  No jobs found matching your criteria
+                  {hasActiveFilters 
+                    ? "No jobs found matching your criteria. Try adjusting your filters." 
+                    : "No jobs available at the moment."
+                  }
                 </td>
               </tr>
             ) : (
