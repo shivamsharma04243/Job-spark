@@ -32,6 +32,10 @@ import AlertsManage from "../modules/user/User-Dashboard/user-Alerts.jsx";
 import AdminSignIn from "../modules/admin/SignIn.jsx";
 import AdminSignUp from "../modules/admin/SignUp.jsx";
 import AdminDashboard from "../modules/admin/AdminDashboard.jsx";
+import AdminUsers from "../modules/admin/AdminUsers.jsx";
+import AdminRecruiters from "../modules/admin/AdminRecruiters.jsx";
+import AdminJobs from "../modules/admin/AdminJobs.jsx";
+ 
 
 const router = createBrowserRouter([
   {
@@ -69,6 +73,31 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      // In your router configuration
+{
+  path: "admin/users",
+  element: (
+    <ProtectedRoute roles={["admin"]}>
+      <AdminUsers />
+    </ProtectedRoute>
+  ),
+},
+{
+  path: "admin/recruiters",
+  element: (
+    <ProtectedRoute roles={["admin"]}>
+      <AdminRecruiters />
+    </ProtectedRoute>
+  ),
+},
+{
+  path: "admin/jobs", 
+  element: (
+    <ProtectedRoute roles={["admin"]}>
+      <AdminJobs />
+    </ProtectedRoute>
+  ),
+},
 
       // ================= RECRUITER ONLY ROUTES =================
       {

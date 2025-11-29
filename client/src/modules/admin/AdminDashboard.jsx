@@ -1,22 +1,59 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../components/apiconfig/apiconfig";
 
 export default function AdminDashboard() {
-  const [admin, setAdmin] = useState(null);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalRecruiters: 0,
+    totalJobs: 0,
+    verifiedRecruiters: 0
+  });
+  const [recentData, setRecentData] = useState({
+    recentUsers: [],
+    recentRecruiters: [],
+    recentJobs: []
+  });
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // You can add an admin profile fetch API later
-    const timer = setTimeout(() => {
-      setLoading(false);
-      setAdmin({
-        name: "Admin User",
-        email: "admin@hirespark.com"
-      });
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    fetchDashboardData();
   }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      const [usersRes, recruitersRes, jobsRes] = await Promise.all([
+        api.get("/admin/auth/users"),
+        api.get("/admin/auth/recruiters"), 
+        api.get("/admin/auth/jobs")
+      ]);
+
+      const users = usersRes.data.users || [];
+      const recruiters = recruitersRes.data.recruiters || [];
+      const jobs = jobsRes.data.jobs || [];
+
+      setStats({
+        totalUsers: users.length,
+        totalRecruiters: recruiters.length,
+        totalJobs: jobs.length,
+        verifiedRecruiters: recruiters.filter(r => r.verified).length
+      });
+
+      setRecentData({
+        recentUsers: users.slice(0, 5),
+        recentRecruiters: recruiters.slice(0, 5),
+        recentJobs: jobs.slice(0, 5)
+      });
+
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -25,6 +62,10 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Logout error:", error);
     }
+  };
+
+  const handleViewAll = (type) => {
+    navigate(`/admin/${type}`);
   };
 
   if (loading) {
@@ -49,7 +90,12 @@ export default function AdminDashboard() {
               <span className="ml-3 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">Admin</span>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">Welcome, {admin?.name}</span>
+              <button
+                onClick={fetchDashboardData}
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium"
+              >
+                Refresh Data
+              </button>
               <button
                 onClick={handleLogout}
                 className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
@@ -65,7 +111,11 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          {/* Total Users - Clickable */}
+          <div 
+            onClick={() => handleViewAll('users')}
+            className="bg-white p-6 rounded-xl shadow-sm border cursor-pointer hover:shadow-md transition-shadow"
+          >
             <div className="flex items-center">
               <div className="p-3 bg-blue-100 rounded-lg">
                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,12 +124,17 @@ export default function AdminDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Users</p>
-                <p className="text-2xl font-semibold text-gray-900">1,234</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.totalUsers}</p>
+                <p className="text-xs text-blue-600 mt-1">Click to view all →</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          {/* Total Jobs - Clickable */}
+          <div 
+            onClick={() => handleViewAll('jobs')}
+            className="bg-white p-6 rounded-xl shadow-sm border cursor-pointer hover:shadow-md transition-shadow"
+          >
             <div className="flex items-center">
               <div className="p-3 bg-green-100 rounded-lg">
                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,12 +143,17 @@ export default function AdminDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Jobs</p>
-                <p className="text-2xl font-semibold text-gray-900">567</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.totalJobs}</p>
+                <p className="text-xs text-green-600 mt-1">Click to view all →</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          {/* Recruiters - Clickable */}
+          <div 
+            onClick={() => handleViewAll('recruiters')}
+            className="bg-white p-6 rounded-xl shadow-sm border cursor-pointer hover:shadow-md transition-shadow"
+          >
             <div className="flex items-center">
               <div className="p-3 bg-purple-100 rounded-lg">
                 <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +162,8 @@ export default function AdminDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Recruiters</p>
-                <p className="text-2xl font-semibold text-gray-900">89</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.totalRecruiters}</p>
+                <p className="text-xs text-purple-600 mt-1">Click to view all →</p>
               </div>
             </div>
           </div>
@@ -115,33 +176,15 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Admins</p>
-                <p className="text-2xl font-semibold text-gray-900">5</p>
+                <p className="text-sm font-medium text-gray-600">Verified Recruiters</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.verifiedRecruiters}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <button className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-colors text-left">
-              <h3 className="font-semibold text-gray-900">Manage Users</h3>
-              <p className="text-sm text-gray-600 mt-1">View and manage all users</p>
-            </button>
-            
-            <button className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-green-500 hover:bg-green-50 transition-colors text-left">
-              <h3 className="font-semibold text-gray-900">Manage Jobs</h3>
-              <p className="text-sm text-gray-600 mt-1">View and manage job postings</p>
-            </button>
-            
-            <button className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-colors text-left">
-              <h3 className="font-semibold text-gray-900">Manage Recruiters</h3>
-              <p className="text-sm text-gray-600 mt-1">View and manage recruiters</p>
-            </button>
-          </div>
-        </div>
+        {/* Rest of the dashboard remains the same */}
+        {/* ... */}
       </main>
     </div>
   );

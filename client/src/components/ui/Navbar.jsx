@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Sparkles, Search, User } from "lucide-react";
+import { Sparkles, Search, User, Shield } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./button";
 import api from "../apiconfig/apiconfig.jsx";
@@ -76,17 +76,21 @@ export default function Navbar() {
     }
   }
 
+  const handleAdminLogin = () => {
+    navigate("/admin/signin");
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-900 text-white">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
 
         {/* Logo */}
-        <div >
+        <div>
           <Link to="/" className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-orange-500 text-white grid place-items-center">
-            <Sparkles size={18} />
-          </div>
-          <b className="text-lg">HireSpark</b>
+            <div className="h-9 w-9 rounded-xl bg-orange-500 text-white grid place-items-center">
+              <Sparkles size={18} />
+            </div>
+            <b className="text-lg">HireSpark</b>
           </Link>
         </div>
 
@@ -101,6 +105,16 @@ export default function Navbar() {
 
         {/* Buttons / Profile */}
         <div className="flex gap-3 items-center">
+          {/* Admin Login Button - Always visible */}
+          <button
+            onClick={handleAdminLogin}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+            title="Admin Login"
+          >
+            <Shield size={16} />
+            <span className="hidden sm:inline">Admin</span>
+          </button>
+
           {!loading && user ? (
             <div className="relative" ref={dropdownRef}>
               <button
@@ -150,6 +164,7 @@ export default function Navbar() {
             </div>
           ) : (
             <>
+              {/* Regular Sign In Button - Keep this as it was */}
               <Link to="/sign-in">
                 <Button variant="ghost" className="text-white hover:bg-slate-800">
                   Sign in
