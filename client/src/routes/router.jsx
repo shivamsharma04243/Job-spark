@@ -28,6 +28,11 @@ import Saved from "../modules/user/User-Dashboard/user-Saved.jsx";
 import Applied from "../modules/user/User-Dashboard/user-Applied.jsx";
 import AlertsManage from "../modules/user/User-Dashboard/user-Alerts.jsx";
 
+// Import Admin Components (you'll need to create these)
+import AdminSignIn from "../modules/admin/SignIn.jsx";
+import AdminSignUp from "../modules/admin/SignUp.jsx";
+import AdminDashboard from "../modules/admin/AdminDashboard.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -48,8 +53,22 @@ const router = createBrowserRouter([
       { path: "sign-up", element: <SignUp /> },
       { path: "forgot", element: <Forgot /> },
 
+      // Admin Auth pages (accessible without login)
+      { path: "admin/signin", element: <AdminSignIn /> },
+      { path: "admin/signup", element: <AdminSignUp /> },
+
       // Profile - Public
       { path: "profile", element: <Profile /> },
+
+      // ================= ADMIN ONLY ROUTES =================
+      {
+        path: "admin-dashboard",
+        element: (
+          <ProtectedRoute roles={["admin"]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        ),
+      },
 
       // ================= RECRUITER ONLY ROUTES =================
       {
