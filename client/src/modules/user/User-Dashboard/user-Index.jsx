@@ -1,42 +1,232 @@
 import { Card, CardContent } from "../../../components/ui/card";
 
 export default function Dashboard() {
+  const stats = [
+    {
+      title: "Profile Completeness",
+      value: "70%",
+      description: "Complete your profile for better job matches",
+      progress: 70,
+      color: "bg-blue-500",
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      )
+    },
+    {
+      title: "Saved Jobs",
+      value: "6",
+      description: "Jobs you're interested in",
+      color: "bg-green-500",
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+      )
+    },
+    {
+      title: "Applications",
+      value: "2",
+      description: "Jobs you've applied to",
+      color: "bg-purple-500",
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      )
+    }
+  ];
+
+  const quickActions = [
+    {
+      title: "Update Profile",
+      description: "Complete your professional profile",
+      href: "/dashboard/profile",
+      icon: "📝",
+      color: "bg-blue-50 text-blue-700 border-blue-200"
+    },
+    {
+      title: "Browse Jobs",
+      description: "Find new opportunities",
+      href: "/jobs",
+      icon: "🔍",
+      color: "bg-green-50 text-green-700 border-green-200"
+    },
+    {
+      title: "Job Alerts",
+      description: "Manage your notifications",
+      href: "/dashboard/alerts",
+      icon: "🔔",
+      color: "bg-purple-50 text-purple-700 border-purple-200"
+    },
+    {
+      title: "Application Status",
+      description: "Track your applications",
+      href: "/dashboard/applied",
+      icon: "📊",
+      color: "bg-orange-50 text-orange-700 border-orange-200"
+    }
+  ];
+
   return (
-
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-extrabold mb-4">user Dashboard</h1>
-      <div className="flex flex-wrap gap-2 mb-6">
-        <a className="px-3 py-1 rounded-full bg-slate-100" href="/dashboard">Overview</a>
-        <a className="px-3 py-1 rounded-full bg-slate-100" href="/dashboard/profile">Profile</a>
-        <a className="px-3 py-1 rounded-full bg-slate-100" href="/dashboard/saved">Saved Jobs</a>
-        <a className="px-3 py-1 rounded-full bg-slate-100" href="/dashboard/applied">Applied Jobs</a>
-        <a className="px-3 py-1 rounded-full bg-slate-100" href="/dashboard/alerts">Job Alerts</a>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-5">
-        <Card className="rounded-2xl border-slate-200">
-          <CardContent className="pt-6">
-            <p className="text-sm text-slate-600">Profile completeness</p>
-            <p className="text-3xl font-bold mt-2">70%</p>
-            <div className="mt-3 h-2 rounded bg-slate-100">
-              <div className="h-2 w-7/12 rounded bg-orange-500" />
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+              <p className="text-gray-600 mt-2">Welcome back! Here's your job search overview.</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card className="rounded-2xl border-slate-200">
-          <CardContent className="pt-6">
-            <p className="text-sm text-slate-600">Saved jobs</p>
-            <p className="text-3xl font-bold mt-2">6</p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-2xl border-slate-200">
-          <CardContent className="pt-6">
-            <p className="text-sm text-slate-600">Applications</p>
-            <p className="text-3xl font-bold mt-2">2</p>
-          </CardContent>
-        </Card>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                U
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="mb-8">
+          <div className="flex space-x-1 bg-white rounded-2xl p-1 shadow-sm border border-gray-200 w-fit">
+            {[
+              { name: "Overview", href: "/dashboard", active: true },
+              { name: "Profile", href: "/dashboard/profile", active: false },
+              { name: "Saved Jobs", href: "/dashboard/saved", active: false },
+              { name: "Applied Jobs", href: "/dashboard/applied", active: false },
+              { name: "Job Alerts", href: "/dashboard/alerts", active: false }
+            ].map((tab) => (
+              <a
+                key={tab.name}
+                href={tab.href}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                  tab.active
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                }`}
+              >
+                {tab.name}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {stats.map((stat, index) => (
+            <Card key={index} className="rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                    <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
+                  </div>
+                  <div className={`p-3 rounded-xl ${stat.color} text-white`}>
+                    {stat.icon}
+                  </div>
+                </div>
+                {stat.progress && (
+                  <div className="mt-4">
+                    <div className="flex justify-between text-sm text-gray-600 mb-1">
+                      <span>Progress</span>
+                      <span>{stat.progress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full ${stat.color} transition-all duration-300`}
+                        style={{ width: `${stat.progress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {quickActions.map((action, index) => (
+              <a
+                key={index}
+                href={action.href}
+                className="block p-6 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all hover:scale-105 group"
+              >
+                <div className={`w-12 h-12 rounded-xl ${action.color} flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform`}>
+                  {action.icon}
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">{action.title}</h3>
+                <p className="text-sm text-gray-600">{action.description}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
+            <a href="/dashboard/applied" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+              View all
+            </a>
+          </div>
+          
+          <div className="space-y-4">
+            {[
+              {
+                type: "application",
+                title: "Senior Frontend Developer",
+                company: "TechCorp Inc.",
+                status: "Under Review",
+                time: "2 hours ago",
+                statusColor: "bg-yellow-100 text-yellow-800"
+              },
+              {
+                type: "saved",
+                title: "Product Manager",
+                company: "StartupXYZ",
+                status: "Saved",
+                time: "1 day ago",
+                statusColor: "bg-blue-100 text-blue-800"
+              },
+              {
+                type: "alert",
+                title: "New matching jobs",
+                company: "Job Alerts",
+                status: "5 new jobs",
+                time: "2 days ago",
+                statusColor: "bg-green-100 text-green-800"
+              }
+            ].map((activity, index) => (
+              <div key={index} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                <div className="flex items-center space-x-4">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    activity.type === 'application' ? 'bg-orange-100 text-orange-600' :
+                    activity.type === 'saved' ? 'bg-blue-100 text-blue-600' :
+                    'bg-green-100 text-green-600'
+                  }`}>
+                    {activity.type === 'application' ? '📨' : activity.type === 'saved' ? '💾' : '🔔'}
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">{activity.title}</h4>
+                    <p className="text-sm text-gray-600">{activity.company}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${activity.statusColor}`}>
+                    {activity.status}
+                  </span>
+                  <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
-
   );
 }

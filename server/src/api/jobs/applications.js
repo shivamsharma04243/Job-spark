@@ -1,11 +1,9 @@
-// routes/applications.js
-const express = require("express");
-const router = express.Router();
+// applications.js
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
-const pool = require("../../config/db"); // adjust path to your pool
-const { requireAuth } = require("../../../middlewares/auth"); // use requireAuth middleware
+const pool = require("../config/db");
+const { requireAuth } = require("../../middlewares/auth");
 
 // Ensure upload directory exists
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "resumes");
@@ -24,7 +22,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit (adjust if needed)
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = [".pdf", ".doc", ".docx"];
     const ext = path.extname(file.originalname).toLowerCase();
@@ -33,9 +31,8 @@ const upload = multer({
   },
 });
 
-// POST /applications
-// Body: multipart/form-data with fields: job_id, cover_letter (optional), resume (file optional)
-router.post("/", requireAuth, upload.single("resume"), async (req, res) => {
+// POST /applications function
+const postApplication = async (req, res) => {
   const conn = await pool.getConnection();
   try {
     const userId = req.user && req.user.id;
@@ -48,13 +45,13 @@ router.post("/", requireAuth, upload.single("resume"), async (req, res) => {
       return res.status(400).json({ ok: false, error: "job_id is required" });
     }
 
-    // Optional: check if job exists (safer)
+    // Check if job exists
     const [jobRows] = await conn.query("SELECT id FROM jobs WHERE id = ? LIMIT 1", [job_id]);
     if (jobRows.length === 0) {
       return res.status(404).json({ ok: false, error: "Job not found" });
     }
 
-    // Prevent duplicate application by same user for same job (optional)
+    // Prevent duplicate application
     const [existing] = await conn.query(
       "SELECT id FROM job_applications WHERE job_id = ? AND user_id = ? LIMIT 1",
       [job_id, userId]
@@ -104,5 +101,10 @@ router.post("/", requireAuth, upload.single("resume"), async (req, res) => {
   } finally {
     conn.release();
   }
-});
-module.exports = router;
+};
+
+// Export the upload middleware and postApplication function
+module.exports = {
+  upload,
+  postApplication
+};
