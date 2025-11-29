@@ -65,8 +65,15 @@ export default function SignIn() {
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     required
+                    onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                    e.preventDefault();
+                    document.getElementById("password-input").focus();
+                    }
+                    }}
                   />
                   <Input
+                    id="password-input"
                     className="rounded-xl border p-3 text-sm"
                     placeholder="Password"
                     type="password"
