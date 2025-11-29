@@ -7,9 +7,12 @@ const jobsRouter = require('../controllers/jobs/index'); // This should point to
 const profileRoutes = require("../controllers/profile/user/index");
 const authRoutes = require('../controllers/auth/users/index');
 const recruiter_profiles = require("../controllers/profile/recruiter/index");
+const  requireAdminAuth  = require('../controllers/auth/admire/index');
 
 // Auth routes
 router.use('/auth', authRoutes);
+// Admin Auth routes
+router.use('/admin/auth', requireAdminAuth);
 
 // Recruiter jobs
 router.use('/recruiter/jobs', recruiterJobRoutes);

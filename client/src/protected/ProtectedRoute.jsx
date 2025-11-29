@@ -34,6 +34,10 @@ export default function ProtectedRoute({ children, roles }) {
 
   // If user is not logged in, redirect to login
   if (!user) {
+    // For admin routes, redirect to admin signin
+    if (location.pathname.startsWith('/admin')) {
+      return <Navigate to="/admin/signin" replace state={{ from: location }} />;
+    }
     return <Navigate to="/sign-in" replace state={{ from: location }} />;
   }
 
@@ -42,7 +46,9 @@ export default function ProtectedRoute({ children, roles }) {
   // Check if user has required role
   if (roles && roles.length > 0 && !roles.includes(role)) {
     // If user tries to access wrong role's pages, redirect them to appropriate page
-    if (role === "recruiter") {
+    if (role === "admin") {
+      return <Navigate to="/admin-dashboard" replace />;
+    } else if (role === "recruiter") {
       return <Navigate to="/recruiter-dashboard" replace />;
     } else {
       return <Navigate to="/home" replace />;
