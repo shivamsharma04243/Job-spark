@@ -19,7 +19,7 @@ const getAdminUsers = async (req, res) => {
       LEFT JOIN users u ON up.user_id = u.id
       ORDER BY up.created_at DESC
     `);
-
+// Send response
     res.json({
       success: true,
       users: users || []

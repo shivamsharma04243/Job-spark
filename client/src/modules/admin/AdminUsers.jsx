@@ -12,7 +12,7 @@ export default function AdminUsers() {
   useEffect(() => {
     fetchUsers();
   }, []);
-
+// Fetch users from API
   const fetchUsers = async () => {
     try {
       const response = await api.get("/admin/auth/users");
@@ -28,7 +28,7 @@ export default function AdminUsers() {
     setSelectedUser(user);
     setShowModal(true);
   };
-
+// Navigate back to dashboard
   const handleBack = () => {
     navigate("/admin-dashboard");
   };
@@ -40,7 +40,7 @@ export default function AdminUsers() {
       </div>
     );
   }
-
+// Main render
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">

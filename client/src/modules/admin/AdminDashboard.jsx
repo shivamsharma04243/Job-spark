@@ -34,7 +34,7 @@ export default function AdminDashboard() {
       const users = usersRes.data.users || [];
       const recruiters = recruitersRes.data.recruiters || [];
       const jobs = jobsRes.data.jobs || [];
-
+// Update stats and recent data
       setStats({
         totalUsers: users.length,
         totalRecruiters: recruiters.length,
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
-
+// Logout handler
   const handleLogout = async () => {
     try {
       await api.post("/admin/auth/logout");
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
       console.error("Logout error:", error);
     }
   };
-
+// Navigation handler for viewing all items
   const handleViewAll = (type) => {
     navigate(`/admin/${type}`);
   };
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
       </div>
     );
   }
-
+// Main dashboard layout
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}

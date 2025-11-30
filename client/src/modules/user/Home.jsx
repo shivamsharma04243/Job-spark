@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-
+// Home Page Component for JobSpark
 const fallbackJobs = [
   {
     id: "s1",
@@ -23,7 +23,7 @@ const fallbackJobs = [
     experiance: "Student",
   },
 ];
-
+// Utility function to convert ISO date to "time ago" format
 function timeAgo(iso) {
   if (!iso) return "";
   const created = new Date(iso);
@@ -42,7 +42,7 @@ function timeAgo(iso) {
   const years = Math.floor(months / 12);
   return `${years}y ago`;
 }
-
+// Hero Section Component
 function Hero() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ function Hero() {
       navigate(`/jobs?search=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
-
+// Main Hero Section JSX
   return (
     <section className="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-2 gap-8 items-center mb-6">
       <div>
@@ -98,7 +98,7 @@ function Hero() {
     </section>
   );
 }
-
+// Section explaining why HireSpark is different
 function WhyHireSpark() {
   return (
     <section className="max-w-6xl mx-auto px-4 py-12">
@@ -171,7 +171,7 @@ function WhyHireSpark() {
     </section>
   );
 }
-
+// Table row component for job listings
 function JobsTableRow({ job }) {
   return (
     <tr className="border-b">
@@ -219,7 +219,7 @@ function JobsTableRow({ job }) {
     </tr>
   );
 }
-
+// Jobs Listing Component
 function JobsListing() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -264,7 +264,7 @@ function JobsListing() {
       mounted = false;
     };
   }, []);
-
+// Jobs Listing JSX
   return (
     <main className="max-w-7xl mx-auto px-10 py-12">
       <div className="flex items-center justify-between mb-8">

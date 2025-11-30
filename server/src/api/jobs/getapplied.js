@@ -1,7 +1,7 @@
 const pool = require("../../api/config/db");
 const { requireAuth } = require("../../middlewares/auth");
 
-// GET /applied-jobs - Get all applied jobs for current user
+// GET /applied-jobs - Get all applied jobs for current login  user
 const getAppliedJobs = async (req, res) => {
   const connection = await pool.getConnection();
   

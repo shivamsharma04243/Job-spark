@@ -13,7 +13,7 @@ export default function AdminJobs() {
   useEffect(() => {
     fetchJobs();
   }, []);
-
+// Fetch jobs from API
   const fetchJobs = async () => {
     try {
       const response = await api.get("/admin/auth/jobs");
@@ -29,7 +29,7 @@ export default function AdminJobs() {
     setSelectedJob(job);
     setShowModal(true);
   };
-
+// Navigate back to dashboard
   const handleBack = () => {
     navigate("/admin-dashboard");
   };
@@ -38,14 +38,14 @@ export default function AdminJobs() {
     if (!salary) return "Not specified";
     return salary;
   };
-
+// Format experience range
   const formatExperience = (min, max) => {
     if (min == null && max == null) return "Fresher";
     if (min != null && max == null) return `${min}+ yrs`;
     if (min == null && max != null) return `Up to ${max} yrs`;
     return `${min}-${max} yrs`;
   };
-
+// Filter jobs based on selected filter
   const filteredJobs = jobs.filter(job => {
     if (filter === "all") return true;
     if (filter === "full-time") return job.job_type?.toLowerCase().includes("full");
@@ -61,7 +61,7 @@ export default function AdminJobs() {
       </div>
     );
   }
-
+// Main render
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">

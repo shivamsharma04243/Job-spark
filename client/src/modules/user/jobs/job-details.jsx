@@ -1,4 +1,4 @@
-import { Building2, MapPin, Clock, Briefcase, GraduationCap } from "lucide-react";
+import { Building2, MapPin, Clock, Briefcase, GraduationCap, Bookmark, BookmarkCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
@@ -13,6 +13,7 @@ export default function JobDetail() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSaved, setIsSaved] = useState(false); // Track if job is saved
 
   // Application form state
   const [applicantName, setApplicantName] = useState("");
@@ -35,6 +36,9 @@ export default function JobDetail() {
         if (!alive) return;
         if (data.ok && data.job) {
           setJob(data.job);
+          
+          // Check if job is saved
+          await checkSavedStatus(id);
         } else {
           setError(data.message || "Job not found");
         }
@@ -47,6 +51,34 @@ export default function JobDetail() {
     })();
     return () => { alive = false; };
   }, [id]);
+
+  // Check if job is saved
+  const checkSavedStatus = async (jobId) => {
+    try {
+      const response = await api.get(`/jobs/save/${jobId}`);
+      setIsSaved(response.data.isSaved);
+    } catch (error) {
+      console.error('Error checking saved status:', error);
+      setIsSaved(false);
+    }
+  };
+
+  const toggleSave = async () => {
+    try {
+      if (isSaved) {
+        // Unsave the job
+        await api.delete(`/jobs/save/${id}`);
+        setIsSaved(false);
+      } else {
+        // Save the job
+        await api.post(`/jobs/save/${id}`);
+        setIsSaved(true);
+      }
+    } catch (error) {
+      console.error('Error toggling save:', error);
+      alert('Error: ' + (error.response?.data?.message || error.message));
+    }
+  };
 
   const skills = job?.tags || [];
   const responsibilities = job?.responsibilities || [];
@@ -125,7 +157,7 @@ export default function JobDetail() {
       setApplying(false);
     }
   };
-
+// Render
   if (loading) return <div className="p-6">Loading job...</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
   if (!job) return <div className="p-6">Job not found</div>;
@@ -170,7 +202,29 @@ export default function JobDetail() {
 
       <aside>
         <Card className="sticky top-24 rounded-2xl">
-          <CardHeader><CardTitle>Apply to this job</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="flex justify-between items-center">
+              Apply to this job
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={toggleSave}
+                className="flex items-center gap-1"
+              >
+                {isSaved ? (
+                  <>
+                    <BookmarkCheck size={16} className="text-blue-500" />
+                    Saved
+                  </>
+                ) : (
+                  <>
+                    <Bookmark size={16} />
+                    Save
+                  </>
+                )}
+              </Button>
+            </CardTitle>
+          </CardHeader>
           <CardContent>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between"><span>Compensation</span><span className="font-semibold">{job.salary || 'NA'}</span></div>
@@ -207,13 +261,6 @@ export default function JobDetail() {
               <div className="flex gap-2">
                 <Button className="w-full" onClick={submitApplication} disabled={applying || applied}>
                   {applied ? "Applied" : applying ? "Applying..." : "Quick Apply"}
-                </Button>
-                <Button variant="secondary" className="w-full" onClick={() => {
-                  // Optional: implement save/bookmark behavior
-                  // Here we just navigate to jobs list as fallback
-                  navigate('/jobs');
-                }}>
-                  Save
                 </Button>
               </div>
             </div>

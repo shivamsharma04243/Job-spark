@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import api from "../../../components/apiconfig/apiconfig";
-
+// Component for creating a new job posting
 export default function AdminPostJob() {
   const [form, setForm] = useState({
     title: "",
@@ -26,12 +26,12 @@ export default function AdminPostJob() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(null);
-
+// Update form field
   function updateField(name, value) {
     setForm((s) => ({ ...s, [name]: value }));
     setErrors((e) => ({ ...e, [name]: "" }));
   }
-
+// Handle logo file change
   function handleLogoChange(e) {
     const file = e.target.files?.[0] ?? null;
     updateField("logoFile", file);

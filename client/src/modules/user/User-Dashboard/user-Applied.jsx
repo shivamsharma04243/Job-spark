@@ -1,7 +1,7 @@
 import { Card, CardContent } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
 import { useEffect, useState } from "react";
-
+// User Applied Jobs Dashboard Component
 const statusColors = {
   applied: "bg-blue-100 text-blue-800",
   reviewed: "bg-purple-100 text-purple-800",
@@ -9,7 +9,7 @@ const statusColors = {
   rejected: "bg-red-100 text-red-800",
   hired: "bg-emerald-100 text-emerald-800"
 };
-
+// Mapping of status codes to human-readable labels
 const statusLabels = {
   applied: "Applied",
   reviewed: "Under Review", 
@@ -17,7 +17,7 @@ const statusLabels = {
   rejected: "Rejected",
   hired: "Hired"
 };
-
+// Main Applied Jobs Component
 export default function Applied() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +59,7 @@ export default function Applied() {
   useEffect(() => {
     fetchAppliedJobs();
   }, []);
-
+// Format date to a readable string
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',

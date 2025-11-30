@@ -1,4 +1,4 @@
-// routes/profile.js
+
 const pool = require('../../config/db');
 /**
  * Handler: Create or update user profile.

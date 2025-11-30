@@ -29,14 +29,14 @@ import Applied from "../modules/user/User-Dashboard/user-Applied.jsx";
 import AlertsManage from "../modules/user/User-Dashboard/user-Alerts.jsx";
 
 // Import Admin Components (you'll need to create these)
+import AdminLayout from "../modules/admin/AdminLayout.jsx";
 import AdminSignIn from "../modules/admin/SignIn.jsx";
 import AdminSignUp from "../modules/admin/SignUp.jsx";
 import AdminDashboard from "../modules/admin/AdminDashboard.jsx";
 import AdminUsers from "../modules/admin/AdminUsers.jsx";
 import AdminRecruiters from "../modules/admin/AdminRecruiters.jsx";
 import AdminJobs from "../modules/admin/AdminJobs.jsx";
- 
-
+// Define application routes
 const router = createBrowserRouter([
   {
     path: "/",
@@ -63,41 +63,6 @@ const router = createBrowserRouter([
 
       // Profile - Public
       { path: "profile", element: <Profile /> },
-
-      // ================= ADMIN ONLY ROUTES =================
-      {
-        path: "admin-dashboard",
-        element: (
-          <ProtectedRoute roles={["admin"]}>
-            <AdminDashboard />
-          </ProtectedRoute>
-        ),
-      },
-      // In your router configuration
-{
-  path: "admin/users",
-  element: (
-    <ProtectedRoute roles={["admin"]}>
-      <AdminUsers />
-    </ProtectedRoute>
-  ),
-},
-{
-  path: "admin/recruiters",
-  element: (
-    <ProtectedRoute roles={["admin"]}>
-      <AdminRecruiters />
-    </ProtectedRoute>
-  ),
-},
-{
-  path: "admin/jobs", 
-  element: (
-    <ProtectedRoute roles={["admin"]}>
-      <AdminJobs />
-    </ProtectedRoute>
-  ),
-},
 
       // ================= RECRUITER ONLY ROUTES =================
       {
@@ -151,7 +116,7 @@ const router = createBrowserRouter([
       {
         path: "recruiter/jobs/:jobId/applicants",
         element: (
-          <ProtectedRoute roles={["recruiter"]}>  
+          <ProtectedRoute roles={["recruiter"]}>
             <JobApplicants />
           </ProtectedRoute>
         ),
@@ -200,6 +165,22 @@ const router = createBrowserRouter([
       },
 
       { path: "*", element: <Navigate to="/home" replace /> },
+    ],
+  },
+
+  // ================= ADMIN ROUTES WITH SIDEBAR (SEPARATE FROM MAIN LAYOUT) =================
+  {
+    path: "admin",
+    element: (
+      <ProtectedRoute roles={["admin"]}>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <AdminDashboard /> },
+      { path: "users", element: <AdminUsers /> },
+      { path: "recruiters", element: <AdminRecruiters /> },
+      { path: "jobs", element: <AdminJobs /> },
     ],
   },
 ]);

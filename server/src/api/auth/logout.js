@@ -1,4 +1,3 @@
-// src/api/auth/logout.js
 async function  logout(req, res) {
   try {
     const isProd = process.env.NODE_ENV === 'production';

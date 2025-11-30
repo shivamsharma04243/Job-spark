@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 
-
+// User Alerts Management Component
 export default function AlertsManage() {
   const alerts = [
     { id: 1, q: "React intern", loc: "Remote", exp: "Student", freq: "Weekly", active: true },

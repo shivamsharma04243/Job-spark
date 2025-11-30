@@ -3,7 +3,7 @@ import { Button } from "../../../components/ui/button";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../../components/apiconfig/apiconfig";
-
+// Component to display applicants for a specific job
 export default function JobApplicants() {
   const { jobId } = useParams();
   const [applicants, setApplicants] = useState([]);
@@ -39,7 +39,7 @@ export default function JobApplicants() {
       setLoading(false);
     }
   };
-
+// Format date utility
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -72,7 +72,7 @@ export default function JobApplicants() {
       document.body.removeChild(link);
     }
   };
-
+// Loading state
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-10">

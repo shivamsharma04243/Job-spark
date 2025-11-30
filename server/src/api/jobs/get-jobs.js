@@ -1,6 +1,5 @@
-// api/jobs/list-jobs.js
 const express = require('express');
-const pool = require('../config/db'); // path relative to this file
+const pool = require('../config/db'); 
 const router = express.Router();
 
 function parseSkills(skills) {

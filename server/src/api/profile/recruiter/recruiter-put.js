@@ -1,4 +1,3 @@
-// routes/recruiterProfile.js
 const pool = require('../../config/db');
 const ALLOWED_COMPANY_TYPES = ['company', 'consultancy', 'startup'];
 

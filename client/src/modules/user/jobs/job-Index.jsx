@@ -5,6 +5,8 @@ import {
   MapPin,
   Briefcase,
   GraduationCap,
+  Bookmark,
+  BookmarkCheck,
 } from "lucide-react";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
@@ -20,6 +22,7 @@ export default function Jobs() {
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [savedStatus, setSavedStatus] = useState({}); // Track saved status for each job
   
   // Get search query from URL parameters
   const locationHook = useLocation();
@@ -60,6 +63,9 @@ export default function Jobs() {
           setJobList(mapped);
           setFiltered(mapped);
           console.log("Jobs loaded:", mapped); // Debug log
+
+          // Check saved status for all jobs
+          await checkSavedStatusForJobs(mapped);
         }
       } catch (err) {
         console.error("Error loading jobs:", err);
@@ -73,6 +79,38 @@ export default function Jobs() {
       alive = false;
     };
   }, []);
+
+  // Check saved status for all jobs
+  const checkSavedStatusForJobs = async (jobs) => {
+    const status = {};
+    for (const job of jobs) {
+      try {
+        const response = await api.get(`/jobs/save/${job.id}`);
+        status[job.id] = response.data.isSaved;
+      } catch (error) {
+        console.error(`Error checking saved status for job ${job.id}:`, error);
+        status[job.id] = false;
+      }
+    }
+    setSavedStatus(status);
+  };
+
+  const toggleSaveJob = async (jobId, isCurrentlySaved) => {
+    try {
+      if (isCurrentlySaved) {
+        // Unsave the job
+        await api.delete(`/jobs/save/${jobId}`);
+        setSavedStatus(prev => ({ ...prev, [jobId]: false }));
+      } else {
+        // Save the job
+        await api.post(`/jobs/save/${jobId}`);
+        setSavedStatus(prev => ({ ...prev, [jobId]: true }));
+      }
+    } catch (error) {
+      console.error('Error toggling save:', error);
+      alert('Error saving job: ' + (error.response?.data?.message || error.message));
+    }
+  };
 
   const handleSearch = () => {
     if (jobList.length === 0) return;
@@ -328,6 +366,18 @@ export default function Jobs() {
                         </Button>
                       </a>
                       <Button className="flex-1 text-xs">Apply</Button>
+                      <Button 
+                        variant="outline" 
+                        className="text-xs p-2"
+                        onClick={() => toggleSaveJob(r.id, savedStatus[r.id])}
+                        title={savedStatus[r.id] ? "Unsave job" : "Save job"}
+                      >
+                        {savedStatus[r.id] ? (
+                          <BookmarkCheck size={14} className="text-blue-500" />
+                        ) : (
+                          <Bookmark size={14} />
+                        )}
+                      </Button>
                     </div>
                   </td>
                 </tr>

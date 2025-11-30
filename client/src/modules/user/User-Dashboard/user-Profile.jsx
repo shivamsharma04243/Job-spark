@@ -23,7 +23,7 @@ export default function ProfilePage() {
     linkedin_url: "",
     portfolio_url: "",
   });
-
+// Selected resume file state
   const [selectedResumeFile, setSelectedResumeFile] = useState(null);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function ProfilePage() {
       setLoading(false);
     }
   }
-
+// Map user data to form structure
   function mapUserToForm(u) {
     return {
       user_id: u.user_id || u.id || "",

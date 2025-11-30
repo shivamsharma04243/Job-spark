@@ -10,7 +10,7 @@ export default function RecruiterDashboard() {
     recentActivity: []
   });
   const [loading, setLoading] = useState(true);
-
+// Fetch dashboard stats on component mount
   useEffect(() => {
     fetchDashboardStats();
   }, []);
@@ -27,7 +27,7 @@ export default function RecruiterDashboard() {
       setLoading(false);
     }
   };
-
+// Format time ago utility
   const formatTimeAgo = (timestamp) => {
     const now = new Date();
     const time = new Date(timestamp);

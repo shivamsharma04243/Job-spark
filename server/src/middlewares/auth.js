@@ -1,4 +1,4 @@
-// GET /api/auth/me - Validate cookie and return user info from JWT
+
 const jwt = require('jsonwebtoken');
 
 

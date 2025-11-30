@@ -8,7 +8,7 @@ export default function JobPosted() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+// Fetch posted jobs on component mount
   useEffect(() => {
     fetchPostedJobs();
   }, []);
@@ -30,7 +30,7 @@ export default function JobPosted() {
       setLoading(false);
     }
   };
-
+// Format date utility
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -56,7 +56,7 @@ export default function JobPosted() {
       </div>
     );
   }
-
+// Main render
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="flex justify-between items-center mb-6">

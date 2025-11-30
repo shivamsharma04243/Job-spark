@@ -19,7 +19,7 @@ export default function RecruiterProfileView() {
     country: "",
     pincode: ""
   });
-
+// Load recruiter profile on mount
   useEffect(() => {
     let mounted = true;
 
@@ -64,12 +64,12 @@ export default function RecruiterProfileView() {
     loadProfile();
     return () => { mounted = false; };
   }, []);
-
+// Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
-
+// Save profile changes
   const handleSave = async (e) => {
     e.preventDefault();
     try {
@@ -81,7 +81,7 @@ export default function RecruiterProfileView() {
       setError("Failed to save profile. Please try again.");
     }
   };
-
+// Cancel editing
   const handleCancel = () => {
     if (profile) {
       setForm({

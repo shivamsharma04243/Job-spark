@@ -23,7 +23,7 @@ export default function AdminRecruiters() {
       setLoading(false);
     }
   };
-
+// View recruiter details
   const handleViewDetails = (recruiter) => {
     setSelectedRecruiter(recruiter);
     setShowModal(true);
@@ -32,7 +32,7 @@ export default function AdminRecruiters() {
   const handleBack = () => {
     navigate("/admin-dashboard");
   };
-
+// Toggle recruiter verification status
   const toggleVerification = async (recruiterId, currentStatus) => {
     try {
       // You'll need to create this API endpoint
@@ -44,7 +44,7 @@ export default function AdminRecruiters() {
       console.error("Error updating verification:", error);
     }
   };
-
+// Loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
