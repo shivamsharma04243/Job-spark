@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../components/apiconfig/apiconfig";
-import { Input } from "../../../components/ui/input"; // Import your custom Input component
+import { Input } from "../../../components/ui/input";
+import { Button } from "../../../components/ui/button";
+import { Card, CardContent } from "../../../components/ui/card";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -23,7 +25,7 @@ export default function ProfilePage() {
     linkedin_url: "",
     portfolio_url: "",
   });
-// Selected resume file state
+
   const [selectedResumeFile, setSelectedResumeFile] = useState(null);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export default function ProfilePage() {
       setLoading(false);
     }
   }
-// Map user data to form structure
+
   function mapUserToForm(u) {
     return {
       user_id: u.user_id || u.id || "",
@@ -158,87 +160,89 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
+      <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-          <p className="text-gray-600 mt-2">Manage your professional profile and information</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Professional Profile</h1>
+          <p className="text-gray-600 text-lg">Manage your professional information and career details</p>
         </div>
 
         {loading ? (
-          <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+          <Card className="rounded-2xl border border-blue-200 shadow-lg p-8 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 mt-4">Loading your profile...</p>
-          </div>
+            <p className="text-gray-600 mt-4 text-lg">Loading your profile...</p>
+          </Card>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sidebar */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-sm p-6 sticky top-8">
-                <div className="text-center mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-3">
-                    {user?.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
-                  </div>
-                  <h2 className="font-semibold text-lg text-gray-900">{user?.full_name || "New User"}</h2>
-                  <p className="text-sm text-gray-600 mt-1">{user?.highest_education || "Add your education"}</p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    {user?.experience_years ?? 0} years experience
-                  </div>
-                  
-                  <div className="flex items-center text-sm text-gray-600">
-                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    {user?.phone || "No phone"}
-                  </div>
-
-                  {user?.resume_path && (
-                    <div className="pt-4 border-t">
-                      <a href={user.resume_path} target="_blank" rel="noreferrer" className="flex items-center text-sm text-blue-600 hover:text-blue-700">
-                        <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        View Resume
-                      </a>
+              <Card className="rounded-2xl border border-blue-200 shadow-lg sticky top-8">
+                <CardContent className="p-6">
+                  <div className="text-center mb-6">
+                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4 shadow-lg">
+                      {user?.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
                     </div>
-                  )}
-                </div>
-              </div>
+                    <h2 className="font-bold text-xl text-gray-900">{user?.full_name || "New User"}</h2>
+                    <p className="text-gray-600 mt-2">{user?.highest_education || "Add your education"}</p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center text-gray-700">
+                      <svg className="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {user?.experience_years ?? 0} years experience
+                    </div>
+                    
+                    <div className="flex items-center text-gray-700">
+                      <svg className="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      {user?.phone || "No phone"}
+                    </div>
+
+                    {user?.resume_path && (
+                      <div className="pt-4 border-t border-blue-200">
+                        <a href={user.resume_path} target="_blank" rel="noreferrer" className="flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                          <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          View Resume
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Main Content */}
             <div className="lg:col-span-3">
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <Card className="rounded-2xl border border-blue-200 shadow-lg overflow-hidden">
                 {/* Card Header */}
-                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div className="px-8 py-6 border-b border-blue-200 bg-blue-50">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Profile Information</h3>
-                      <p className="text-sm text-gray-600">Update your professional details and contact information</p>
+                      <h3 className="text-xl font-bold text-gray-900">Profile Information</h3>
+                      <p className="text-gray-600 mt-1">Update your professional details and contact information</p>
                     </div>
                     {!isEditing && (
-                      <button
+                      <Button
                         onClick={handleEditClick}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center text-sm font-medium"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center"
                       >
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                         Edit Profile
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>
 
                 {/* Card Body */}
-                <div className="p-6">
+                <CardContent className="p-8">
                   {!isEditing ? (
                     <ProfileView user={user} onEdit={handleEditClick} />
                   ) : (
@@ -253,36 +257,39 @@ export default function ProfilePage() {
                       <Section title="Personal Information">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">Full Name *</label>
                             <Input 
                               name="full_name" 
                               value={form.full_name} 
                               onChange={handleChange} 
                               required
                               placeholder="Enter your full name"
+                              className="border-blue-300 focus:border-blue-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Phone *</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">Phone *</label>
                             <Input 
                               name="phone" 
                               value={form.phone} 
                               onChange={handleChange} 
                               required
                               placeholder="Enter your phone number"
+                              className="border-blue-300 focus:border-blue-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Highest Education</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">Highest Education</label>
                             <Input 
                               name="highest_education" 
                               value={form.highest_education} 
                               onChange={handleChange}
                               placeholder="e.g., Bachelor's Degree"
+                              className="border-blue-300 focus:border-blue-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Experience (years)</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">Experience (years)</label>
                             <Input 
                               name="experience_years" 
                               value={form.experience_years} 
@@ -290,39 +297,43 @@ export default function ProfilePage() {
                               type="number" 
                               min="0"
                               placeholder="Years of experience"
+                              className="border-blue-300 focus:border-blue-500"
                             />
                           </div>
                         </div>
                       </Section>
 
                       {/* Location Information Section */}
-                      <Section title="Location">
+                      <Section title="Location Information">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">City</label>
                             <Input 
                               name="city" 
                               value={form.city} 
                               onChange={handleChange}
                               placeholder="Enter your city"
+                              className="border-blue-300 focus:border-blue-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">State</label>
                             <Input 
                               name="state" 
                               value={form.state} 
                               onChange={handleChange}
                               placeholder="Enter your state"
+                              className="border-blue-300 focus:border-blue-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">Country</label>
                             <Input 
                               name="country" 
                               value={form.country} 
                               onChange={handleChange}
                               placeholder="Enter your country"
+                              className="border-blue-300 focus:border-blue-500"
                             />
                           </div>
                         </div>
@@ -332,45 +343,47 @@ export default function ProfilePage() {
                       <Section title="Professional Links">
                         <div className="space-y-6">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn URL</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">LinkedIn URL</label>
                             <Input 
                               name="linkedin_url" 
                               value={form.linkedin_url} 
                               onChange={handleChange} 
                               placeholder="https://linkedin.com/in/yourprofile"
                               type="url"
+                              className="border-blue-300 focus:border-blue-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Portfolio URL</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">Portfolio URL</label>
                             <Input 
                               name="portfolio_url" 
                               value={form.portfolio_url} 
                               onChange={handleChange} 
                               placeholder="https://yourportfolio.com"
                               type="url"
+                              className="border-blue-300 focus:border-blue-500"
                             />
                           </div>
                         </div>
                       </Section>
 
                       {/* Resume Section */}
-                      <Section title="Resume">
+                      <Section title="Resume Upload">
                         <div className="space-y-4">
-                          <div className="flex items-center justify-between p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
+                          <div className="flex items-center justify-between p-6 border-2 border-dashed border-blue-300 rounded-xl hover:border-blue-400 transition-colors bg-blue-50">
                             <div className="flex items-center">
-                              <svg className="w-8 h-8 text-gray-400 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-10 h-10 text-blue-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                               </svg>
                               <div>
-                                <p className="text-sm font-medium text-gray-900">
+                                <p className="text-lg font-semibold text-gray-900">
                                   {selectedResumeFile ? selectedResumeFile.name : (form.resume_path || 'No resume uploaded')}
                                 </p>
-                                <p className="text-xs text-gray-500">PDF, DOC, DOCX up to 10MB</p>
+                                <p className="text-sm text-gray-500">PDF, DOC, DOCX up to 10MB</p>
                               </div>
                             </div>
                             <label className="cursor-pointer">
-                              <span className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                              <span className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold">
                                 Choose File
                               </span>
                               <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileSelect} className="hidden" />
@@ -380,22 +393,23 @@ export default function ProfilePage() {
                       </Section>
 
                       {/* Action Buttons */}
-                      <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
-                        <button
+                      <div className="flex items-center justify-end gap-4 pt-8 border-t border-blue-200">
+                        <Button
                           type="button"
                           onClick={handleCancel}
-                          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                          variant="outline"
+                          className="border-blue-300 text-blue-700 hover:bg-blue-50 px-8 py-3 font-semibold"
                         >
                           Cancel
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           type="submit"
                           disabled={saving}
-                          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors font-medium flex items-center"
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 font-semibold flex items-center"
                         >
                           {saving ? (
                             <>
-                              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                              <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                               </svg>
@@ -404,12 +418,12 @@ export default function ProfilePage() {
                           ) : (
                             'Save Changes'
                           )}
-                        </button>
+                        </Button>
                       </div>
                     </form>
                   )}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         )}
@@ -422,17 +436,17 @@ function ProfileView({ user, onEdit }) {
   if (!user) {
     return (
       <div className="text-center py-12">
-        <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-20 h-20 text-blue-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No Profile Found</h3>
-        <p className="text-gray-600 mb-6">Create your professional profile to get started</p>
-        <button 
+        <h3 className="text-2xl font-bold text-gray-900 mb-3">No Profile Found</h3>
+        <p className="text-gray-600 text-lg mb-8">Create your professional profile to get started with your job search</p>
+        <Button 
           onClick={onEdit} 
-          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold"
         >
           Create Profile
-        </button>
+        </Button>
       </div>
     );
   }
@@ -450,7 +464,7 @@ function ProfileView({ user, onEdit }) {
       </InfoSection>
 
       {/* Location */}
-      <InfoSection title="Location" icon="location">
+      <InfoSection title="Location Information" icon="location">
         <InfoGrid>
           <InfoItem label="City" value={user.city} />
           <InfoItem label="State" value={user.state} />
@@ -460,7 +474,7 @@ function ProfileView({ user, onEdit }) {
 
       {/* Professional Links */}
       <InfoSection title="Professional Links" icon="link">
-        <div className="space-y-3">
+        <div className="space-y-4">
           <LinkItem 
             label="LinkedIn" 
             url={user.linkedin_url} 
@@ -481,7 +495,7 @@ function ProfileView({ user, onEdit }) {
 function Section({ title, children }) {
   return (
     <div>
-      <h4 className="text-lg font-medium text-gray-900 mb-4">{title}</h4>
+      <h4 className="text-xl font-bold text-gray-900 mb-6">{title}</h4>
       {children}
     </div>
   );
@@ -499,12 +513,12 @@ function InfoSection({ title, icon, children }) {
   };
 
   return (
-    <div className="bg-gray-50 rounded-lg p-6">
-      <div className="flex items-center mb-4">
-        <svg className="w-5 h-5 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+      <div className="flex items-center mb-6">
+        <svg className="w-6 h-6 text-blue-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={getIcon(icon)} />
         </svg>
-        <h4 className="text-lg font-semibold text-gray-900">{title}</h4>
+        <h4 className="text-xl font-bold text-gray-900">{title}</h4>
       </div>
       {children}
     </div>
@@ -514,7 +528,7 @@ function InfoSection({ title, icon, children }) {
 // Info Grid Component
 function InfoGrid({ children }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {children}
     </div>
   );
@@ -524,8 +538,8 @@ function InfoGrid({ children }) {
 function InfoItem({ label, value }) {
   return (
     <div>
-      <dt className="text-sm font-medium text-gray-600">{label}</dt>
-      <dd className="mt-1 text-sm text-gray-900">{value || "—"}</dd>
+      <dt className="text-sm font-semibold text-gray-700 mb-2">{label}</dt>
+      <dd className="text-lg text-gray-900 font-medium">{value || "—"}</dd>
     </div>
   );
 }
@@ -543,22 +557,22 @@ function LinkItem({ label, url, icon }) {
   if (!url) {
     return (
       <div className="flex items-center text-gray-500">
-        <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={getIcon(icon)} />
         </svg>
-        <span className="text-sm">{label}:</span>
-        <span className="ml-2 text-sm text-gray-400">Not provided</span>
+        <span className="font-medium">{label}:</span>
+        <span className="ml-3 text-gray-400">Not provided</span>
       </div>
     );
   }
 
   return (
     <div className="flex items-center">
-      <svg className="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={getIcon(icon)} />
       </svg>
-      <span className="text-sm text-gray-600 mr-2">{label}:</span>
-      <a href={url} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:text-blue-700 truncate">
+      <span className="font-medium text-gray-700 mr-3">{label}:</span>
+      <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-700 font-medium truncate">
         {url}
       </a>
     </div>

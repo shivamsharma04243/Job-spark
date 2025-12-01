@@ -22,13 +22,11 @@ export default function Jobs() {
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [savedStatus, setSavedStatus] = useState({}); // Track saved status for each job
+  const [savedStatus, setSavedStatus] = useState({});
   
-  // Get search query from URL parameters
   const locationHook = useLocation();
 
   useEffect(() => {
-    // Read search parameter from URL when component loads
     const searchParams = new URLSearchParams(locationHook.search);
     const searchQuery = searchParams.get('search') || '';
     if (searchQuery) {
@@ -47,7 +45,6 @@ export default function Jobs() {
         if (!alive) return;
 
         if (data.ok && Array.isArray(data.jobs)) {
-          // Use the exact field names from your database response
           const mapped = data.jobs.map((j) => ({
             id: j._id || j.id,
             title: j.title || j.jobTitle || "",
@@ -62,9 +59,7 @@ export default function Jobs() {
           }));
           setJobList(mapped);
           setFiltered(mapped);
-          console.log("Jobs loaded:", mapped); // Debug log
 
-          // Check saved status for all jobs
           await checkSavedStatusForJobs(mapped);
         }
       } catch (err) {
@@ -80,7 +75,6 @@ export default function Jobs() {
     };
   }, []);
 
-  // Check saved status for all jobs
   const checkSavedStatusForJobs = async (jobs) => {
     const status = {};
     for (const job of jobs) {
@@ -98,11 +92,9 @@ export default function Jobs() {
   const toggleSaveJob = async (jobId, isCurrentlySaved) => {
     try {
       if (isCurrentlySaved) {
-        // Unsave the job
         await api.delete(`/jobs/save/${jobId}`);
         setSavedStatus(prev => ({ ...prev, [jobId]: false }));
       } else {
-        // Save the job
         await api.post(`/jobs/save/${jobId}`);
         setSavedStatus(prev => ({ ...prev, [jobId]: true }));
       }
@@ -120,9 +112,6 @@ export default function Jobs() {
     const roleTrim = role.trim().toLowerCase();
     const locationTrim = location.trim().toLowerCase();
 
-    console.log("Filtering with:", { roleTrim, locationTrim, exp, type }); // Debug log
-
-    // Role filter - search in title, company, and tags
     if (roleTrim !== "") {
       data = data.filter((job) => {
         const titleMatch = job.title?.toLowerCase().includes(roleTrim) || false;
@@ -136,20 +125,17 @@ export default function Jobs() {
       });
     }
 
-    // Location filter
     if (locationTrim !== "") {
       data = data.filter((job) =>
         job.location?.toLowerCase().includes(locationTrim)
       );
     }
 
-    // Experience filter
     if (exp && exp !== "Experience") {
       data = data.filter((job) => {
         const jobExp = job.experience?.toLowerCase() || "";
         const filterExp = exp.toLowerCase();
         
-        // Flexible matching for experience
         if (filterExp === "student") {
           return jobExp.includes("student") || jobExp.includes("fresher") || jobExp.includes("intern") || jobExp.includes("0");
         } else if (filterExp === "fresher (0 yrs)") {
@@ -161,7 +147,6 @@ export default function Jobs() {
       });
     }
 
-    // Type filter
     if (type && type !== "Type") {
       data = data.filter((job) => {
         const jobType = job.type?.toLowerCase() || "";
@@ -170,11 +155,9 @@ export default function Jobs() {
       });
     }
 
-    console.log("Filtered results:", data.length); // Debug log
     setFiltered(data);
     setPage(1);
     
-    // Update URL with current search parameters
     const params = new URLSearchParams();
     if (roleTrim) params.set('search', roleTrim);
     if (locationTrim) params.set('location', locationTrim);
@@ -185,7 +168,6 @@ export default function Jobs() {
     window.history.replaceState({}, '', newUrl);
   };
 
-  // Call handleSearch whenever any filter changes
   useEffect(() => {
     handleSearch();
   }, [role, location, exp, type, jobList]);
@@ -212,215 +194,243 @@ export default function Jobs() {
 
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-  // Check if any filters are active
   const hasActiveFilters = role || location || (exp && exp !== "Experience") || (type && type !== "Type");
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">                                                                                                                                     
-      <div className="flex justify-between items-center mb-1">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold">
-            {role ? `Search Results for "${role}"` : "Find Jobs"}
-          </h1>
-          <p className="text-slate-600 mb-4">
-            {filtered.length} {filtered.length === 1 ? 'job' : 'jobs'} found
-            {role && ` for "${role}"`}
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Header Section */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
+          <div className="mb-4 lg:mb-0">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {role ? `Search Results for "${role}"` : "Find Your Dream Job"}
+            </h1>
+            <p className="text-gray-600 text-lg">
+              {filtered.length} {filtered.length === 1 ? 'job' : 'jobs'} found
+              {role && ` for "${role}"`}
+            </p>
+          </div>
+          
+          {hasActiveFilters && (
+            <Button 
+              variant="outline" 
+              onClick={clearFilters}
+              className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 px-6"
+            >
+              Clear All Filters
+            </Button>
+          )}
         </div>
-        
-        {hasActiveFilters && (
-          <Button 
-            variant="outline" 
-            onClick={clearFilters}
-            className="mb-4"
+
+        {/* Search Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-6 rounded-2xl border border-blue-200 shadow-lg mb-8">
+          <Input
+            placeholder="Role, skill, or company"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="border-blue-300 focus:border-blue-500 focus:ring-blue-500"
+          />
+
+          <Input
+            placeholder="Location (Remote, Bengaluru...)"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="border-blue-300 focus:border-blue-500 focus:ring-blue-500"
+          />
+
+          <select
+            className="rounded-lg border border-blue-300 p-3 text-sm focus:border-blue-500 focus:ring-blue-500 bg-white"
+            value={exp}
+            onChange={(e) => setExp(e.target.value)}
           >
-            Clear Filters
-          </Button>
-        )}
-      </div>
+            <option value="">Experience Level</option>
+            <option value="Student">Student</option>
+            <option value="Fresher">Fresher (0 yrs)</option>
+            <option value="1-2 years">1–2 yrs</option>
+          </select>
 
-      <div className="grid md:grid-cols-4 gap-2 bg-white p-3 rounded-2xl border mb-4">
-        <Input
-          placeholder="Role or skill"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-        />
-
-        <Input
-          placeholder="Location (Remote, Bengaluru...)"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
-
-        <select
-          className="rounded-xl border p-2 text-sm"
-          value={exp}
-          onChange={(e) => setExp(e.target.value)}
-        >
-          <option value="">Experience</option>
-          <option value="Student">Student</option>
-          <option value="Fresher">Fresher (0 yrs)</option>
-          <option value="1-2 years">1–2 yrs</option>
-        </select>
-
-        <select
-          className="rounded-xl border p-2 text-sm"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-        >
-          <option value="">Type</option>
-          <option value="Internship">Internship</option>
-          <option value="Full-time">Full-time</option>
-          <option value="Part-time">Part-time</option>
-          <option value="Contract">Contract</option>
-        </select>
-      </div>
-
-      {/* Debug info - remove in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="text-xs text-gray-500 mb-2">
-          Showing {filtered.length} of {jobList.length} jobs | Page {page} of {totalPages}
+          <select
+            className="rounded-lg border border-blue-300 p-3 text-sm focus:border-blue-500 focus:ring-blue-500 bg-white"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+          >
+            <option value="">Job Type</option>
+            <option value="Internship">Internship</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+          </select>
         </div>
-      )}
 
-      <div className="overflow-x-auto rounded-2xl border bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-100 text-slate-700">
-            <tr>
-              <th className="px-3 py-2 text-left">Job Title</th>
-              <th className="px-3 py-2 text-left">Company</th>
-              <th className="px-3 py-2 text-left">Location</th>
-              <th className="px-3 py-2 text-left">Type</th>
-              <th className="px-3 py-2 text-left">Experience</th>
-              <th className="px-3 py-2 text-left">Tags</th>
-              <th className="px-3 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {loading ? (
+        {/* Jobs Table */}
+        <div className="overflow-x-auto rounded-2xl border border-blue-200 bg-white shadow-lg">
+          <table className="w-full text-sm">
+            <thead className="bg-blue-50 text-blue-900 border-b border-blue-200">
               <tr>
-                <td colSpan="7" className="text-center py-4 text-slate-500">
-                  Loading jobs...
-                </td>
+                <th className="px-6 py-4 text-left font-semibold text-sm">Job Title</th>
+                <th className="px-6 py-4 text-left font-semibold text-sm">Company</th>
+                <th className="px-6 py-4 text-left font-semibold text-sm">Location</th>
+                <th className="px-6 py-4 text-left font-semibold text-sm">Type</th>
+                <th className="px-6 py-4 text-left font-semibold text-sm">Experience</th>
+                <th className="px-6 py-4 text-left font-semibold text-sm">Skills</th>
+                <th className="px-6 py-4 text-left font-semibold text-sm">Actions</th>
               </tr>
-            ) : paginated.length === 0 ? (
-              <tr>
-                <td colSpan="7" className="text-center py-4 text-slate-500">
-                  {hasActiveFilters 
-                    ? "No jobs found matching your criteria. Try adjusting your filters." 
-                    : "No jobs available at the moment."
-                  }
-                </td>
-              </tr>
-            ) : (
-              paginated.map((r) => (
-                <tr key={r.id} className="border-b hover:bg-slate-50 transition">
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    {r.title}
-                  </td>
+            </thead>
 
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <Building2 size={14} /> {r.company}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <MapPin size={14} /> {r.location}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <Briefcase size={14} /> {r.type}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <GraduationCap size={14} /> {r.experience}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle">
-                    <div className="flex flex-wrap gap-1">
-                      {r.tags && r.tags.map((t, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="rounded-full text-xs"
-                        >
-                          {t}
-                        </Badge>
-                      ))}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex gap-2">
-                      <a href={`/jobs/${r.id}`} className="flex-1">
-                        <Button variant="secondary" className="w-full text-xs">
-                          View
-                        </Button>
-                      </a>
-                      <Button className="flex-1 text-xs">Apply</Button>
-                      <Button 
-                        variant="outline" 
-                        className="text-xs p-2"
-                        onClick={() => toggleSaveJob(r.id, savedStatus[r.id])}
-                        title={savedStatus[r.id] ? "Unsave job" : "Save job"}
-                      >
-                        {savedStatus[r.id] ? (
-                          <BookmarkCheck size={14} className="text-blue-500" />
-                        ) : (
-                          <Bookmark size={14} />
-                        )}
-                      </Button>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="7" className="text-center py-8 text-gray-500">
+                    <div className="flex justify-center items-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+                      Loading jobs...
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : paginated.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="text-center py-8 text-gray-500">
+                    <div className="space-y-2">
+                      <p className="text-lg font-medium">
+                        {hasActiveFilters 
+                          ? "No jobs found matching your criteria" 
+                          : "No jobs available at the moment"
+                        }
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        {hasActiveFilters 
+                          ? "Try adjusting your filters or search terms" 
+                          : "Check back later for new opportunities"
+                        }
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                paginated.map((r) => (
+                  <tr key={r.id} className="border-b border-blue-100 hover:bg-blue-50 transition-colors">
+                    <td className="px-6 py-4 align-middle">
+                      <div className="font-medium text-gray-900">{r.title}</div>
+                    </td>
 
-      <div className="flex justify-center items-center gap-2 mt-4">
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={page === 1}
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-        >
-          Previous
-        </button>
+                    <td className="px-6 py-4 align-middle">
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <Building2 size={16} className="text-blue-500" /> 
+                        {r.company}
+                      </div>
+                    </td>
 
-        {Array.from({ length: totalPages }).map((_, i) => {
-          const pageNum = i + 1;
-          const active = page === pageNum;
-          return (
+                    <td className="px-6 py-4 align-middle">
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <MapPin size={16} className="text-blue-500" /> 
+                        {r.location}
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 align-middle">
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <Briefcase size={16} className="text-blue-500" /> 
+                        {r.type}
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 align-middle">
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <GraduationCap size={16} className="text-blue-500" /> 
+                        {r.experience}
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 align-middle">
+                      <div className="flex flex-wrap gap-2">
+                        {r.tags && r.tags.slice(0, 3).map((t, index) => (
+                          <Badge
+                            key={index}
+                            variant="outline"
+                            className="rounded-full text-xs border-blue-200 bg-blue-50 text-blue-700"
+                          >
+                            {t}
+                          </Badge>
+                        ))}
+                        {r.tags && r.tags.length > 3 && (
+                          <Badge variant="outline" className="rounded-full text-xs border-blue-200 bg-blue-50 text-blue-700">
+                            +{r.tags.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 align-middle">
+                      <div className="flex gap-3">
+                        <a href={`/jobs/${r.id}`} className="flex-1">
+                          <Button variant="outline" className="w-full text-sm border-blue-300 text-blue-700 hover:bg-blue-50">
+                            View Details
+                          </Button>
+                        </a>
+                        <Button className="flex-1 text-sm bg-blue-600 hover:bg-blue-700 text-white">
+                          Quick Apply
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          className="p-2 border-blue-300 hover:bg-blue-50"
+                          onClick={() => toggleSaveJob(r.id, savedStatus[r.id])}
+                          title={savedStatus[r.id] ? "Unsave job" : "Save job"}
+                        >
+                          {savedStatus[r.id] ? (
+                            <BookmarkCheck size={16} className="text-blue-600" />
+                          ) : (
+                            <Bookmark size={16} className="text-blue-500" />
+                          )}
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-3 mt-8">
             <button
-              key={pageNum}
-              onClick={() => setPage(pageNum)}
-              className={`px-3 py-1 text-sm rounded-md border ${
-                active
-                  ? "bg-slate-800 text-white border-slate-800"
-                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-              }`}
+              className="rounded-lg border border-blue-300 px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              disabled={page === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
-              {pageNum}
+              Previous
             </button>
-          );
-        })}
 
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={page === totalPages || totalPages === 0}
-          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-        >
-          Next
-        </button>
+            <div className="flex gap-2">
+              {Array.from({ length: totalPages }).map((_, i) => {
+                const pageNum = i + 1;
+                const active = page === pageNum;
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setPage(pageNum)}
+                    className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
+                      active
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-blue-700 border-blue-300 hover:bg-blue-50"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              className="rounded-lg border border-blue-300 px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              disabled={page === totalPages || totalPages === 0}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

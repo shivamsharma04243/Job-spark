@@ -18,7 +18,7 @@ export default function Dashboard() {
       title: "Saved Jobs",
       value: "6",
       description: "Jobs you're interested in",
-      color: "bg-green-500",
+      color: "bg-blue-600",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -29,7 +29,7 @@ export default function Dashboard() {
       title: "Applications",
       value: "2",
       description: "Jobs you've applied to",
-      color: "bg-purple-500",
+      color: "bg-blue-700",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -37,50 +37,50 @@ export default function Dashboard() {
       )
     }
   ];
-// Quick action links for user dashboard
+
   const quickActions = [
     {
       title: "Update Profile",
       description: "Complete your professional profile",
       href: "/dashboard/profile",
       icon: "📝",
-      color: "bg-blue-50 text-blue-700 border-blue-200"
+      color: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
     },
     {
       title: "Browse Jobs",
       description: "Find new opportunities",
       href: "/jobs",
       icon: "🔍",
-      color: "bg-green-50 text-green-700 border-green-200"
+      color: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
     },
     {
       title: "Job Alerts",
       description: "Manage your notifications",
       href: "/dashboard/alerts",
       icon: "🔔",
-      color: "bg-purple-50 text-purple-700 border-purple-200"
+      color: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
     },
     {
       title: "Application Status",
       description: "Track your applications",
       href: "/dashboard/applied",
       icon: "📊",
-      color: "bg-orange-50 text-orange-700 border-orange-200"
+      color: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
+      <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-600 mt-2">Welcome back! Here's your job search overview.</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
+              <p className="text-lg text-gray-600">Welcome back! Here's your job search overview.</p>
             </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-lg">
                 U
               </div>
             </div>
@@ -89,7 +89,7 @@ export default function Dashboard() {
 
         {/* Navigation Tabs */}
         <div className="mb-8">
-          <div className="flex space-x-1 bg-white rounded-2xl p-1 shadow-sm border border-gray-200 w-fit">
+          <div className="flex space-x-2 bg-white rounded-2xl p-2 shadow-lg border border-blue-200 w-fit">
             {[
               { name: "Overview", href: "/dashboard", active: true },
               { name: "Profile", href: "/dashboard/profile", active: false },
@@ -100,10 +100,10 @@ export default function Dashboard() {
               <a
                 key={tab.name}
                 href={tab.href}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                className={`px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   tab.active
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "text-gray-600 hover:text-blue-700 hover:bg-blue-50"
                 }`}
               >
                 {tab.name}
@@ -115,27 +115,27 @@ export default function Dashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {stats.map((stat, index) => (
-            <Card key={index} className="rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <Card key={index} className="rounded-2xl border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-gray-600 mb-1">{stat.title}</p>
+                    <p className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</p>
+                    <p className="text-sm text-gray-500">{stat.description}</p>
                   </div>
-                  <div className={`p-3 rounded-xl ${stat.color} text-white`}>
+                  <div className={`p-4 rounded-xl ${stat.color} text-white shadow-lg`}>
                     {stat.icon}
                   </div>
                 </div>
                 {stat.progress && (
                   <div className="mt-4">
-                    <div className="flex justify-between text-sm text-gray-600 mb-1">
-                      <span>Progress</span>
-                      <span>{stat.progress}%</span>
+                    <div className="flex justify-between text-sm text-gray-600 mb-2">
+                      <span className="font-medium">Progress</span>
+                      <span className="font-semibold">{stat.progress}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-blue-100 rounded-full h-3">
                       <div
-                        className={`h-2 rounded-full ${stat.color} transition-all duration-300`}
+                        className={`h-3 rounded-full ${stat.color} transition-all duration-500 ease-out`}
                         style={{ width: `${stat.progress}%` }}
                       />
                     </div>
@@ -148,34 +148,34 @@ export default function Dashboard() {
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {quickActions.map((action, index) => (
               <a
                 key={index}
                 href={action.href}
-                className="block p-6 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all hover:scale-105 group"
+                className="block p-6 bg-white rounded-2xl border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
               >
-                <div className={`w-12 h-12 rounded-xl ${action.color} flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform`}>
+                <div className={`w-14 h-14 rounded-xl ${action.color} flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300 border-2`}>
                   {action.icon}
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">{action.title}</h3>
-                <p className="text-sm text-gray-600">{action.description}</p>
+                <h3 className="font-bold text-gray-900 text-lg mb-2">{action.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{action.description}</p>
               </a>
             ))}
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
-            <a href="/dashboard/applied" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-              View all
+        <div className="bg-white rounded-2xl shadow-lg border border-blue-200 p-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">Recent Activity</h2>
+            <a href="/dashboard/applied" className="text-blue-600 hover:text-blue-700 font-semibold text-lg transition-colors">
+              View all activity →
             </a>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
             {[
               {
                 type: "application",
@@ -183,7 +183,7 @@ export default function Dashboard() {
                 company: "TechCorp Inc.",
                 status: "Under Review",
                 time: "2 hours ago",
-                statusColor: "bg-yellow-100 text-yellow-800"
+                statusColor: "bg-yellow-100 text-yellow-800 border border-yellow-200"
               },
               {
                 type: "saved",
@@ -191,7 +191,7 @@ export default function Dashboard() {
                 company: "StartupXYZ",
                 status: "Saved",
                 time: "1 day ago",
-                statusColor: "bg-blue-100 text-blue-800"
+                statusColor: "bg-blue-100 text-blue-800 border border-blue-200"
               },
               {
                 type: "alert",
@@ -199,28 +199,28 @@ export default function Dashboard() {
                 company: "Job Alerts",
                 status: "5 new jobs",
                 time: "2 days ago",
-                statusColor: "bg-green-100 text-green-800"
+                statusColor: "bg-green-100 text-green-800 border border-green-200"
               }
             ].map((activity, index) => (
-              <div key={index} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
-                <div className="flex items-center space-x-4">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    activity.type === 'application' ? 'bg-orange-100 text-orange-600' :
-                    activity.type === 'saved' ? 'bg-blue-100 text-blue-600' :
-                    'bg-green-100 text-green-600'
-                  }`}>
+              <div key={index} className="flex items-center justify-between p-6 border border-blue-100 rounded-xl hover:bg-blue-50 transition-all duration-300 group">
+                <div className="flex items-center space-x-6">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-md ${
+                    activity.type === 'application' ? 'bg-orange-100 text-orange-600 border border-orange-200' :
+                    activity.type === 'saved' ? 'bg-blue-100 text-blue-600 border border-blue-200' :
+                    'bg-green-100 text-green-600 border border-green-200'
+                  } group-hover:scale-110 transition-transform`}>
                     {activity.type === 'application' ? '📨' : activity.type === 'saved' ? '💾' : '🔔'}
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">{activity.title}</h4>
-                    <p className="text-sm text-gray-600">{activity.company}</p>
+                    <h4 className="font-bold text-gray-900 text-lg mb-1">{activity.title}</h4>
+                    <p className="text-gray-600 font-medium">{activity.company}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${activity.statusColor}`}>
+                  <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${activity.statusColor}`}>
                     {activity.status}
                   </span>
-                  <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                  <p className="text-sm text-gray-500 mt-2 font-medium">{activity.time}</p>
                 </div>
               </div>
             ))}

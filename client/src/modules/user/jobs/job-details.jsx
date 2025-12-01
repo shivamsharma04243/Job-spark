@@ -157,116 +157,153 @@ export default function JobDetail() {
       setApplying(false);
     }
   };
-// Render
-  if (loading) return <div className="p-6">Loading job...</div>;
+
+  // Render
+  if (loading) return <div className="p-6 text-gray-600">Loading job...</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
-  if (!job) return <div className="p-6">Job not found</div>;
+  if (!job) return <div className="p-6 text-gray-600">Job not found</div>;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10 grid lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
-        <div className="mb-3 text-sm text-slate-600">
-          <a href="/jobs" className="hover:underline">Jobs</a> / <span>{job.title}</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="w-full mx-auto px-3 sm:px-4 py-6 grid lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="lg:col-span-2">
+          <div className="mb-3 text-sm text-gray-600">
+            <a href="/jobs" className="hover:underline text-blue-600">Jobs</a> / <span className="text-gray-700">{job.title}</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">{job.title}</h1>
+          <p className="mt-1 text-gray-600 flex flex-wrap items-center gap-2 sm:gap-3">
+            <span className="inline-flex items-center gap-1 text-sm"><Building2 size={16} className="text-blue-500"/> {job.company}</span>
+            <span className="inline-flex items-center gap-1 text-sm"><MapPin size={16} className="text-blue-500"/> {job.location}</span>
+            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><Clock size={14}/> {job.type}</span>
+            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><Briefcase size={14}/> {job.type}</span>
+            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><GraduationCap size={14}/> {job.experiance}</span>
+          </p>
+
+          <Card className="mt-6 rounded-xl sm:rounded-2xl border border-blue-200 shadow-lg">
+            <CardHeader className="border-b border-blue-100 p-4 sm:p-6">
+              <CardTitle className="text-blue-900 text-lg sm:text-xl">About the role</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-gray-700 p-4 sm:p-6">
+              <p className="text-sm sm:text-base">{job.description}</p>
+              <div>
+                <p className="font-semibold mb-1 text-blue-900 text-sm sm:text-base">Responsibilities</p>
+                <ul className="list-disc pl-4 sm:pl-5 space-y-1 text-sm sm:text-base">
+                  {responsibilities.length ? responsibilities.map((r) => <li key={r}>{r}</li>) : <li>Responsibilities not provided</li>}
+                </ul>
+              </div>
+              <div>
+                <p className="font-semibold mb-1 text-blue-900 text-sm sm:text-base">Qualifications</p>
+                <ul className="list-disc pl-4 sm:pl-5 space-y-1 text-sm sm:text-base">
+                  {qualifications.length ? qualifications.map((q) => <li key={q}>{q}</li>) : <li>Qualifications not provided</li>}
+                </ul>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((s) => (
+                  <Badge 
+                    key={s} 
+                    variant="outline" 
+                    className="rounded-full border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs"
+                  >
+                    {s}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
-        <h1 className="text-3xl font-extrabold">{job.title}</h1>
-        <p className="mt-1 text-slate-600 flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-1"><Building2 size={16}/> {job.company}</span>
-          <span className="inline-flex items-center gap-1"><MapPin size={16}/> {job.location}</span>
-          <span className="inline-flex items-center gap-1 text-xs border rounded-full px-3 py-1"><Clock size={14}/> {job.type}</span>
-          <span className="inline-flex items-center gap-1 text-xs border rounded-full px-3 py-1"><Briefcase size={14}/> {job.type}</span>
-          <span className="inline-flex items-center gap-1 text-xs border rounded-full px-3 py-1"><GraduationCap size={14}/> {job.experiance}</span>
-        </p>
 
-        <Card className="mt-6 rounded-2xl">
-          <CardHeader><CardTitle>About the role</CardTitle></CardHeader>
-          <CardContent className="space-y-4 text-slate-700">
-            <p>{job.description}</p>
-            <div>
-              <p className="font-semibold mb-1">Responsibilities</p>
-              <ul className="list-disc pl-5 space-y-1">
-                {responsibilities.length ? responsibilities.map((r) => <li key={r}>{r}</li>) : <li>Responsibilities not provided</li>}
-              </ul>
-            </div>
-            <div>
-              <p className="font-semibold mb-1">Qualifications</p>
-              <ul className="list-disc pl-5 space-y-1">
-                {qualifications.length ? qualifications.map((q) => <li key={q}>{q}</li>) : <li>Qualifications not provided</li>}
-              </ul>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {skills.map((s) => <Badge key={s} variant="outline" className="rounded-full">{s}</Badge>)}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <aside>
-        <Card className="sticky top-24 rounded-2xl">
-          <CardHeader>
-            <CardTitle className="flex justify-between items-center">
-              Apply to this job
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={toggleSave}
-                className="flex items-center gap-1"
-              >
-                {isSaved ? (
-                  <>
-                    <BookmarkCheck size={16} className="text-blue-500" />
-                    Saved
-                  </>
-                ) : (
-                  <>
-                    <Bookmark size={16} />
-                    Save
-                  </>
-                )}
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span>Compensation</span><span className="font-semibold">{job.salary || 'NA'}</span></div>
-              <div className="flex justify-between"><span>Work Mode</span><span className="font-semibold">{job.type}</span></div>
-              <div className="flex justify-between"><span>Experience</span><span className="font-semibold">{job.experiance}</span></div>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              {/* applicant name/email are optional; backend typically sets user from token */}
-              <Input placeholder="Your name (optional)" value={applicantName} onChange={(e) => setApplicantName(e.target.value)} />
-              <Input placeholder="Email (optional)" value={applicantEmail} onChange={(e) => setApplicantEmail(e.target.value)} />
-
-              <div>
-                <label className="block text-sm mb-1">Resume (PDF / DOC / DOCX)</label>
-                <input type="file" accept=".pdf,.doc,.docx" onChange={onFileChange} />
-                {resumeFile && <div className="text-xs mt-1">{resumeFile.name}</div>}
-              </div>
-
-              <Input placeholder="Or paste a resume link" value={resumeLink} onChange={(e) => setResumeLink(e.target.value)} />
-
-              <div>
-                <label className="block text-sm mb-1">Cover letter (optional)</label>
-                <textarea
-                  rows={4}
-                  value={coverLetter}
-                  onChange={(e) => setCoverLetter(e.target.value)}
-                  className="w-full rounded border p-2 text-sm"
-                />
-              </div>
-
-              {applyError && <div className="text-red-600 text-sm">{applyError}</div>}
-              {applySuccess && <div className="text-green-700 text-sm">{applySuccess}</div>}
-
-              <div className="flex gap-2">
-                <Button className="w-full" onClick={submitApplication} disabled={applying || applied}>
-                  {applied ? "Applied" : applying ? "Applying..." : "Quick Apply"}
+        <aside className="lg:sticky lg:top-4">
+          <Card className="rounded-xl sm:rounded-2xl border border-blue-200 shadow-lg">
+            <CardHeader className="border-b border-blue-100 p-4 sm:p-6">
+              <CardTitle className="flex justify-between items-center text-blue-900 text-lg sm:text-xl">
+                Apply to this job
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={toggleSave}
+                  className="flex items-center gap-1 border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800 text-xs"
+                >
+                  {isSaved ? (
+                    <>
+                      <BookmarkCheck size={14} className="text-blue-600" />
+                      Saved
+                    </>
+                  ) : (
+                    <>
+                      <Bookmark size={14} />
+                      Save
+                    </>
+                  )}
                 </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6">
+              <div className="space-y-3 text-sm text-gray-700 mb-4 sm:mb-6">
+                <div className="flex justify-between"><span>Compensation</span><span className="font-semibold text-blue-700">{job.salary || 'NA'}</span></div>
+                <div className="flex justify-between"><span>Work Mode</span><span className="font-semibold text-blue-700">{job.type}</span></div>
+                <div className="flex justify-between"><span>Experience</span><span className="font-semibold text-blue-700">{job.experiance}</span></div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </aside>
+
+              <div className="space-y-3 sm:space-y-4">
+                <Input 
+                  placeholder="Your name (optional)" 
+                  value={applicantName} 
+                  onChange={(e) => setApplicantName(e.target.value)}
+                  className="border-blue-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                />
+                <Input 
+                  placeholder="Email (optional)" 
+                  value={applicantEmail} 
+                  onChange={(e) => setApplicantEmail(e.target.value)}
+                  className="border-blue-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                />
+
+                <div>
+                  <label className="block text-sm mb-1 text-gray-700">Resume (PDF / DOC / DOCX)</label>
+                  <input 
+                    type="file" 
+                    accept=".pdf,.doc,.docx" 
+                    onChange={onFileChange}
+                    className="w-full text-xs sm:text-sm text-gray-600 file:mr-2 file:py-1 file:px-3 sm:file:py-2 sm:file:px-4 file:rounded-full file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  {resumeFile && <div className="text-xs mt-1 text-blue-600">{resumeFile.name}</div>}
+                </div>
+
+                <Input 
+                  placeholder="Or paste a resume link" 
+                  value={resumeLink} 
+                  onChange={(e) => setResumeLink(e.target.value)}
+                  className="border-blue-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                />
+
+                <div>
+                  <label className="block text-sm mb-1 text-gray-700">Cover letter (optional)</label>
+                  <textarea
+                    rows={3}
+                    value={coverLetter}
+                    onChange={(e) => setCoverLetter(e.target.value)}
+                    className="w-full rounded-lg border border-blue-300 p-2 sm:p-3 text-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Tell us why you're a good fit for this role..."
+                  />
+                </div>
+
+                {applyError && <div className="text-red-600 text-sm bg-red-50 p-2 rounded-lg">{applyError}</div>}
+                {applySuccess && <div className="text-green-700 text-sm bg-green-50 p-2 rounded-lg">{applySuccess}</div>}
+
+                <div className="flex gap-2">
+                  <Button 
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base" 
+                    onClick={submitApplication} 
+                    disabled={applying || applied}
+                  >
+                    {applied ? "Applied" : applying ? "Applying..." : "Quick Apply"}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </aside>
+      </div>
     </div>
   );
 }
