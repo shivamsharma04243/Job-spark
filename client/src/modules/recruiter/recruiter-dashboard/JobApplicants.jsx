@@ -3,7 +3,7 @@ import { Button } from "../../../components/ui/button";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../../components/apiconfig/apiconfig";
-// Component to display applicants for a specific job
+
 export default function JobApplicants() {
   const { jobId } = useParams();
   const [applicants, setApplicants] = useState([]);
@@ -39,7 +39,7 @@ export default function JobApplicants() {
       setLoading(false);
     }
   };
-// Format date utility
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -63,7 +63,6 @@ export default function JobApplicants() {
 
   const downloadResume = (resumePath, applicantName) => {
     if (resumePath) {
-      // Create a temporary link to download the resume
       const link = document.createElement('a');
       link.href = `/${resumePath}`;
       link.download = `${applicantName.replace(/\s+/g, '_')}_resume${resumePath.substring(resumePath.lastIndexOf('.'))}`;
@@ -72,35 +71,33 @@ export default function JobApplicants() {
       document.body.removeChild(link);
     }
   };
-// Loading state
+
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-10">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="rounded-2xl">
-              <CardContent className="py-4">
-                <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/3"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="animate-pulse space-y-4">
+        <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="rounded-2xl">
+            <CardContent className="py-4">
+              <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      {/* Header */}
+    <div className="space-y-6">
+      {/* Header - Remove max-w-6xl mx-auto */}
       <div className="mb-6">
         <Link to="/job-posted" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
           ← Back to Posted Jobs
         </Link>
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-extrabold">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               Applicants for {job?.title || 'Job'}
             </h1>
             {job && (
@@ -113,7 +110,7 @@ export default function JobApplicants() {
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-4 mb-6">
+        <div className="rounded-md bg-red-50 p-4">
           <p className="text-red-700">{error}</p>
         </div>
       )}

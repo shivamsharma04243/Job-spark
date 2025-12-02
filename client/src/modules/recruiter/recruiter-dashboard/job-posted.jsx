@@ -8,7 +8,7 @@ export default function JobPosted() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-// Fetch posted jobs on component mount
+
   useEffect(() => {
     fetchPostedJobs();
   }, []);
@@ -16,7 +16,7 @@ export default function JobPosted() {
   const fetchPostedJobs = async () => {
     try {
       setLoading(true);
-   const { data } = await api.get("/recruiter/jobs");
+      const { data } = await api.get("/recruiter/jobs");
 
       if (data.ok) {
         setJobs(data.jobs);
@@ -30,7 +30,7 @@ export default function JobPosted() {
       setLoading(false);
     }
   };
-// Format date utility
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -41,11 +41,11 @@ export default function JobPosted() {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-10">
-        <h1 className="text-3xl font-extrabold mb-6">Posted Jobs</h1>
-        <div className="space-y-3">
+      <div className="space-y-4">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="rounded-2xl animate-pulse">
+            <Card key={i} className="rounded-2xl">
               <CardContent className="py-4">
                 <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
                 <div className="h-3 bg-gray-200 rounded w-1/3"></div>
@@ -56,18 +56,19 @@ export default function JobPosted() {
       </div>
     );
   }
-// Main render
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-extrabold">Posted Jobs</h1>
+    <div className="space-y-6">
+      {/* Header - Remove max-w-6xl mx-auto */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Posted Jobs</h1>
         <div className="text-sm text-gray-600">
           {jobs.length} job{jobs.length !== 1 ? 's' : ''} posted
         </div>
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-4 mb-6">
+        <div className="rounded-md bg-red-50 p-4">
           <p className="text-red-700">{error}</p>
         </div>
       )}
@@ -83,7 +84,7 @@ export default function JobPosted() {
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No jobs posted yet</h3>
             <p className="text-gray-600 mb-4">Start by creating your first job posting</p>
             <Button asChild>
-              <a href="/create-job">Post Your First Job</a>
+              <Link to="/create-job">Post Your First Job</Link>
             </Button>
           </CardContent>
         </Card>

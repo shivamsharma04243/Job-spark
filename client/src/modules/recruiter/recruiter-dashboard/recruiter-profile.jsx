@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../../components/apiconfig/apiconfig";
-import { Input } from "../../../components/ui/input"; // Adjust import path as needed
+import { Input } from "../../../components/ui/input";
 
 export default function RecruiterProfileView() {
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ export default function RecruiterProfileView() {
     country: "",
     pincode: ""
   });
-// Load recruiter profile on mount
+
   useEffect(() => {
     let mounted = true;
 
@@ -64,12 +64,12 @@ export default function RecruiterProfileView() {
     loadProfile();
     return () => { mounted = false; };
   }, []);
-// Handle form field changes
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
-// Save profile changes
+
   const handleSave = async (e) => {
     e.preventDefault();
     try {
@@ -81,7 +81,7 @@ export default function RecruiterProfileView() {
       setError("Failed to save profile. Please try again.");
     }
   };
-// Cancel editing
+
   const handleCancel = () => {
     if (profile) {
       setForm({
@@ -101,10 +101,17 @@ export default function RecruiterProfileView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your recruiter profile...</p>
+      <div className="space-y-4">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-1">
+              <div className="bg-gray-200 rounded-2xl h-64"></div>
+            </div>
+            <div className="lg:col-span-3">
+              <div className="bg-gray-200 rounded-2xl h-96"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -112,356 +119,350 @@ export default function RecruiterProfileView() {
 
   if (error && !profile) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <div className="max-w-md w-full">
-          <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-red-800 mb-2">Unable to load profile</h3>
-            <p className="text-red-700 mb-4">{error}</p>
-            <button
-              onClick={() => setIsEditing(true)}
-              className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Create Profile
-            </button>
+      <div className="space-y-4">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
+          <h3 className="text-lg font-medium text-red-800 mb-2">Unable to load profile</h3>
+          <p className="text-red-700 mb-4">{error}</p>
+          <button
+            onClick={() => setIsEditing(true)}
+            className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Create Profile
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Recruiter Profile</h1>
-              <p className="text-gray-600 mt-2">Manage your company information and recruitment details</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Recruiter Profile</h1>
+          <p className="text-gray-600 mt-2">Manage your company information and recruitment details</p>
+        </div>
+        {!isEditing && profile && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edit Profile
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Sidebar - Company Overview */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-8">
+            {/* Company Badge */}
+            <div className="text-center mb-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+                {form.company_name ? form.company_name.charAt(0).toUpperCase() : "C"}
+              </div>
+              <h2 className="font-bold text-lg text-gray-900 truncate">{form.company_name || "Your Company"}</h2>
+              <p className="text-sm text-gray-600 mt-1">{form.company_type || "Company"}</p>
+              
+              {/* Verification Badge */}
+              {profile && (
+                <div className="mt-3">
+                  {profile.verified === 1 ? (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      Verified
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Pending Verification
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
-            {!isEditing && profile && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Edit Profile
-              </button>
+
+            {/* Quick Links */}
+            {form.company_website && (
+              <div className="border-t pt-4">
+                <a
+                  href={form.company_website.startsWith('http') ? form.company_website : `https://${form.company_website}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                  Visit Website
+                </a>
+              </div>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar - Company Overview */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-8">
-              {/* Company Badge */}
-              <div className="text-center mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
-                  {form.company_name ? form.company_name.charAt(0).toUpperCase() : "C"}
-                </div>
-                <h2 className="font-bold text-lg text-gray-900 truncate">{form.company_name || "Your Company"}</h2>
-                <p className="text-sm text-gray-600 mt-1">{form.company_type || "Company"}</p>
-                
-                {/* Verification Badge */}
-                {profile && (
-                  <div className="mt-3">
-                    {profile.verified === 1 ? (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        Verified
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Pending Verification
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
+        {/* Main Content */}
+        <div className="lg:col-span-3">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            {/* Card Header */}
+            <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {isEditing ? "Edit Company Information" : "Company Information"}
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                {isEditing ? "Update your business details below" : "Complete business details and verification status"}
+              </p>
+            </div>
 
-              {/* Quick Links */}
-              {form.company_website && (
-                <div className="border-t pt-4">
-                  <a
-                    href={form.company_website.startsWith('http') ? form.company_website : `https://${form.company_website}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center text-sm text-blue-600 hover:text-blue-700 font-medium"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                    Visit Website
-                  </a>
+            {/* Card Body */}
+            <div className="p-6">
+              {isEditing ? (
+                <form onSubmit={handleSave} className="space-y-6">
+                  {/* Company Details Section */}
+                  <InfoSection title="Company Details" icon="business">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Company Name *
+                        </label>
+                        <Input
+                          name="company_name"
+                          value={form.company_name}
+                          onChange={handleChange}
+                          required
+                          placeholder="Enter company name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Company Type
+                        </label>
+                        <Input
+                          name="company_type"
+                          value={form.company_type}
+                          onChange={handleChange}
+                          placeholder="e.g., Technology, Healthcare"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Company Website
+                        </label>
+                        <Input
+                          name="company_website"
+                          value={form.company_website}
+                          onChange={handleChange}
+                          placeholder="https://yourcompany.com"
+                          type="url"
+                        />
+                      </div>
+                    </div>
+                  </InfoSection>
+
+                  {/* Address Section */}
+                  <InfoSection title="Company Address" icon="location">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Address Line 1
+                        </label>
+                        <Input
+                          name="address_line1"
+                          value={form.address_line1}
+                          onChange={handleChange}
+                          placeholder="Street address, P.O. box"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Address Line 2
+                        </label>
+                        <Input
+                          name="address_line2"
+                          value={form.address_line2}
+                          onChange={handleChange}
+                          placeholder="Apartment, suite, unit, building, floor, etc."
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          City
+                        </label>
+                        <Input
+                          name="city"
+                          value={form.city}
+                          onChange={handleChange}
+                          placeholder="City"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          State
+                        </label>
+                        <Input
+                          name="state"
+                          value={form.state}
+                          onChange={handleChange}
+                          placeholder="State / Province"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Country
+                        </label>
+                        <Input
+                          name="country"
+                          value={form.country}
+                          onChange={handleChange}
+                          placeholder="Country"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Pincode
+                        </label>
+                        <Input
+                          name="pincode"
+                          value={form.pincode}
+                          onChange={handleChange}
+                          placeholder="Postal code"
+                        />
+                      </div>
+                    </div>
+                  </InfoSection>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="space-y-6">
+                  {/* Company Details Section */}
+                  <InfoSection title="Company Details" icon="business">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <InfoItem 
+                        label="Company Name" 
+                        value={profile?.company_name}
+                        icon="building"
+                      />
+                      <InfoItem 
+                        label="Company Type" 
+                        value={profile?.company_type}
+                        icon="category"
+                      />
+                      <InfoItem 
+                        label="Website" 
+                        value={profile?.company_website}
+                        icon="link"
+                        isLink={true}
+                      />
+                      <InfoItem 
+                        label="Verification Status" 
+                        value={profile?.verified === 1 ? "Verified" : "Pending Verification"}
+                        icon="verified"
+                        status={profile?.verified === 1 ? "success" : "warning"}
+                      />
+                    </div>
+                  </InfoSection>
+
+                  {/* Address Section */}
+                  <InfoSection title="Company Address" icon="location">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <InfoItem 
+                        label="Address Line 1" 
+                        value={profile?.address_line1}
+                        icon="location"
+                      />
+                      <InfoItem 
+                        label="Address Line 2" 
+                        value={profile?.address_line2}
+                        icon="location"
+                      />
+                      <InfoItem 
+                        label="City" 
+                        value={profile?.city}
+                        icon="city"
+                      />
+                      <InfoItem 
+                        label="State" 
+                        value={profile?.state}
+                        icon="region"
+                      />
+                      <InfoItem 
+                        label="Country" 
+                        value={profile?.country}
+                        icon="country"
+                      />
+                      <InfoItem 
+                        label="Pincode" 
+                        value={profile?.pincode}
+                        icon="pin"
+                      />
+                    </div>
+                  </InfoSection>
+
+                  {/* Verification & Metadata Section */}
+                  {profile && (
+                    <InfoSection title="Profile Information" icon="info">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <InfoItem 
+                          label="Verification Notes" 
+                          value={profile.verification_notes || "No notes provided"}
+                          icon="notes"
+                        />
+                        <InfoItem 
+                          label="Profile Created" 
+                          value={profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          }) : "—"}
+                          icon="calendar"
+                        />
+                        <InfoItem 
+                          label="Last Updated" 
+                          value={profile.updated_at ? new Date(profile.updated_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }) : "—"}
+                          icon="update"
+                        />
+                      </div>
+                    </InfoSection>
+                  )}
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-              {/* Card Header */}
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {isEditing ? "Edit Company Information" : "Company Information"}
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  {isEditing ? "Update your business details below" : "Complete business details and verification status"}
-                </p>
-              </div>
-
-              {/* Card Body */}
-              <div className="p-6">
-                {isEditing ? (
-                  <form onSubmit={handleSave} className="space-y-8">
-                    {/* Company Details Section */}
-                    <InfoSection title="Company Details" icon="business">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Company Name *
-                          </label>
-                          <Input
-                            name="company_name"
-                            value={form.company_name}
-                            onChange={handleChange}
-                            required
-                            placeholder="Enter company name"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Company Type
-                          </label>
-                          <Input
-                            name="company_type"
-                            value={form.company_type}
-                            onChange={handleChange}
-                            placeholder="e.g., Technology, Healthcare"
-                          />
-                        </div>
-                        <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Company Website
-                          </label>
-                          <Input
-                            name="company_website"
-                            value={form.company_website}
-                            onChange={handleChange}
-                            placeholder="https://yourcompany.com"
-                            type="url"
-                          />
-                        </div>
-                      </div>
-                    </InfoSection>
-
-                    {/* Address Section */}
-                    <InfoSection title="Company Address" icon="location">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Address Line 1
-                          </label>
-                          <Input
-                            name="address_line1"
-                            value={form.address_line1}
-                            onChange={handleChange}
-                            placeholder="Street address, P.O. box"
-                          />
-                        </div>
-                        <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Address Line 2
-                          </label>
-                          <Input
-                            name="address_line2"
-                            value={form.address_line2}
-                            onChange={handleChange}
-                            placeholder="Apartment, suite, unit, building, floor, etc."
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            City
-                          </label>
-                          <Input
-                            name="city"
-                            value={form.city}
-                            onChange={handleChange}
-                            placeholder="City"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            State
-                          </label>
-                          <Input
-                            name="state"
-                            value={form.state}
-                            onChange={handleChange}
-                            placeholder="State / Province"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Country
-                          </label>
-                          <Input
-                            name="country"
-                            value={form.country}
-                            onChange={handleChange}
-                            placeholder="Country"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Pincode
-                          </label>
-                          <Input
-                            name="pincode"
-                            value={form.pincode}
-                            onChange={handleChange}
-                            placeholder="Postal code"
-                          />
-                        </div>
-                      </div>
-                    </InfoSection>
-
-                    {/* Action Buttons */}
-                    <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
-                      <button
-                        type="button"
-                        onClick={handleCancel}
-                        className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center"
-                      >
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Save Changes
-                      </button>
-                    </div>
-                  </form>
-                ) : (
-                  <div className="space-y-8">
-                    {/* Company Details Section */}
-                    <InfoSection title="Company Details" icon="business">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InfoItem 
-                          label="Company Name" 
-                          value={profile?.company_name}
-                          icon="building"
-                        />
-                        <InfoItem 
-                          label="Company Type" 
-                          value={profile?.company_type}
-                          icon="category"
-                        />
-                        <InfoItem 
-                          label="Website" 
-                          value={profile?.company_website}
-                          icon="link"
-                          isLink={true}
-                        />
-                        <InfoItem 
-                          label="Verification Status" 
-                          value={profile?.verified === 1 ? "Verified" : "Pending Verification"}
-                          icon="verified"
-                          status={profile?.verified === 1 ? "success" : "warning"}
-                        />
-                      </div>
-                    </InfoSection>
-
-                    {/* Address Section */}
-                    <InfoSection title="Company Address" icon="location">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InfoItem 
-                          label="Address Line 1" 
-                          value={profile?.address_line1}
-                          icon="location"
-                        />
-                        <InfoItem 
-                          label="Address Line 2" 
-                          value={profile?.address_line2}
-                          icon="location"
-                        />
-                        <InfoItem 
-                          label="City" 
-                          value={profile?.city}
-                          icon="city"
-                        />
-                        <InfoItem 
-                          label="State" 
-                          value={profile?.state}
-                          icon="region"
-                        />
-                        <InfoItem 
-                          label="Country" 
-                          value={profile?.country}
-                          icon="country"
-                        />
-                        <InfoItem 
-                          label="Pincode" 
-                          value={profile?.pincode}
-                          icon="pin"
-                        />
-                      </div>
-                    </InfoSection>
-
-                    {/* Verification & Metadata Section */}
-                    {profile && (
-                      <InfoSection title="Profile Information" icon="info">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <InfoItem 
-                            label="Verification Notes" 
-                            value={profile.verification_notes || "No notes provided"}
-                            icon="notes"
-                          />
-                          <InfoItem 
-                            label="Profile Created" 
-                            value={profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            }) : "—"}
-                            icon="calendar"
-                          />
-                          <InfoItem 
-                            label="Last Updated" 
-                            value={profile.updated_at ? new Date(profile.updated_at).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            }) : "—"}
-                            icon="update"
-                          />
-                        </div>
-                      </InfoSection>
-                    )}
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </div>
@@ -470,7 +471,7 @@ export default function RecruiterProfileView() {
   );
 }
 
-// Info Section Component
+// Info Section Component (keep as is)
 function InfoSection({ title, icon, children }) {
   const getIcon = (iconName) => {
     const icons = {
@@ -494,7 +495,7 @@ function InfoSection({ title, icon, children }) {
   );
 }
 
-// Info Item Component
+// Info Item Component (keep as is)
 function InfoItem({ label, value, icon, isLink = false, status }) {
   const getIcon = (iconName) => {
     const icons = {

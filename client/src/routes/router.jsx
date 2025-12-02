@@ -40,9 +40,11 @@ import PendingRecruiters from "../modules/admin/PendingRecruiters.jsx";
 import VerifiedRecruiters from "../modules/admin/VerifiedRecruiters.jsx";
 import PendingJobs from "../modules/admin/PendingJobs.jsx";
 import ApprovedJobs from "../modules/admin/ApprovedJobs.jsx";
-//import RejectedJobs from "../modules/admin/";
 import ClosedJobs from "../modules/admin/ClosedJobs.jsx";
 import RejectedJobs from "../modules/admin/RejectedJobs.jsx";
+
+// Import Recruiter Layout (CREATE THIS FILE)
+import RecruiterLayout from "../modules/recruiter/recruiter-dashboard/RecruiterLayout.jsx";
 
 // Define application routes
 const router = createBrowserRouter([
@@ -71,64 +73,6 @@ const router = createBrowserRouter([
 
       // Profile - Public
       { path: "profile", element: <Profile /> },
-
-      // ================= RECRUITER ONLY ROUTES =================
-      {
-        path: "recruiter-profileform",
-        element: (
-          <ProtectedRoute roles={["recruiter"]}>
-            <RecruiterProfileform />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "recruiter-profile",
-        element: (
-          <ProtectedRoute roles={["recruiter"]}>
-            <RecruiterProfile />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "create-job",
-        element: (
-          <ProtectedRoute roles={["recruiter"]}>
-            <RecruiterCreateJob />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "job-posted",
-        element: (
-          <ProtectedRoute roles={["recruiter"]}>
-            <JobPosted />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "recruiter-dashboard",
-        element: (
-          <ProtectedRoute roles={["recruiter"]}>
-            <RecruiterDashboard />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "talent-hire",
-        element: (
-          <ProtectedRoute roles={["recruiter"]}>
-            <TalentHire />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "recruiter/jobs/:jobId/applicants",
-        element: (
-          <ProtectedRoute roles={["recruiter"]}>
-            <JobApplicants />
-          </ProtectedRoute>
-        ),
-      },
 
       // ================= USER/JOB SEEKER ONLY ROUTES =================
       {
@@ -176,6 +120,46 @@ const router = createBrowserRouter([
     ],
   },
 
+  // ================= RECRUITER ROUTES WITH SIDEBAR (SEPARATE FROM MAIN LAYOUT) =================
+  {
+    path: "/",
+    element: (
+      <ProtectedRoute roles={["recruiter"]}>
+        <RecruiterLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        path: "recruiter-dashboard",
+        element: <RecruiterDashboard />,
+      },
+      {
+        path: "recruiter-profile",
+        element: <RecruiterProfile />,
+      },
+      {
+        path: "recruiter-profileform",
+        element: <RecruiterProfileform />,
+      },
+      {
+        path: "create-job",
+        element: <RecruiterCreateJob />,
+      },
+      {
+        path: "job-posted",
+        element: <JobPosted />,
+      },
+      {
+        path: "talent-hire",
+        element: <TalentHire />,
+      },
+      {
+        path: "recruiter/jobs/:jobId/applicants",
+        element: <JobApplicants />,
+      },
+    ],
+  },
+
   // ================= ADMIN ROUTES WITH SIDEBAR (SEPARATE FROM MAIN LAYOUT) =================
   {
     path: "admin",
@@ -189,13 +173,12 @@ const router = createBrowserRouter([
       { path: "users", element: <AdminUsers /> },
       { path: "recruiters", element: <AdminRecruiters /> },
       { path: "jobs", element: <AdminJobs /> },
-      // MOVE THESE INSIDE THE ADMIN LAYOUT
       { path: "pending-recruiters", element: <PendingRecruiters /> },
       { path: "verified-recruiters", element: <VerifiedRecruiters /> },
       { path: "pending-jobs", element: <PendingJobs /> },
       { path: "approved-jobs", element: <ApprovedJobs /> },
       { path: "closed-jobs", element: <ClosedJobs /> },
-      {path: "rejected-jobs", element: <RejectedJobs />},
+      { path: "rejected-jobs", element: <RejectedJobs /> },
     ],
   },
 ]);
