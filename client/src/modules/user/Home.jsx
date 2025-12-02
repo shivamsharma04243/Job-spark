@@ -1,4 +1,3 @@
-// Home.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../components/apiconfig/apiconfig";
@@ -251,6 +250,7 @@ function JobsListing() {
         if (!mounted) return;
 
         if (data.ok && Array.isArray(data.jobs)) {
+          // Backend already returns only approved jobs
           const mapped = data.jobs.map((j) => ({
             id: j.id,
             title: j.title,

@@ -45,6 +45,7 @@ export default function Jobs() {
         if (!alive) return;
 
         if (data.ok && Array.isArray(data.jobs)) {
+          // Backend already filters approved jobs, no need to filter here
           const mapped = data.jobs.map((j) => ({
             id: j._id || j.id,
             title: j.title || j.jobTitle || "",

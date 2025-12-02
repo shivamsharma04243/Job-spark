@@ -24,8 +24,10 @@ async function getjobs (req, res) {
         vacancies,
         description,
         logo_path,
+        status, -- Add status field
         created_at
       FROM jobs
+      WHERE status = 'approved' -- Only show approved jobs
       ORDER BY created_at DESC
       LIMIT ?
     `;
@@ -66,6 +68,7 @@ async function getjobs (req, res) {
         vacancies: r.vacancies,
         description: r.description,
         logoPath: r.logo_path || null,
+        status: r.status, // Include status
         createdAt: r.created_at,
         experiance,
       };
