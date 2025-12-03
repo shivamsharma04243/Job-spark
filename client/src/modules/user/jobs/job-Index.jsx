@@ -7,6 +7,7 @@ import {
   GraduationCap,
   Bookmark,
   BookmarkCheck,
+  Tag,
 } from "lucide-react";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
@@ -53,7 +54,7 @@ export default function Jobs() {
             type: j.type || j.jobType || "",
             mode: j.mode || j.workMode || j.workType || "",
             experience: j.experience || j.experiance || j.exp || "",
-            tags: j.tags || j.skills || [],
+            skills: j.skills || j.tags || [], // Use skills field
             salary: j.salary || "",
             description: j.description || ""
           }));
@@ -116,12 +117,12 @@ export default function Jobs() {
       data = data.filter((job) => {
         const titleMatch = job.title?.toLowerCase().includes(roleTrim) || false;
         const companyMatch = job.company?.toLowerCase().includes(roleTrim) || false;
-        const tagsMatch = job.tags?.some(tag => 
-          tag?.toLowerCase().includes(roleTrim)
+        const skillsMatch = job.skills?.some(skill => 
+          skill?.toLowerCase().includes(roleTrim)
         ) || false;
         const descriptionMatch = job.description?.toLowerCase().includes(roleTrim) || false;
         
-        return titleMatch || companyMatch || tagsMatch || descriptionMatch;
+        return titleMatch || companyMatch || skillsMatch || descriptionMatch;
       });
     }
 
@@ -272,7 +273,12 @@ export default function Jobs() {
                 <th className="px-6 py-4 text-left font-semibold text-sm">Location</th>
                 <th className="px-6 py-4 text-left font-semibold text-sm">Type</th>
                 <th className="px-6 py-4 text-left font-semibold text-sm">Experience</th>
-                <th className="px-6 py-4 text-left font-semibold text-sm">Skills</th>
+                <th className="px-6 py-4 text-left font-semibold text-sm">
+                  <div className="flex items-center gap-2">
+                    <Tag size={14} />
+                    Skills
+                  </div>
+                </th>
                 <th className="px-6 py-4 text-left font-semibold text-sm">Actions</th>
               </tr>
             </thead>
@@ -342,20 +348,23 @@ export default function Jobs() {
                     </td>
 
                     <td className="px-6 py-4 align-middle">
-                      <div className="flex flex-wrap gap-2">
-                        {r.tags && r.tags.slice(0, 3).map((t, index) => (
+                      <div className="flex flex-wrap gap-2 max-w-xs">
+                        {r.skills && r.skills.slice(0, 4).map((skill, index) => (
                           <Badge
                             key={index}
                             variant="outline"
-                            className="rounded-full text-xs border-blue-200 bg-blue-50 text-blue-700"
+                            className="rounded-full text-xs border-blue-200 bg-blue-50 text-blue-700 px-2 py-1"
                           >
-                            {t}
+                            {skill}
                           </Badge>
                         ))}
-                        {r.tags && r.tags.length > 3 && (
+                        {r.skills && r.skills.length > 4 && (
                           <Badge variant="outline" className="rounded-full text-xs border-blue-200 bg-blue-50 text-blue-700">
-                            +{r.tags.length - 3} more
+                            +{r.skills.length - 4} more
                           </Badge>
+                        )}
+                        {(!r.skills || r.skills.length === 0) && (
+                          <span className="text-xs text-gray-400 italic">No skills listed</span>
                         )}
                       </div>
                     </td>

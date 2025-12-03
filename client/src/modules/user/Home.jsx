@@ -1,8 +1,7 @@
-// Home.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../components/apiconfig/apiconfig";
-import { Search } from "lucide-react";
+import { Search, Tag } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -18,7 +17,7 @@ const fallbackJobs = [
     title: "Software Engineer Intern",
     company: "CloudMints",
     location: "Remote (IN)",
-    tags: ["JavaScript", "React", "API"],
+    skills: ["JavaScript", "React", "API"],
     posted: "Today",
     type: "Internship",
     experiance: "Student",
@@ -201,17 +200,17 @@ function JobsTableRow({ job }) {
       <td className="px-4 py-3 text-gray-700">{job.experiance}</td>
       <td className="px-4 py-3">
         <div className="flex flex-wrap gap-2 max-w-[170px]">
-          {job.tags && job.tags.length ? (
-            job.tags.map((t, i) => (
+          {job.skills && job.skills.length ? (
+            job.skills.slice(0, 3).map((skill, i) => (
               <span
                 key={i}
                 className="px-2 py-1 text-xs rounded border border-blue-200 bg-blue-50 text-blue-700 whitespace-nowrap"
               >
-                {t}
+                {skill}
               </span>
             ))
           ) : (
-            <span className="text-xs text-gray-400">No tags</span>
+            <span className="text-xs text-gray-400">No skills listed</span>
           )}
         </div>
       </td>
@@ -256,7 +255,7 @@ function JobsListing() {
             title: j.title,
             company: j.company,
             location: j.location || "Remote",
-            tags: j.tags || [],
+            skills: j.skills || [], // Use skills field
             posted: timeAgo(j.createdAt),
             type: j.type,
             experiance: j.experiance || j.experience,
@@ -304,7 +303,12 @@ function JobsListing() {
               <th className="px-4 py-3 text-left text-blue-900 font-semibold">Location</th>
               <th className="px-4 py-3 text-left text-blue-900 font-semibold">Type</th>
               <th className="px-4 py-3 text-left text-blue-900 font-semibold">Experience</th>
-              <th className="px-4 py-3 text-left text-blue-900 font-semibold">Tags</th>
+              <th className="px-4 py-3 text-left text-blue-900 font-semibold">
+                <div className="flex items-center gap-2">
+                  <Tag size={14} />
+                  Skills
+                </div>
+              </th>
               <th className="px-4 py-3 text-left text-blue-900 font-semibold">Posted</th>
               <th className="px-4 py-3 text-left text-blue-900 font-semibold">Action</th>
             </tr>

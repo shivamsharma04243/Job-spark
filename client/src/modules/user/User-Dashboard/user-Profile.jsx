@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../../../components/apiconfig/apiconfig";
+import api from "../../../components/apiconfig/apiconfig.jsx";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
@@ -159,275 +159,211 @@ export default function ProfilePage() {
     setSelectedResumeFile(null);
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Professional Profile</h1>
-          <p className="text-gray-600 text-lg">Manage your professional information and career details</p>
-        </div>
-
-        {loading ? (
-          <Card className="rounded-2xl border border-blue-200 shadow-lg p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 mt-4 text-lg">Loading your profile...</p>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Sidebar */}
-            <div className="lg:col-span-1">
-              <Card className="rounded-2xl border border-blue-200 shadow-lg sticky top-8">
-                <CardContent className="p-6">
-                  <div className="text-center mb-6">
-                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4 shadow-lg">
-                      {user?.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
-                    </div>
-                    <h2 className="font-bold text-xl text-gray-900">{user?.full_name || "New User"}</h2>
-                    <p className="text-gray-600 mt-2">{user?.highest_education || "Add your education"}</p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center text-gray-700">
-                      <svg className="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {user?.experience_years ?? 0} years experience
-                    </div>
-                    
-                    <div className="flex items-center text-gray-700">
-                      <svg className="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      {user?.phone || "No phone"}
-                    </div>
-
-                    {user?.resume_path && (
-                      <div className="pt-4 border-t border-blue-200">
-                        <a href={user.resume_path} target="_blank" rel="noreferrer" className="flex items-center text-blue-600 hover:text-blue-700 font-medium">
-                          <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                          View Resume
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Main Content */}
-            <div className="lg:col-span-3">
-              <Card className="rounded-2xl border border-blue-200 shadow-lg overflow-hidden">
-                {/* Card Header */}
-                <div className="px-8 py-6 border-b border-blue-200 bg-blue-50">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">Profile Information</h3>
-                      <p className="text-gray-600 mt-1">Update your professional details and contact information</p>
-                    </div>
-                    {!isEditing && (
-                      <Button
-                        onClick={handleEditClick}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center"
-                      >
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Edit Profile
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Card Body */}
-                <CardContent className="p-8">
-                  {!isEditing ? (
-                    <ProfileView user={user} onEdit={handleEditClick} />
-                  ) : (
-                    <form onSubmit={handleSave} className="space-y-8">
-                      {error && (
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                          {error}
-                        </div>
-                      )}
-
-                      {/* Personal Information Section */}
-                      <Section title="Personal Information">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">Full Name *</label>
-                            <Input 
-                              name="full_name" 
-                              value={form.full_name} 
-                              onChange={handleChange} 
-                              required
-                              placeholder="Enter your full name"
-                              className="border-blue-300 focus:border-blue-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">Phone *</label>
-                            <Input 
-                              name="phone" 
-                              value={form.phone} 
-                              onChange={handleChange} 
-                              required
-                              placeholder="Enter your phone number"
-                              className="border-blue-300 focus:border-blue-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">Highest Education</label>
-                            <Input 
-                              name="highest_education" 
-                              value={form.highest_education} 
-                              onChange={handleChange}
-                              placeholder="e.g., Bachelor's Degree"
-                              className="border-blue-300 focus:border-blue-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">Experience (years)</label>
-                            <Input 
-                              name="experience_years" 
-                              value={form.experience_years} 
-                              onChange={handleChange} 
-                              type="number" 
-                              min="0"
-                              placeholder="Years of experience"
-                              className="border-blue-300 focus:border-blue-500"
-                            />
-                          </div>
-                        </div>
-                      </Section>
-
-                      {/* Location Information Section */}
-                      <Section title="Location Information">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">City</label>
-                            <Input 
-                              name="city" 
-                              value={form.city} 
-                              onChange={handleChange}
-                              placeholder="Enter your city"
-                              className="border-blue-300 focus:border-blue-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">State</label>
-                            <Input 
-                              name="state" 
-                              value={form.state} 
-                              onChange={handleChange}
-                              placeholder="Enter your state"
-                              className="border-blue-300 focus:border-blue-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">Country</label>
-                            <Input 
-                              name="country" 
-                              value={form.country} 
-                              onChange={handleChange}
-                              placeholder="Enter your country"
-                              className="border-blue-300 focus:border-blue-500"
-                            />
-                          </div>
-                        </div>
-                      </Section>
-
-                      {/* Professional Links Section */}
-                      <Section title="Professional Links">
-                        <div className="space-y-6">
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">LinkedIn URL</label>
-                            <Input 
-                              name="linkedin_url" 
-                              value={form.linkedin_url} 
-                              onChange={handleChange} 
-                              placeholder="https://linkedin.com/in/yourprofile"
-                              type="url"
-                              className="border-blue-300 focus:border-blue-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">Portfolio URL</label>
-                            <Input 
-                              name="portfolio_url" 
-                              value={form.portfolio_url} 
-                              onChange={handleChange} 
-                              placeholder="https://yourportfolio.com"
-                              type="url"
-                              className="border-blue-300 focus:border-blue-500"
-                            />
-                          </div>
-                        </div>
-                      </Section>
-
-                      {/* Resume Section */}
-                      <Section title="Resume Upload">
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between p-6 border-2 border-dashed border-blue-300 rounded-xl hover:border-blue-400 transition-colors bg-blue-50">
-                            <div className="flex items-center">
-                              <svg className="w-10 h-10 text-blue-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                              </svg>
-                              <div>
-                                <p className="text-lg font-semibold text-gray-900">
-                                  {selectedResumeFile ? selectedResumeFile.name : (form.resume_path || 'No resume uploaded')}
-                                </p>
-                                <p className="text-sm text-gray-500">PDF, DOC, DOCX up to 10MB</p>
-                              </div>
-                            </div>
-                            <label className="cursor-pointer">
-                              <span className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold">
-                                Choose File
-                              </span>
-                              <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileSelect} className="hidden" />
-                            </label>
-                          </div>
-                        </div>
-                      </Section>
-
-                      {/* Action Buttons */}
-                      <div className="flex items-center justify-end gap-4 pt-8 border-t border-blue-200">
-                        <Button
-                          type="button"
-                          onClick={handleCancel}
-                          variant="outline"
-                          className="border-blue-300 text-blue-700 hover:bg-blue-50 px-8 py-3 font-semibold"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          disabled={saving}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 font-semibold flex items-center"
-                        >
-                          {saving ? (
-                            <>
-                              <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                              Saving...
-                            </>
-                          ) : (
-                            'Save Changes'
-                          )}
-                        </Button>
-                      </div>
-                    </form>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )}
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      {/* Card Header */}
+      <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">Profile Information</h3>
+            <p className="text-sm text-slate-600 mt-1">Update your professional details and contact information</p>
+          </div>
+          {!isEditing && (
+            <Button
+              onClick={handleEditClick}
+              className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm"
+            >
+              Edit Profile
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <CardContent className="p-6">
+        {!isEditing ? (
+          <ProfileView user={user} onEdit={handleEditClick} />
+        ) : (
+          <form onSubmit={handleSave} className="space-y-6">
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Personal Information */}
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900 mb-4">Personal Information</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-2">Full Name *</label>
+                  <Input 
+                    name="full_name" 
+                    value={form.full_name} 
+                    onChange={handleChange} 
+                    required
+                    placeholder="Enter your full name"
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-2">Phone *</label>
+                  <Input 
+                    name="phone" 
+                    value={form.phone} 
+                    onChange={handleChange} 
+                    required
+                    placeholder="Enter your phone number"
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-2">Highest Education</label>
+                  <Input 
+                    name="highest_education" 
+                    value={form.highest_education} 
+                    onChange={handleChange}
+                    placeholder="e.g., Bachelor's Degree"
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-2">Experience (years)</label>
+                  <Input 
+                    name="experience_years" 
+                    value={form.experience_years} 
+                    onChange={handleChange} 
+                    type="number" 
+                    min="0"
+                    placeholder="Years of experience"
+                    className="text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Location Information */}
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900 mb-4">Location Information</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-2">City</label>
+                  <Input 
+                    name="city" 
+                    value={form.city} 
+                    onChange={handleChange}
+                    placeholder="Enter your city"
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-2">State</label>
+                  <Input 
+                    name="state" 
+                    value={form.state} 
+                    onChange={handleChange}
+                    placeholder="Enter your state"
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-2">Country</label>
+                  <Input 
+                    name="country" 
+                    value={form.country} 
+                    onChange={handleChange}
+                    placeholder="Enter your country"
+                    className="text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Professional Links */}
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900 mb-4">Professional Links</h4>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-2">LinkedIn URL</label>
+                  <Input 
+                    name="linkedin_url" 
+                    value={form.linkedin_url} 
+                    onChange={handleChange} 
+                    placeholder="https://linkedin.com/in/yourprofile"
+                    type="url"
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-2">Portfolio URL</label>
+                  <Input 
+                    name="portfolio_url" 
+                    value={form.portfolio_url} 
+                    onChange={handleChange} 
+                    placeholder="https://yourportfolio.com"
+                    type="url"
+                    className="text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Resume Section */}
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900 mb-4">Resume Upload</h4>
+              <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 hover:border-slate-400 transition-colors bg-slate-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">
+                        {selectedResumeFile ? selectedResumeFile.name : (form.resume_path || 'No resume uploaded')}
+                      </p>
+                      <p className="text-xs text-slate-500">PDF, DOC, DOCX up to 10MB</p>
+                    </div>
+                  </div>
+                  <label className="cursor-pointer">
+                    <span className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
+                      Choose File
+                    </span>
+                    <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileSelect} className="hidden" />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-200">
+              <Button
+                type="button"
+                onClick={handleCancel}
+                variant="outline"
+                className="border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 text-sm"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={saving}
+                className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium"
+              >
+                {saving ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </form>
+        )}
+      </CardContent>
     </div>
   );
 }
@@ -435,15 +371,17 @@ export default function ProfilePage() {
 function ProfileView({ user, onEdit }) {
   if (!user) {
     return (
-      <div className="text-center py-12">
-        <svg className="w-20 h-20 text-blue-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-        <h3 className="text-2xl font-bold text-gray-900 mb-3">No Profile Found</h3>
-        <p className="text-gray-600 text-lg mb-8">Create your professional profile to get started with your job search</p>
+      <div className="text-center py-8">
+        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mx-auto mb-4">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-slate-900 mb-2">No Profile Found</h3>
+        <p className="text-slate-600 text-sm mb-4">Create your professional profile to get started</p>
         <Button 
           onClick={onEdit} 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold"
+          className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm"
         >
           Create Profile
         </Button>
@@ -452,127 +390,109 @@ function ProfileView({ user, onEdit }) {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Personal Information */}
-      <InfoSection title="Personal Information" icon="user">
-        <InfoGrid>
-          <InfoItem label="Full Name" value={user.full_name} />
-          <InfoItem label="Phone" value={user.phone} />
-          <InfoItem label="Education" value={user.highest_education} />
-          <InfoItem label="Experience" value={user.experience_years ? `${user.experience_years} years` : null} />
-        </InfoGrid>
-      </InfoSection>
+    <div className="space-y-6">
+      {/* User Info Card */}
+      <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl">
+            {user.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-slate-900 text-lg">{user.full_name}</h3>
+            <p className="text-slate-600 text-sm">{user.highest_education || "Add education"}</p>
+            <div className="flex items-center gap-4 mt-2 text-sm">
+              <span className="text-slate-700">{user.experience_years ?? 0} years experience</span>
+              <span className="text-slate-700">{user.phone || "No phone"}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      {/* Location */}
-      <InfoSection title="Location Information" icon="location">
-        <InfoGrid>
-          <InfoItem label="City" value={user.city} />
-          <InfoItem label="State" value={user.state} />
-          <InfoItem label="Country" value={user.country} />
-        </InfoGrid>
-      </InfoSection>
+      {/* Info Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h4 className="text-sm font-semibold text-slate-900 mb-3">Personal Information</h4>
+          <div className="space-y-3">
+            <InfoItem label="Full Name" value={user.full_name} />
+            <InfoItem label="Phone" value={user.phone} />
+            <InfoItem label="Education" value={user.highest_education} />
+            <InfoItem label="Experience" value={user.experience_years ? `${user.experience_years} years` : null} />
+          </div>
+        </div>
+
+        <div>
+          <h4 className="text-sm font-semibold text-slate-900 mb-3">Location Information</h4>
+          <div className="space-y-3">
+            <InfoItem label="City" value={user.city} />
+            <InfoItem label="State" value={user.state} />
+            <InfoItem label="Country" value={user.country} />
+          </div>
+        </div>
+      </div>
 
       {/* Professional Links */}
-      <InfoSection title="Professional Links" icon="link">
-        <div className="space-y-4">
+      <div>
+        <h4 className="text-sm font-semibold text-slate-900 mb-3">Professional Links</h4>
+        <div className="space-y-3">
           <LinkItem 
             label="LinkedIn" 
             url={user.linkedin_url} 
-            icon="linkedin" 
           />
           <LinkItem 
             label="Portfolio" 
             url={user.portfolio_url} 
-            icon="portfolio" 
           />
         </div>
-      </InfoSection>
-    </div>
-  );
-}
-
-// Section Component for form grouping
-function Section({ title, children }) {
-  return (
-    <div>
-      <h4 className="text-xl font-bold text-gray-900 mb-6">{title}</h4>
-      {children}
-    </div>
-  );
-}
-
-// Info Section Component for view mode
-function InfoSection({ title, icon, children }) {
-  const getIcon = (iconName) => {
-    const icons = {
-      user: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z",
-      location: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z",
-      link: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-    };
-    return icons[icon] || icons.user;
-  };
-
-  return (
-    <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-      <div className="flex items-center mb-6">
-        <svg className="w-6 h-6 text-blue-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={getIcon(icon)} />
-        </svg>
-        <h4 className="text-xl font-bold text-gray-900">{title}</h4>
       </div>
-      {children}
+
+      {/* Resume */}
+      {user.resume_path && (
+        <div className="border-t border-slate-200 pt-4">
+          <a 
+            href={user.resume_path} 
+            target="_blank" 
+            rel="noreferrer"
+            className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            View Resume
+          </a>
+        </div>
+      )}
     </div>
   );
 }
 
-// Info Grid Component
-function InfoGrid({ children }) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {children}
-    </div>
-  );
-}
-
-// Info Item Component
 function InfoItem({ label, value }) {
   return (
-    <div>
-      <dt className="text-sm font-semibold text-gray-700 mb-2">{label}</dt>
-      <dd className="text-lg text-gray-900 font-medium">{value || "—"}</dd>
+    <div className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+      <span className="text-sm text-slate-600">{label}</span>
+      <span className="text-sm font-medium text-slate-900">{value || "—"}</span>
     </div>
   );
 }
 
-// Link Item Component
-function LinkItem({ label, url, icon }) {
-  const getIcon = (iconName) => {
-    const icons = {
-      linkedin: "M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M6 4a2 2 0 100-4 2 2 0 000 4z",
-      portfolio: "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-    };
-    return icons[icon] || icons.portfolio;
-  };
-
+function LinkItem({ label, url }) {
   if (!url) {
     return (
-      <div className="flex items-center text-gray-500">
-        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={getIcon(icon)} />
-        </svg>
-        <span className="font-medium">{label}:</span>
-        <span className="ml-3 text-gray-400">Not provided</span>
+      <div className="flex items-center justify-between py-2 border-b border-slate-100">
+        <span className="text-sm text-slate-600">{label}</span>
+        <span className="text-sm text-slate-400">Not provided</span>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center">
-      <svg className="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={getIcon(icon)} />
-      </svg>
-      <span className="font-medium text-gray-700 mr-3">{label}:</span>
-      <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-700 font-medium truncate">
+    <div className="flex items-center justify-between py-2 border-b border-slate-100">
+      <span className="text-sm text-slate-600">{label}</span>
+      <a 
+        href={url} 
+        target="_blank" 
+        rel="noreferrer"
+        className="text-sm text-blue-600 hover:text-blue-700 font-medium truncate max-w-[200px]"
+      >
         {url}
       </a>
     </div>

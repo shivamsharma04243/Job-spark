@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Briefcase, User, Users, Menu, Clock, CheckCircle } from "lucide-react";
+import { 
+  LayoutDashboard, 
+  Briefcase, 
+  User, 
+  Users, 
+  Menu, 
+  Clock, 
+  CheckCircle,
+  FileText,
+  XCircle,
+  Archive
+} from "lucide-react";
 
 const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -9,10 +20,14 @@ const AdminSidebar = () => {
   // Define menu items
   const menuItems = [
     { title: "Dashboard", icon: <LayoutDashboard />, path: "/admin" },
-    { title: "Jobs", icon: <Briefcase />, path: "/admin/jobs" },
-    { title: "Users", icon: <User />, path: "/admin/users" },
     { title: "Pending Recruiters", icon: <Clock />, path: "/admin/pending-recruiters" },
     { title: "Verified Recruiters", icon: <CheckCircle />, path: "/admin/verified-recruiters" },
+    { title: "Users", icon: <User />, path: "/admin/users" },
+    { title: "Jobs", icon: <FileText />, path: "/admin/jobs" },
+    { title: "Pending Jobs", icon: <Clock />, path: "/admin/pending-jobs" },
+    { title: "Approved Jobs", icon: <CheckCircle />, path: "/admin/approved-jobs" },
+    { title: "Rejected Jobs", icon: <XCircle />, path: "/admin/rejected-jobs" },
+    { title: "Closed Jobs", icon: <Archive />, path: "/admin/closed-jobs" },
   ];
 
   return (

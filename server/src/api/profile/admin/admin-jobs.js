@@ -2,7 +2,9 @@ const pool = require('../../config/db');
 
 const getAdminJobs = async (req, res) => {
   try {
-    const [jobs] = await pool.execute(`
+    const { status } = req.query;
+    
+    let sql = `
       SELECT 
         j.id,
         j.title,
@@ -17,7 +19,9 @@ const getAdminJobs = async (req, res) => {
         j.description,
         j.contact_email,
         j.contact_phone,
+        j.interview_address,
         j.logo_path,
+        j.status,
         j.posted_at,
         j.created_at,
         j.updated_at,
@@ -27,8 +31,17 @@ const getAdminJobs = async (req, res) => {
       FROM jobs j
       LEFT JOIN users u ON j.recruiter_id = u.id
       LEFT JOIN recruiter_profiles rp ON j.recruiter_id = rp.user_id
-      ORDER BY j.created_at DESC
-    `);
+    `;
+    
+    // Add status filter if provided
+    if (status && status !== 'all') {
+      sql += ` WHERE j.status = ?`;
+    }
+    
+    sql += ` ORDER BY j.created_at DESC`;
+    
+    const params = status && status !== 'all' ? [status] : [];
+    const [jobs] = await pool.execute(sql, params);
 
     const jobsWithFormattedData = (jobs || []).map(job => {
       let experience = 'Not specified';

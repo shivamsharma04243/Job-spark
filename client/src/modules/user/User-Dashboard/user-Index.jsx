@@ -1,4 +1,6 @@
-import { Card, CardContent } from "../../../components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { Button } from "../../../components/ui/button";
+import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const stats = [
@@ -70,160 +72,112 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
-              <p className="text-lg text-gray-600">Welcome back! Here's your job search overview.</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-lg">
-                U
+    <div className="space-y-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {stats.map((stat, index) => (
+          <Card key={index} className="bg-white rounded-xl border border-slate-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-xs text-slate-500 mb-1">{stat.title}</p>
+                  <p className="text-2xl font-semibold">{stat.value}</p>
+                  <p className="text-xs text-slate-500 mt-1">{stat.description}</p>
+                </div>
+                <div className={`p-3 rounded-lg ${stat.color} text-white`}>
+                  {stat.icon}
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="mb-8">
-          <div className="flex space-x-2 bg-white rounded-2xl p-2 shadow-lg border border-blue-200 w-fit">
-            {[
-              { name: "Overview", href: "/dashboard", active: true },
-              { name: "Profile", href: "/dashboard/profile", active: false },
-              { name: "Saved Jobs", href: "/dashboard/saved", active: false },
-              { name: "Applied Jobs", href: "/dashboard/applied", active: false },
-              { name: "Job Alerts", href: "/dashboard/alerts", active: false }
-            ].map((tab) => (
-              <a
-                key={tab.name}
-                href={tab.href}
-                className={`px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  tab.active
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "text-gray-600 hover:text-blue-700 hover:bg-blue-50"
-                }`}
-              >
-                {tab.name}
-              </a>
-            ))}
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <Card key={index} className="rounded-2xl border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-600 mb-1">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</p>
-                    <p className="text-sm text-gray-500">{stat.description}</p>
+              {stat.progress && (
+                <div className="mt-4">
+                  <div className="w-full bg-slate-100 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full ${stat.color} transition-all duration-500`}
+                      style={{ width: `${stat.progress}%` }}
+                    />
                   </div>
-                  <div className={`p-4 rounded-xl ${stat.color} text-white shadow-lg`}>
-                    {stat.icon}
+                  <div className="flex justify-between text-xs text-slate-500 mt-2">
+                    <span>Progress</span>
+                    <span>{stat.progress}%</span>
                   </div>
                 </div>
-                {stat.progress && (
-                  <div className="mt-4">
-                    <div className="flex justify-between text-sm text-gray-600 mb-2">
-                      <span className="font-medium">Progress</span>
-                      <span className="font-semibold">{stat.progress}%</span>
-                    </div>
-                    <div className="w-full bg-blue-100 rounded-full h-3">
-                      <div
-                        className={`h-3 rounded-full ${stat.color} transition-all duration-500 ease-out`}
-                        style={{ width: `${stat.progress}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <h3 className="text-sm font-semibold mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {quickActions.map((action, index) => (
+            <Link
+              key={index}
+              to={action.href}
+              className="block p-4 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors duration-200"
+            >
+              <div className={`w-12 h-12 rounded-lg ${action.color} flex items-center justify-center text-2xl mb-3`}>
+                {action.icon}
+              </div>
+              <h4 className="font-medium text-slate-900 mb-1">{action.title}</h4>
+              <p className="text-xs text-slate-600">{action.description}</p>
+            </Link>
           ))}
         </div>
+      </div>
 
-        {/* Quick Actions */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {quickActions.map((action, index) => (
-              <a
-                key={index}
-                href={action.href}
-                className="block p-6 bg-white rounded-2xl border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
-              >
-                <div className={`w-14 h-14 rounded-xl ${action.color} flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300 border-2`}>
-                  {action.icon}
-                </div>
-                <h3 className="font-bold text-gray-900 text-lg mb-2">{action.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{action.description}</p>
-              </a>
-            ))}
+      {/* Recommended Jobs */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold">Recommended jobs</h3>
+          <Link to="/jobs" className="text-xs text-slate-500 hover:underline">View all</Link>
+        </div>
+        <div className="space-y-3">
+          <div className="border border-slate-100 rounded-lg p-3 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Frontend Developer (React)</p>
+              <p className="text-xs text-slate-500">TechZen • Bengaluru • 6–10 LPA</p>
+            </div>
+            <button className="text-xs px-3 py-1.5 rounded-full border border-slate-200 hover:bg-slate-50">
+              View
+            </button>
+          </div>
+
+          <div className="border border-slate-100 rounded-lg p-3 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Data Analyst – Entry Level</p>
+              <p className="text-xs text-slate-500">Insightly • Remote • 4–6 LPA</p>
+            </div>
+            <button className="text-xs px-3 py-1.5 rounded-full border border-slate-200 hover:bg-slate-50">
+              View
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* Recent Activity */}
-        <div className="bg-white rounded-2xl shadow-lg border border-blue-200 p-8">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Recent Activity</h2>
-            <a href="/dashboard/applied" className="text-blue-600 hover:text-blue-700 font-semibold text-lg transition-colors">
-              View all activity →
-            </a>
+      {/* Recent Applications */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold">Recent applications</h3>
+          <Link to="/dashboard/applied" className="text-xs text-slate-500 hover:underline">
+            Go to Applications
+          </Link>
+        </div>
+        <div className="space-y-3 text-xs">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium text-sm">Backend Engineer (Node.js)</p>
+              <p className="text-slate-500">Status: Under review</p>
+            </div>
+            <p className="text-slate-400">2 days ago</p>
           </div>
-          
-          <div className="space-y-6">
-            {[
-              {
-                type: "application",
-                title: "Senior Frontend Developer",
-                company: "TechCorp Inc.",
-                status: "Under Review",
-                time: "2 hours ago",
-                statusColor: "bg-yellow-100 text-yellow-800 border border-yellow-200"
-              },
-              {
-                type: "saved",
-                title: "Product Manager",
-                company: "StartupXYZ",
-                status: "Saved",
-                time: "1 day ago",
-                statusColor: "bg-blue-100 text-blue-800 border border-blue-200"
-              },
-              {
-                type: "alert",
-                title: "New matching jobs",
-                company: "Job Alerts",
-                status: "5 new jobs",
-                time: "2 days ago",
-                statusColor: "bg-green-100 text-green-800 border border-green-200"
-              }
-            ].map((activity, index) => (
-              <div key={index} className="flex items-center justify-between p-6 border border-blue-100 rounded-xl hover:bg-blue-50 transition-all duration-300 group">
-                <div className="flex items-center space-x-6">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-md ${
-                    activity.type === 'application' ? 'bg-orange-100 text-orange-600 border border-orange-200' :
-                    activity.type === 'saved' ? 'bg-blue-100 text-blue-600 border border-blue-200' :
-                    'bg-green-100 text-green-600 border border-green-200'
-                  } group-hover:scale-110 transition-transform`}>
-                    {activity.type === 'application' ? '📨' : activity.type === 'saved' ? '💾' : '🔔'}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900 text-lg mb-1">{activity.title}</h4>
-                    <p className="text-gray-600 font-medium">{activity.company}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${activity.statusColor}`}>
-                    {activity.status}
-                  </span>
-                  <p className="text-sm text-gray-500 mt-2 font-medium">{activity.time}</p>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium text-sm">Junior Data Engineer</p>
+              <p className="text-slate-500">Status: Shortlisted</p>
+            </div>
+            <p className="text-slate-400">5 days ago</p>
           </div>
         </div>
       </div>
