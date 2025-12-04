@@ -188,10 +188,10 @@ function Hero() {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
             Find local & remote jobs{" "}
             <span className="text-blue-600">in minutes</span>
-    </h1>
+          </h1>
           <p className="text-sm sm:text-base text-slate-600 max-w-xl">
             Search by city, role or skill. Apply in a few taps. No confusing
-            steps.
+            steps. Real openings from verified companies, not spam.
           </p>
 
           {/* Advanced search */}
