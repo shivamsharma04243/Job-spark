@@ -281,7 +281,6 @@ function JobCard({ job }) {
   );
 }
 
-// Jobs Listing Component
 function JobsListing() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -299,16 +298,17 @@ function JobsListing() {
 
         if (data.ok && Array.isArray(data.jobs)) {
           const mapped = data.jobs.map((j) => ({
-            id: j.id,
-            title: j.title,
-            company: j.company,
-            location: j.location || "Remote",
-            skills: j.skills || [], // Use skills field
+            id: j._id || j.id,
+            title: j.title || j.jobTitle || "",
+            company: j.company || j.companyName || "",
+            location: j.location || j.jobLocation || "Remote",
+            tags: j.skills || j.tags || [],
             posted: timeAgo(j.createdAt),
-            type: j.type,
-            experience: j.experience || j.experiance,
+            type: j.type || j.jobType || "",
+            experience: j.experience || j.experiance || j.exp || "",
             logoPath: j.logoPath,
           }));
+
           setJobs(mapped);
         } else {
           setJobs(fallbackJobs);
