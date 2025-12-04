@@ -14,8 +14,6 @@ import {
   UserPlus,
   Send,
 } from "lucide-react";
-import { FcGoogle } from "react-icons/fc";
-import SignInModal from "../auth/SignInModal";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -23,6 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
+import homeIllustration from "../../assets/home.svg";
 
 // THEME CONSTANTS
 const PRIMARY_BLUE = "#0066CC";
@@ -52,13 +51,87 @@ const fallbackJobs = [
 ];
 
 const jobCategories = [
-  { id: "it", label: "IT & Software", count: 324, icon: <Briefcase size={22} /> },
-  { id: "marketing", label: "Marketing", count: 142, icon: <Send size={22} /> },
-  { id: "sales", label: "Sales", count: 210, icon: <ArrowRight size={22} /> },
-  { id: "healthcare", label: "Healthcare", count: 98, icon: <Users size={22} /> },
-  { id: "finance", label: "Finance", count: 176, icon: <Building2 size={22} /> },
-  { id: "design", label: "Design & Creative", count: 87, icon: <UserPlus size={22} /> },
+  {
+    id: "work-from-home",
+    label: "Work from home",
+    count: 260000,
+    icon: <HomeIcon />,
+    headline: "2,60,000+ Vacancies",
+    description: "Work from home jobs",
+  },
+  {
+    id: "part-time",
+    label: "Part Time",
+    count: 1960000,
+    icon: <Clock size={22} />,
+    headline: "19,60,000+ Vacancies",
+    description: "Part time jobs for flexible hours",
+  },
+  {
+    id: "women",
+    label: "Jobs for Women",
+    count: 720000,
+    icon: <Users size={22} />,
+    headline: "7,20,000+ Vacancies",
+    description: "Safe & women‑friendly workplaces",
+  },
+  {
+    id: "fresher",
+    label: "Fresher jobs",
+    count: 1170000,
+    icon: <UserPlus size={22} />,
+    headline: "11,70,000+ Vacancies",
+    description: "No / less experience required",
+  },
+  {
+    id: "delivery-sales",
+    label: "Delivery / Sales",
+    count: 540000,
+    icon: <Send size={22} />,
+    headline: "5,40,000+ Vacancies",
+    description: "Delivery partner & field sales roles",
+  },
+  {
+    id: "office-data-entry",
+    label: "Office job / Data entry",
+    count: 380000,
+    icon: <Building2 size={22} />,
+    headline: "3,80,000+ Vacancies",
+    description: "Back‑office, computer & data work",
+  },
+  {
+    id: "telecaller",
+    label: "Telecaller",
+    count: 290000,
+    icon: <Briefcase size={22} />,
+    headline: "2,90,000+ Vacancies",
+    description: "Inbound / outbound calling jobs",
+  },
+  {
+    id: "internship-paid",
+    label: "Internship (Paid)",
+    count: 210000,
+    icon: <ArrowRight size={22} />,
+    headline: "2,10,000+ Vacancies",
+    description: "Stipend based internships",
+  },
+  {
+    id: "internship-unpaid",
+    label: "Internship (Unpaid / Student)",
+    count: 160000,
+    icon: <Briefcase size={22} />,
+    headline: "1,60,000+ Vacancies",
+    description: "Learning focused roles for students",
+  },
 ];
+
+function HomeIcon() {
+  return (
+    <div className="w-4 h-4 rounded-sm border border-blue-500 bg-blue-50 flex items-center justify-center">
+      <span className="w-2 h-2 border-b-2 border-l-2 border-blue-500 rotate-[-45deg]" />
+    </div>
+  );
+}
 
 // UTIL
 function timeAgo(iso) {
@@ -115,8 +188,6 @@ function Hero() {
   const [chips, setChips] = useState([]);
   const [activeField, setActiveField] = useState("title");
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [loginRole, setLoginRole] = useState("candidate");
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -360,68 +431,18 @@ function Hero() {
           </div>
         </div>
 
-        {/* Right login card */}
-        <div className="relative">
-          <div className="absolute -inset-4 bg-gradient-to-tr from-blue-50 via-sky-50 to-slate-50 rounded-3xl blur-2xl -z-10" />
-          <Card className="relative border border-slate-100 shadow-xl rounded-3xl overflow-hidden bg-white">
-            <CardHeader className="p-6 pb-3 border-b border-slate-100">
-              <p className="text-xs font-semibold text-blue-600 uppercase tracking-[0.2em]">
-                Sign in with Google
-              </p>
-              <CardTitle className="text-2xl font-bold text-slate-900">
-                Sign in as{" "}
-                {loginRole === "candidate" ? "Candidate" : "Recruiter"}
-              </CardTitle>
-              <p className="text-sm text-slate-500">
-                Use your Google account to continue. No password needed.
-              </p>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <div className="inline-flex rounded-2xl border border-slate-200 p-1 bg-slate-50 w-full">
-                {["candidate", "recruiter"].map((role) => (
-                  <button
-                    key={role}
-                    type="button"
-                    onClick={() => setLoginRole(role)}
-                    className={`flex-1 text-sm font-semibold rounded-xl py-2 transition-colors ${
-                      loginRole === role
-                        ? "bg-white shadow text-blue-700"
-                        : "text-slate-500 hover:text-slate-700"
-                    }`}
-                  >
-                    {role === "candidate" ? "Job seeker" : "Recruiter"}
-                  </button>
-                ))}
-              </div>
-
-              <div className="space-y-3">
-                <button
-                  type="button"
-                  onClick={() => setShowLoginModal(true)}
-                  className="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 font-medium rounded-2xl py-2.5 flex items-center justify-center gap-3"
-                >
-                  <FcGoogle size={20} />
-                  <span className="text-sm">Sign in with Google</span>
-                </button>
-
-                <p className="text-[11px] text-center text-slate-500">
-                  Currently signing in as{" "}
-                  <span className="font-semibold">
-                    {loginRole === "candidate" ? "Candidate" : "Recruiter"}
-                  </span>
-                  .
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Right side – hero illustration image */}
+        <div className="relative flex items-center justify-center">
+          <div className="relative w-full max-w-xl lg:max-w-2xl lg:mt-12">
+            <img
+              src={homeIllustration}
+              alt="People exploring new career opportunities"
+              className="w-full h-auto rounded-3xl object-contain"
+              loading="lazy"
+            />
+          </div>
         </div>
       </div>
-      {showLoginModal && (
-        <SignInModal
-          role={loginRole === "candidate" ? "user" : "recruiter"}
-          onClose={() => setShowLoginModal(false)}
-        />
-      )}
     </section>
   );
 }
