@@ -27,7 +27,7 @@ import {
 // THEME CONSTANTS
 const PRIMARY_BLUE = "#0066CC";
 const LIGHT_GREY_BG = "#F5F5F5";
-const CTA_GREEN = "#28A745";
+const CTA_GREEN = "#0052A3";
 
 // SIMPLE FALLBACK DATA
 const fallbackJobs = [
@@ -146,7 +146,7 @@ function Hero() {
 
   return (
     <section className="relative bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 lg:py-24 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12 lg:py-16 lg:min-h-[calc(100vh-120px)] grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         {/* Left copy */}
         <div className="space-y-5">
           <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-blue-600 bg-blue-50 border border-blue-100 rounded-full px-3 py-1 w-fit">
@@ -315,7 +315,7 @@ function Hero() {
           <div className="flex flex-col sm:flex-row gap-3">
             <Link to="/post-job" className="flex-1">
               <Button
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md flex items-center justify-center gap-2 text-sm"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md flex items-center justify-center gap-2 text-sm"
                 style={{ backgroundColor: CTA_GREEN }}
               >
                 Post a Job
@@ -438,7 +438,7 @@ function JobCard({ job }) {
 
         <div className="flex gap-2 pt-2">
           <Button
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold shadow-sm hover:shadow-md"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm hover:shadow-md"
             style={{ backgroundColor: CTA_GREEN }}
           >
             Quick Apply
@@ -496,7 +496,7 @@ function FeaturedJobs() {
   }, []);
 
   return (
-    <section className="bg-slate-50">
+    <section className="bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
@@ -648,7 +648,7 @@ function Categories() {
   };
 
   return (
-    <section className="bg-white">
+    <section className="bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
@@ -741,7 +741,7 @@ function WhyChooseUs() {
               className="border border-slate-200 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all"
             >
               <CardContent className="p-5 space-y-3">
-                <CheckCircle2 className="text-green-600" />
+            <CheckCircle2 className="text-blue-600" />
                 <h3 className="text-sm font-semibold text-slate-900">
                   {item.title}
                 </h3>
@@ -805,7 +805,7 @@ function DualCTA() {
                   Build a profile once and apply to multiple roles in minutes.
                 </p>
                 <Link to="/profile/upload-resume">
-                  <Button className="mt-2 w-full bg-green-500 hover:bg-green-600 text-white font-semibold flex items-center justify-center gap-1.5">
+                  <Button className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold flex items-center justify-center gap-1.5">
                     Upload Resume
                     <ChevronRight size={16} />
           </Button>

@@ -225,7 +225,7 @@ export default function Navbar() {
 
                 {/* Recruiter (popup) */}
                 <Button
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md"
                   onClick={() => handleOpenAuth("recruiter")}
                 >
                   Recruiter Login
@@ -293,7 +293,7 @@ export default function Navbar() {
                     Candidate Login
                   </Button>
                   <Button
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                     onClick={() => handleOpenAuth("recruiter")}
                   >
                     Recruiter Login
