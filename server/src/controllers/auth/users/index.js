@@ -13,6 +13,7 @@ const updateProfile = require('../../../api/auth/update');
  */
 const signUp = require('../../../api/auth/sign-up');
 const signIn = require('../../../api/auth/sign-in');
+const googleAuth = require('../../../api/auth/google-auth');
 
 /**
  * Auth Middleware
@@ -41,6 +42,9 @@ router.post('/signup', signUp);
 
 // Login user and issue JWT cookie
 router.post('/login', signIn);
+
+// Google OAuth authentication
+router.post('/google', googleAuth);
 
 // Validate token + return currently authenticated user
 router.get('/authcheck', requireAuth, authCheck);

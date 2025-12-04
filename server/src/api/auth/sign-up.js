@@ -34,11 +34,11 @@ function signToken(payload) {
 async function signUp(req, res) {
   try {
     // Extract fields from request body
-    const { username, email, password, role: inputRole } = req.body || {};
+    const { name, email, password, role: inputRole } = req.body || {};
 
     // Basic input validation
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: 'username, email and password are required' });
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'name, email and password are required' });
     }
 
     // Prevent clients from setting arbitrary roles
@@ -50,12 +50,11 @@ async function signUp(req, res) {
       /**
        * Step 1: Check if user already exists
        * -------------------------------------
-       * Using OR condition so user cannot reuse
-       * duplicate email or username.
+       * Check by email only (username removed from schema)
        */
       const [existing] = await conn.execute(
-        'SELECT id FROM users WHERE email = ? OR username = ? LIMIT 1',
-        [email, username]
+        'SELECT id FROM users WHERE email = ? LIMIT 1',
+        [email]
       );
 
       if (existing.length) {
@@ -74,26 +73,27 @@ async function signUp(req, res) {
        * Step 3: Insert new user
        * ------------------------
        * Store hashed password, not plain text.
+       * Using 'password_hash' column name as per schema.
        */
       const [result] = await conn.execute(
-        'INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)',
-        [username, email, passwordHash, role]
+        'INSERT INTO users (name, email, password_hash, role, auth_provider) VALUES (?, ?, ?, ?, ?)',
+        [name, email, passwordHash, role, 'local']
       );
 
       // Build user object for frontend response
-      const user = { id: result.insertId, username, email, role };
+      const user = { id: result.insertId, name, email, role };
 
       /**
        * Step 4: Generate token
        * ------------------------
        * Token contains:
        *  - sub: user ID
-       *  - username
+       *  - email
        *  - role
        */
       const token = signToken({
         sub: user.id,
-        username: user.username,
+        email: user.email,
         role: user.role,
       });
 

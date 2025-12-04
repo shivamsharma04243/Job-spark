@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../components/apiconfig/apiconfig";
-import { Search } from "lucide-react";
+import { Search, MapPin, Clock, Briefcase } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -20,7 +20,7 @@ const fallbackJobs = [
     tags: ["JavaScript", "React", "API"],
     posted: "Today",
     type: "Internship",
-    experiance: "Student",
+    experience: "Student",
   },
 ];
 
@@ -45,112 +45,70 @@ function timeAgo(iso) {
 
 function Hero() {
   return (
-    <section className="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-2 gap-8 items-center mb-6">
-      <div>
-        <h1 className="text-5xl leading-tight font-extrabold text-slate-900 mb-6">
-          Find legit internships & entry-level jobs —{" "}
-          <span className="text-orange-600">no spam</span>, just opportunities
-        </h1>
-        <p className="text-slate-600 mb-6">
-          Discover remote, hybrid, and in-office roles curated for students and
-          freshers. Apply fast with a smart profile and skill-based search.
-        </p>
-        <div className="flex gap-4">
-          <Link to="/jobs">
-            <Button className="shadow">Find Your First Job</Button>
-          </Link>
-          <Link to="/sign-up">
-            <Button variant="secondary">Create Free Profile</Button>
-          </Link>
-        </div>
-      </div>
+    <section className="relative bg-gradient-to-br from-orange-50 to-white border-b border-slate-200">
+   <div className="max-w-7xl mx-auto px-6 py-20 md:py-24 grid md:grid-cols-2 gap-16 items-center">
+  <div className="space-y-6">
+    
+    {/* Small Tag */}
+    <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+      Early Career Opportunities
+    </p>
 
-      <aside>
-        <Card className="rounded-2xl shadow-xl">
-          <CardContent className="bg-white rounded-2xl">
-            <div className="text-lg font-medium mb-3">Search jobs</div>
-            <div className="flex gap-2 items-center">
-              <div className="flex items-center gap-2 border rounded-md px-3 py-2 w-full">
-                <Search size={16} />
-                <input
-                  className="outline-none w-full text-sm"
-                  placeholder="Role, skill or company"
-                />
-              </div>
-              <Button>Search</Button>
-            </div>
-          </CardContent>
-        </Card>
-      </aside>
-    </section>
-  );
-}
+    {/* Main Heading */}
+    <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-tight">
+      Find legit internships & entry-level jobs —
+      <span className="text-orange-600"> no spam </span>,
+      just opportunities
+    </h1>
 
-function WhyHireSpark() {
-  return (
-    <section className="max-w-6xl mx-auto px-4 py-12">
-      <div className="grid md:grid-cols-2 gap-8 items-start">
-        <div>
-          <h2 className="text-4xl font-extrabold mb-4">
-            How HireSpark is different
-          </h2>
-          <p className="text-slate-600 mb-6">
-            We focus only on students & freshers—and we verify listings to keep
-            out spam. Career resources help you apply smarter and get hired
-            faster.
-          </p>
+    {/* Description */}
+    <p className="text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl">
+      Discover remote, hybrid, and in-office roles curated for students and freshers. 
+      Apply fast with a smart profile and skill-based search.
+    </p>
 
-          <div className="space-y-4">
-            <Card className="rounded-2xl">
-              <CardContent className=" rounded-2xl shadow-lg">
-                <div className="font-semibold">
-                  Higher-quality early-career listings
-                </div>
-                <div className="opacity-90 mt-1 text-gray-600">
-                  Only internships and 0–2 year roles, hand-checked to reduce
-                  junk.
-                </div>
-              </CardContent>
-            </Card>
+    {/* Buttons */}
+    <div className="flex flex-wrap gap-4">
+      <Link to="/jobs">
+        <Button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg font-semibold shadow-lg">
+          Explore Jobs
+        </Button>
+      </Link>
 
-            <Card className="rounded-2xl">
-              <CardContent className="rounded-2xl shadow-lg">
-                <div className="font-semibold">Unlimited career resources</div>
-                <div className="opacity-90 mt-1 text-gray-600">
-                  Resume templates, interview prep, and skill guides tailored
-                  for freshers.
-                </div>
-              </CardContent>
-            </Card>
+      <Link to="/sign-up">
+        <Button
+          variant="outline"
+          className="border-2 border-slate-300 text-slate-800 hover:bg-slate-50 px-8 py-4 text-lg font-semibold"
+        >
+          Join for Free
+        </Button>
+      </Link>
+    </div>
 
-            <Card className="rounded-2xl">
-              <CardContent className="shadow-xl rounded-2xl">
-                <div className="font-semibold">Save time with smart apply</div>
-                <div className="opacity-90 mt-1 text-gray-600">
-                  Skill-based profiles, alerts, and one-click apply on select
-                  roles.
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+  </div>
 
-        <aside>
-          <Card className="rounded-2xl shadow-sm p-6">
-            <CardHeader>
-              <CardTitle>Popular searches</CardTitle>
+
+
+        <aside className="w-full">
+          <Card className="border border-slate-200 rounded-2xl shadow-xl bg-white">
+            <CardHeader className="pb-6">
+              <CardTitle className="text-lg font-bold text-slate-900">
+                Quick Job Search
+              </CardTitle>
             </CardHeader>
-            <CardContent className="rounded-2xl">
-              <ul className="grid grid-cols-2 gap-2 text-sm text-slate-700">
-                <li>Internships</li>
-                <li>Remote Fresher Jobs</li>
-                <li>Software (0–2 yrs)</li>
-                <li>Data Analyst</li>
-                <li>UI/UX Designer</li>
-                <li>Business Analyst</li>
-                <li>Marketing Associate</li>
-                <li>Customer Support</li>
-              </ul>
+            <CardContent className="pt-0">
+              <div className="flex gap-4 items-center">
+                <div className="flex items-center gap-4 border border-slate-300 rounded-xl px-5 py-4 w-full bg-slate-50 shadow-inner">
+                  <Search size={20} className="text-slate-500" />
+                  <input
+                    className="outline-none w-full text-lg text-slate-900 placeholder:text-slate-400 bg-transparent"
+                    placeholder="Search by role, skill, or company"
+                  />
+                </div>
+                <Button className="bg-slate-900 hover:bg-slate-800 text-lg px-6 py-4 font-semibold shadow-lg">
+                  Search
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </aside>
@@ -159,52 +117,153 @@ function WhyHireSpark() {
   );
 }
 
-function JobsTableRow({ job }) {
+function WhyHireSpark() {
   return (
-    <tr className="border-b">
-      <td className="px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="text-sm">
-            {job.title.charAt(0).toUpperCase() + job.title.slice(1)}
+    <section className="bg-white border-t border-slate-200">
+      <div className="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-16 items-start">
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">
+              Why HireSpark Stands Out for Early Talent
+            </h2>
+            <p className="text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl">
+              Designed exclusively for students and freshers, we ensure every listing is vetted, spam-free, and focused on real career growth.
+            </p>
           </div>
 
-        </div>
-      </td>
+          <div className="space-y-6">
+            <Card className="border border-slate-200 rounded-2xl shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-r from-slate-50 to-white">
+              <CardContent className="py-6 px-8">
+                <div className="text-xl font-bold text-slate-900 mb-3">
+                  Premium Early-Career Listings
+                </div>
+                <p className="text-base text-slate-600">
+                  Curated internships and 0–2 year roles with emphasis on authenticity and relevance.
+                </p>
+              </CardContent>
+            </Card>
 
-      <td className="px-4 py-3">{job.company}</td>
-      <td className="px-4 py-3">{job.location}</td>
-      <td className="px-4 py-3">{job.type}</td>
-      <td className="px-4 py-3">{job.experiance}</td>
-      <td className="px-4 py-3">
-        <div className="flex flex-wrap gap-2 max-w-[170px]">
-          {job.tags && job.tags.length ? (
-            job.tags.map((t, i) => (
-              <span
-                key={i}
-                className="px-2 py-1 text-xs rounded border bg-slate-50 whitespace-nowrap"
-              >
-                {t}
-              </span>
-            ))
-          ) : (
-            <span className="text-xs text-slate-400">No tags</span>
-          )}
-        </div>
-      </td>
+            <Card className="border border-slate-200 rounded-2xl shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-r from-slate-50 to-white">
+              <CardContent className="py-6 px-8">
+                <div className="text-xl font-bold text-slate-900 mb-3">
+                  Actionable Career Resources
+                </div>
+                <p className="text-base text-slate-600">
+                  Access resume builders, interview guides, and skill-building roadmaps tailored for beginners.
+                </p>
+              </CardContent>
+            </Card>
 
-      <td className="px-4 py-3 text-orange-600">{job.posted}</td>
-      <td className="px-4 py-3">
-        <div className="flex flex-row gap-2 items-center">
-          <Button className="px-4 py-2 whitespace-nowrap">Quick Apply</Button>
-          <Link
-            to={`/jobs/${job.id}`}
-            className="text-slate-900 hover:text-orange-600 text-sm border px-3 py-2 rounded-xl bg-slate-100"
-          >
-            View
-          </Link>
+            <Card className="border border-slate-200 rounded-2xl shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-r from-slate-50 to-white">
+              <CardContent className="py-6 px-8">
+                <div className="text-xl font-bold text-slate-900 mb-3">
+                  Seamless Application Process
+                </div>
+                <p className="text-base text-slate-600">
+                  Use your profile for quick applies, get notifications, and enjoy streamlined flows for faster hiring.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </td>
-    </tr>
+
+        <aside>
+          <Card className="border border-slate-200 rounded-2xl shadow-xl bg-white">
+            <CardHeader className="pb-6">
+              <CardTitle className="text-xl font-bold text-slate-900">
+                Trending Searches
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0 pb-8">
+              <ul className="grid grid-cols-2 gap-4 text-base text-slate-700">
+                <li className="hover:text-orange-600 cursor-pointer transition-colors">Internships</li>
+                <li className="hover:text-orange-600 cursor-pointer transition-colors">Remote Fresher Roles</li>
+                <li className="hover:text-orange-600 cursor-pointer transition-colors">Software (0–2 yrs)</li>
+                <li className="hover:text-orange-600 cursor-pointer transition-colors">Data Analyst</li>
+                <li className="hover:text-orange-600 cursor-pointer transition-colors">UI/UX Designer</li>
+                <li className="hover:text-orange-600 cursor-pointer transition-colors">Business Analyst</li>
+                <li className="hover:text-orange-600 cursor-pointer transition-colors">Marketing Associate</li>
+                <li className="hover:text-orange-600 cursor-pointer transition-colors">Customer Support</li>
+              </ul>
+            </CardContent>
+          </Card>
+        </aside>
+      </div>
+    </section>
+  );
+}
+function JobCard({ job }) {
+  return (
+    <Card className="group border border-slate-200 rounded-2xl shadow-md hover:shadow-2xl hover:border-orange-200 transition-all duration-300 bg-white overflow-hidden cursor-pointer">
+      <CardContent className="p-6">
+        <div className="space-y-5">
+          {/* Header with logo placeholder */}
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+              <Briefcase size={24} className="text-orange-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-orange-600 transition-colors line-clamp-2">
+                {job.title.charAt(0).toUpperCase() + job.title.slice(1)}
+              </h3>
+              <p className="text-base font-medium text-slate-600">{job.company}</p>
+            </div>
+          </div>
+
+          {/* Enhanced meta information */}
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-slate-600">
+            <div className="flex items-center gap-1.5">
+              <MapPin size={16} className="text-slate-400" />
+              <span>{job.location}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Briefcase size={16} className="text-slate-400" />
+              <span>{job.type}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Clock size={16} className="text-slate-400" />
+              <span>{job.posted}</span>
+            </div>
+          </div>
+
+          {/* Improved tags section */}
+          <div className="min-h-[32px]">
+            {job.tags && job.tags.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {job.tags.slice(0, 3).map((t, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1.5 text-xs font-semibold rounded-full bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 transition-colors"
+                  >
+                    {t}
+                  </span>
+                ))}
+                {job.tags.length > 3 && (
+                  <span className="px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-600">
+                    +{job.tags.length - 3} more
+                  </span>
+                )}
+              </div>
+            ) : (
+              <span className="text-sm text-slate-400 italic">No skills listed</span>
+            )}
+          </div>
+
+          {/* Refined action buttons */}
+          <div className="flex gap-3 pt-2 border-t border-slate-100">
+            <Button className="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-2.5 font-semibold shadow-sm hover:shadow-md transition-all">
+              Apply Now
+            </Button>
+            <Link
+              to={`/jobs/${job.id}`}
+              className="flex-1 flex items-center justify-center text-slate-700 hover:text-orange-600 hover:bg-orange-50 border border-slate-300 hover:border-orange-300 py-2.5 rounded-lg font-semibold transition-all"
+            >
+              Details
+            </Link>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -232,7 +291,7 @@ function JobsListing() {
             tags: j.tags || [],
             posted: timeAgo(j.createdAt),
             type: j.type,
-            experiance: j.experiance || j.experience,
+            experience: j.experience || j.experiance,
             logoPath: j.logoPath,
           }));
           setJobs(mapped);
@@ -254,64 +313,61 @@ function JobsListing() {
   }, []);
 
   return (
-    <main className="max-w-7xl mx-auto px-10 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold">
-          Featuring fresh internships & entry-level jobs
-        </h2>
-        <Link
-          to="/jobs"
-          className="px-4 py-2 border border-orange-500 text-orange-600 rounded-full hover:bg-orange-50"
-        >
-          Browse all jobs
-        </Link>
-      </div>
+    <main className="bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900">
+            Featured Internships & Entry-Level Roles
+          </h2>
+          <Link
+            to="/jobs"
+            className="inline-flex items-center justify-center px-8 py-4 text-lg border-2 border-orange-500 text-orange-600 rounded-full hover:bg-orange-50 font-semibold transition-colors"
+          >
+            View All Jobs
+          </Link>
+        </div>
 
-      <div className="overflow-x-auto rounded-xl shadow-sm border">
-        <table className="w-full border bg-white ">
-          <thead className="bg-slate-100 border-b">
-            <tr>
-              <th className="px-4 py-3 text-left">Job Title</th>
-              <th className="px-4 py-3 text-left">Company</th>
-              <th className="px-4 py-3 text-left">Location</th>
-              <th className="px-4 py-3 text-left">Type</th>
-              <th className="px-4 py-3 text-left">Experience</th>
-              <th className="px-4 py-3 text-left">Tags</th>
-              <th className="px-4 py-3 text-left">Posted</th>
-              <th className="px-4 py-3 text-left">Action</th>
-            </tr>
-          </thead>
+        {loading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Card key={i} className="border border-slate-200 rounded-2xl shadow-lg animate-pulse">
+                <CardContent className="p-6 space-y-4">
+                  <div className="h-6 bg-slate-200 rounded"></div>
+                  <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-slate-200 rounded w-1/2"></div>
+                  <div className="flex gap-2">
+                    <div className="h-6 bg-slate-200 rounded-full w-16"></div>
+                    <div className="h-6 bg-slate-200 rounded-full w-20"></div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="h-10 bg-slate-200 rounded flex-1"></div>
+                    <div className="h-10 bg-slate-200 rounded flex-1"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-20">
+            <p className="text-2xl text-rose-600 font-semibold">{error}</p>
+          </div>
+        ) : jobs.length ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {jobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-2xl text-slate-500 font-semibold">No jobs found.</p>
+          </div>
+        )}
 
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={8} className="p-10 text-center text-slate-500">
-                  Loading jobs...
-                </td>
-              </tr>
-            ) : error ? (
-              <tr>
-                <td colSpan={8} className="p-10 text-center text-rose-600">
-                  {error}
-                </td>
-              </tr>
-            ) : jobs.length ? (
-              jobs.map((job) => <JobsTableRow key={job.id} job={job} />)
-            ) : (
-              <tr>
-                <td colSpan={8} className="p-10 text-center text-slate-500">
-                  No jobs found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mt-10 flex justify-center">
-        <Button className="px-6 bg-orange-500 hover:bg-orange-600 text-white">
-          Find Your Next Role
-        </Button>
+        <div className="mt-16 flex justify-center">
+          <Button className="px-10 py-4 bg-slate-900 hover:bg-slate-800 text-white text-lg font-semibold shadow-lg">
+            Discover Your Next Opportunity
+          </Button>
+        </div>
       </div>
     </main>
   );

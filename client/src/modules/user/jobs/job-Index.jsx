@@ -22,6 +22,9 @@ export default function Jobs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const pageSize = 6;
+  const [page, setPage] = useState(1);
+
   useEffect(() => {
     let alive = true;
 
@@ -47,7 +50,7 @@ export default function Jobs() {
           setFiltered(mapped);
         }
       } catch (err) {
-        setError(err.message);
+        setError((err && err.message) || "Something went wrong");
       } finally {
         setLoading(false);
       }
@@ -78,12 +81,12 @@ export default function Jobs() {
 
     if (exp && exp !== "Experience")
       data = data.filter((job) =>
-        job.exp.toLowerCase().includes(exp.toLowerCase())
+        (job.exp || "").toLowerCase().includes(exp.toLowerCase())
       );
 
     if (mode && mode !== "Work mode")
       data = data.filter((job) =>
-        job.mode.toLowerCase().includes(mode.toLowerCase())
+        (job.mode || "").toLowerCase().includes(mode.toLowerCase())
       );
 
     setFiltered(data);
@@ -92,11 +95,10 @@ export default function Jobs() {
 
   useEffect(() => {
     handleSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role, location, exp, mode]);
 
-  const pageSize = 4;
-  const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(filtered.length / pageSize);
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   useEffect(() => {
     if (page > totalPages) setPage(totalPages || 1);
@@ -104,178 +106,238 @@ export default function Jobs() {
 
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
+  const startIdx = filtered.length === 0 ? 0 : (page - 1) * pageSize + 1;
+  const endIdx = (page - 1) * pageSize + paginated.length;
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <h1 className="text-2xl md:text-3xl font-extrabold mb-1">Find Jobs</h1>
-      <p className="text-slate-600 mb-4">
-        Internships and entry-level roles for students & 0–2 yrs.
-      </p>
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-7xl mx-auto px-4 py-10">
+        <header className="mb-6">
+          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
+            Open positions
+          </h1>
+          <p className="mt-1 text-sm md:text-base text-slate-600">
+            Explore internships and early-career roles across locations and work modes.
+          </p>
+        </header>
 
-      <div className="grid md:grid-cols-6 gap-2 bg-white p-3 rounded-2xl border mb-4">
-        <Input
-          placeholder="Role or skill"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          className="md:col-span-2"
-        />
+        <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-8">
+          {/* Sidebar */}
+          <aside className="bg-white border border-slate-200 rounded-xl p-5 h-fit md:sticky md:top-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-medium text-slate-900">Filter jobs</h2>
+              {(role ||
+                location ||
+                (exp && exp !== "Experience") ||
+                (mode && mode !== "Work mode")) && (
+                <button
+                  className="text-[11px] text-slate-500 hover:text-slate-700"
+                  onClick={() => {
+                    setRole("");
+                    setLocation("");
+                    setExp("");
+                    setMode("");
+                  }}
+                >
+                  Reset
+                </button>
+              )}
+            </div>
 
-        <Input
-          placeholder="Location (Remote, Bengaluru...)"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">
+                  Role or keyword
+                </label>
+                <Input
+                  placeholder="e.g. Frontend, Designer"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="text-sm"
+                />
+              </div>
 
-        <select
-          className="rounded-xl border p-2 text-sm"
-          value={exp}
-          onChange={(e) => setExp(e.target.value)}
-        >
-          <option>Experience</option>
-          <option>Student</option>
-          <option>Fresher (0 yrs)</option>
-          <option>1–2 yrs</option>
-        </select>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">
+                  Location
+                </label>
+                <Input
+                  placeholder="Remote, Bengaluru..."
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="text-sm"
+                />
+              </div>
 
-        <select
-          className="rounded-xl border p-2 text-sm"
-          value={mode}
-          onChange={(e) => setMode(e.target.value)}
-        >
-          <option>Work mode</option>
-          <option>Remote</option>
-          <option>Hybrid</option>
-          <option>Office</option>
-        </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                    Experience
+                  </label>
+                  <select
+                    className="w-full rounded-lg border border-slate-300 bg-white p-2 text-xs text-slate-800"
+                    value={exp}
+                    onChange={(e) => setExp(e.target.value)}
+                  >
+                    <option>Experience</option>
+                    <option>Student</option>
+                    <option>Fresher (0 yrs)</option>
+                    <option>1–2 yrs</option>
+                  </select>
+                </div>
 
-        <Button onClick={handleSearch} className="hidden md:inline-flex">
-          Search
-        </Button>
-      </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                    Work mode
+                  </label>
+                  <select
+                    className="w-full rounded-lg border border-slate-300 bg-white p-2 text-xs text-slate-800"
+                    value={mode}
+                    onChange={(e) => setMode(e.target.value)}
+                  >
+                    <option>Work mode</option>
+                    <option>Remote</option>
+                    <option>Hybrid</option>
+                    <option>Office</option>
+                  </select>
+                </div>
+              </div>
 
-      <div className="overflow-x-auto rounded-2xl border bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-100 text-slate-700">
-            <tr>
-              <th className="px-3 py-2 text-left">Job Title</th>
-              <th className="px-3 py-2 text-left">Company</th>
-              <th className="px-3 py-2 text-left">Location</th>
-              <th className="px-3 py-2 text-left">Type</th>
-              <th className="px-3 py-2 text-left">Mode</th>
-              <th className="px-3 py-2 text-left">Experience</th>
-              <th className="px-3 py-2 text-left">Tags</th>
-              <th className="px-3 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
+              <Button
+                onClick={handleSearch}
+                className="w-full text-sm mt-1 bg-slate-900 hover:bg-slate-800"
+              >
+                Apply filters
+              </Button>
+            </div>
+          </aside>
 
-          <tbody>
-            {paginated.length === 0 ? (
-              <tr>
-                <td colSpan="8" className="text-center py-4 text-slate-500">
-                  No jobs found
-                </td>
-              </tr>
+          {/* Content */}
+          <section>
+            {error && (
+              <div className="mb-4 text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
+                {error}
+              </div>
+            )}
+
+            <div className="mb-4 flex items-center justify-between text-xs md:text-sm text-slate-600">
+              <span>
+                Showing {startIdx}–{endIdx} of {filtered.length} roles
+              </span>
+            </div>
+
+            {loading ? (
+              <div className="border border-slate-200 rounded-xl bg-white p-10 text-center text-slate-500 text-sm">
+                Loading roles…
+              </div>
+            ) : paginated.length === 0 ? (
+              <div className="border border-slate-200 rounded-xl bg-white p-10 text-center text-slate-500 text-sm">
+                No roles match these filters.
+              </div>
             ) : (
-              paginated.map((r) => (
-                <tr key={r.id} className="border-b hover:bg-slate-50 transition">
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    {r.title}
-                  </td>
+              <div className="space-y-4">
+                {paginated.map((r) => (
+                  <article
+                    key={r.id}
+                    className="bg-white border border-slate-200 rounded-xl px-5 py-4 flex flex-col gap-3 shadow-sm hover:shadow-md hover:border-slate-300 transition-colors"
+                  >
+                    <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                      <div>
+                        <h3 className="text-base md:text-lg font-semibold text-slate-900">
+                          {r.title}
+                        </h3>
+                        <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                          <span className="inline-flex items-center gap-1.5">
+                            <Building2 size={16} /> {r.company}
+                          </span>
+                          <span className="inline-flex items-center gap-1.5">
+                            <MapPin size={16} /> {r.loc}
+                          </span>
+                        </div>
+                      </div>
 
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <Building2 size={14} /> {r.company}
+                      <div className="flex flex-wrap gap-2 text-xs text-slate-600">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-slate-50 border border-slate-200">
+                          <Briefcase size={14} /> {r.type}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-slate-50 border border-slate-200">
+                          <Clock size={14} /> {r.mode}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-slate-50 border border-slate-200">
+                          <GraduationCap size={14} /> {r.exp}
+                        </span>
+                      </div>
                     </div>
-                  </td>
 
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <MapPin size={14} /> {r.loc}
-                    </div>
-                  </td>
+                    {r.tags && r.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-1">
+                        {r.tags.map((t) => (
+                          <Badge
+                            key={t}
+                            variant="outline"
+                            className="rounded-full text-[10px] border-slate-200 text-slate-600"
+                          >
+                            {t}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
 
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <Briefcase size={14} /> {r.type}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <Clock size={14} /> {r.mode}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <GraduationCap size={14} /> {r.exp}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle">
-                    <div className="flex flex-wrap gap-1">
-                      {r.tags.map((t) => (
-                        <Badge
-                          key={t}
+                    <div className="flex flex-col gap-2 pt-2 md:flex-row md:justify-end">
+                      <a href={`/jobs/${r.id}`} className="md:w-auto w-full">
+                        <Button
                           variant="outline"
-                          className="rounded-full text-xs"
+                          className="w-full md:w-auto border-slate-300 text-slate-800 hover:bg-slate-50"
                         >
-                          {t}
-                        </Badge>
-                      ))}
-                    </div>
-                  </td>
-
-                  <td className="px-3 py-2 align-middle whitespace-nowrap">
-                    <div className="flex gap-2">
-                      <a href={`/jobs/${r.id}`} className="flex-1">
-                        <Button variant="secondary" className="w-full text-xs">
-                          View
+                          View details
                         </Button>
                       </a>
-                      <Button className="flex-1 text-xs">Apply</Button>
+                      <Button className="md:w-auto w-full bg-slate-900 hover:bg-slate-800">
+                        Apply
+                      </Button>
                     </div>
-                  </td>
-                </tr>
-              ))
+                  </article>
+                ))}
+              </div>
             )}
-          </tbody>
-        </table>
-      </div>
 
-      <div className="flex justify-center items-center gap-2 mt-4">
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={page === 1}
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-        >
-          Previous
-        </button>
+            <div className="flex justify-center items-center gap-2 mt-6">
+              <button
+                className="rounded-md border border-slate-300 px-3 py-1.5 text-xs md:text-sm text-slate-700 disabled:opacity-50"
+                disabled={page === 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                Previous
+              </button>
 
-        {Array.from({ length: totalPages }).map((_, i) => {
-          const pageNum = i + 1;
-          const active = page === pageNum;
-          return (
-            <button
-              key={pageNum}
-              onClick={() => setPage(pageNum)}
-              className={`px-3 py-1 text-sm rounded-md border ${
-                active
-                  ? "bg-slate-800 text-white border-slate-800"
-                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-              }`}
-            >
-              {pageNum}
-            </button>
-          );
-        })}
+              {Array.from({ length: totalPages }).map((_, i) => {
+                const pageNum = i + 1;
+                const active = page === pageNum;
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setPage(pageNum)}
+                    className={`px-3 py-1.5 text-xs md:text-sm rounded-md border ${
+                      active
+                        ? "bg-slate-900 text-white border-slate-900"
+                        : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
 
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={page === totalPages || totalPages === 0}
-          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-        >
-          Next
-        </button>
+              <button
+                className="rounded-md border border-slate-300 px-3 py-1.5 text-xs md:text-sm text-slate-700 disabled:opacity-50"
+                disabled={page === totalPages || filtered.length === 0}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              >
+                Next
+              </button>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ function requireAuth(req, res, next) {
     // Include token issuance time (iat) as loginAt so frontend can show login time
     req.user = {
       id: payload.sub,
-      username: payload.username,
+      email: payload.email,
       role: payload.role,
       loginAt: payload.iat ? new Date(payload.iat * 1000).toISOString() : undefined,
     };

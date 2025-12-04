@@ -20,32 +20,33 @@ function signToken(payload) {
  * ---------------------
  * Steps:
  * 1. Validate body input.
- * 2. Fetch user by email or username.
+ * 2. Fetch user by email.
  * 3. Compare input password with stored password hash.
- * 4. Generate JWT token.
- * 5. Set authentication cookie.
- * 6. Return logged-in user details.
+ * 4. Update last_login timestamp.
+ * 5. Generate JWT token.
+ * 6. Set authentication cookie.
+ * 7. Return logged-in user details.
  */
 async function signIn(req, res) {
   try {
     const { identifier, password } = req.body || {};
 
-    // identifier can be email OR username
+    // identifier is email (username removed from schema)
     if (!identifier || !password) {
-      return res.status(400).json({ message: 'identifier (email or username) and password are required' });
+      return res.status(400).json({ message: 'email and password are required' });
     }
 
     // Get DB connection from pool
     const conn = await pool.getConnection();
     try {
       /**
-       * Step 1: Look up user by email or username
-       * -----------------------------------------
-       * Using OR makes login flexible.
+       * Step 1: Look up user by email
+       * ------------------------------
+       * Email is the identifier now (username removed).
        */
       const [rows] = await conn.execute(
-        'SELECT id, username, email, role, password_hash FROM users WHERE email = ? OR username = ? LIMIT 1',
-        [identifier, identifier]
+        'SELECT id, name, email, role, password_hash FROM users WHERE email = ? LIMIT 1',
+        [identifier]
       );
 
       // User not found
@@ -66,26 +67,34 @@ async function signIn(req, res) {
       }
 
       /**
-       * Step 3: Prepare safe user object (never send password_hash)
+       * Step 3: Update last_login timestamp
+       */
+      await conn.execute(
+        'UPDATE users SET last_login = NOW() WHERE id = ?',
+        [userRow.id]
+      );
+
+      /**
+       * Step 4: Prepare safe user object (never send password_hash)
        */
       const user = {
         id: userRow.id,
-        username: userRow.username,
+        name: userRow.name,
         email: userRow.email,
         role: userRow.role,
       };
 
       /**
-       * Step 4: Generate JWT token
+       * Step 5: Generate JWT token
        * ---------------------------
        * Payload includes:
        *  - sub (ID)
-       *  - username
+       *  - email
        *  - role
        */
       const token = signToken({
         sub: user.id,
-        username: user.username,
+        email: user.email,
         role: user.role,
       });
 

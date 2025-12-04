@@ -25,6 +25,7 @@ import RecruiterProfile  from "../modules/recruiter/recruiter-dashboard/recruite
 import SignIn from "../modules/auth/SignIn.jsx";
 import SignUp from "../modules/auth/SignUp.jsx";
 import Forgot from "../modules/auth/Forgot.jsx";
+import SignInModal from "../modules/auth/SignInModal.jsx";
 import Profile from "../components/profile/profile.jsx";
 
 import Dashboard from "../modules/user/User-Dashboard/user-Index.jsx";
@@ -52,6 +53,7 @@ const router = createBrowserRouter([
       { path: "sign-in", element: <SignIn /> },
       { path: "sign-up", element: <SignUp /> },
       { path: "forgot", element: <Forgot /> },
+      { path: "sign-in-modal", element: <SignInModal /> },
 
       // Profile & Dashboards — now PUBLIC
       { path: "profile", element: <Profile /> },
