@@ -146,7 +146,7 @@ function Hero() {
 
   return (
     <section className="relative bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12 lg:py-16 lg:min-h-[calc(100vh-120px)] grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-10 md:py-12 lg:py-16 lg:min-h-[calc(100vh-120px)] grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         {/* Left copy */}
         <div className="space-y-5">
           <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-blue-600 bg-blue-50 border border-blue-100 rounded-full px-3 py-1 w-fit">
@@ -496,7 +496,7 @@ function FeaturedJobs() {
 
   return (
     <section className="bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-12 md:py-16">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
@@ -580,7 +580,7 @@ function HowItWorks() {
 
   return (
     <section style={{ backgroundColor: LIGHT_GREY_BG }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-12 md:py-16">
         <div className="max-w-2xl mb-8">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
             How it works
@@ -648,7 +648,7 @@ function Categories() {
 
   return (
     <section className="bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-12 md:py-16">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
@@ -723,7 +723,7 @@ function WhyChooseUs() {
 
   return (
     <section className="bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-12 md:py-16">
         <div className="max-w-2xl mb-8">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
             Why people like using JobSpark
@@ -758,7 +758,7 @@ function WhyChooseUs() {
 function DualCTA() {
   return (
     <section className="bg-gradient-to-r from-blue-600 via-blue-700 to-sky-600 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-10 md:py-14">
         <div className="grid lg:grid-cols-2 gap-8 items-center">
           <div className="space-y-3">
             <p className="text-xs font-semibold tracking-[0.22em] uppercase text-blue-100">
