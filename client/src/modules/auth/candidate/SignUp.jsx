@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import api from "../../components/apiconfig/apiconfig";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import api from "../../../components/apiconfig/apiconfig";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -141,3 +141,4 @@ export default function SignUp() {
     </div>
   );
 }
+

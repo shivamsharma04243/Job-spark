@@ -8,27 +8,27 @@ import CandidateLayout from "../components/layout/candidate-layout/CandidateLayo
 import RecruiterLayout from "../components/layout/recruiter-layout/RecruiterLayout.jsx";
 import AdminLayout from "../components/layout/admin-layout/AdminLayout.jsx";
 
-// Import Public/User Components
-import Home from "../modules/user/Home.jsx";
-import Companies from "../modules/user/Companies.jsx";
-import CareerKit from "../modules/user/CareerKit.jsx";
-import Alerts from "../modules/user/alerts.jsx";
-import Jobs from "../modules/user/jobs/job-Index.jsx";
-import JobDetail from "../modules/user/jobs/job-details.jsx";
+// Import Public/Candidate Components
+import Home from "../modules/candidate/Home.jsx";
+import Companies from "../modules/candidate/Companies.jsx";
+import CareerKit from "../modules/candidate/CareerKit.jsx";
+import Alerts from "../modules/candidate/alerts.jsx";
+import Jobs from "../modules/candidate/jobs/job-Index.jsx";
+import JobDetail from "../modules/candidate/jobs/job-details.jsx";
 import Profile from "../components/profile/profile.jsx";
 
-// Import Auth Components
-import SignIn from "../modules/auth/SignIn.jsx";
-import SignUp from "../modules/auth/SignUp.jsx";
-import Forgot from "../modules/auth/Forgot.jsx";
-import SignInModal from "../modules/auth/SignInModal.jsx";
+// Import Auth Components (Candidate)
+import SignIn from "../modules/auth/candidate/SignIn.jsx";
+import SignUp from "../modules/auth/candidate/SignUp.jsx";
+import Forgot from "../modules/auth/candidate/Forgot.jsx";
+import SignInModal from "../modules/auth/candidate/SignInModal.jsx";
 
-// Import Candidate/User Dashboard Components
-import Dashboard from "../modules/user/User-Dashboard/user-Index.jsx";
-import UserProfile from "../modules/user/User-Dashboard/user-Profile.jsx";
-import Saved from "../modules/user/User-Dashboard/user-Saved.jsx";
-import Applied from "../modules/user/User-Dashboard/user-Applied.jsx";
-import AlertsManage from "../modules/user/User-Dashboard/user-Alerts.jsx";
+// Import Candidate Dashboard Components
+import Dashboard from "../modules/candidate/Candidate-Dashboard/candidate-Index.jsx";
+import UserProfile from "../modules/candidate/Candidate-Dashboard/candidate-Profile.jsx";
+import Saved from "../modules/candidate/Candidate-Dashboard/candidate-Saved.jsx";
+import Applied from "../modules/candidate/Candidate-Dashboard/candidate-Applied.jsx";
+import AlertsManage from "../modules/candidate/Candidate-Dashboard/candidate-Alerts.jsx";
 
 // Import Recruiter Components
 import RecruiterCreateJob from "../modules/recruiter/hire-jobs/create-job.jsx";

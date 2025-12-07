@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import api from "../../components/apiconfig/apiconfig";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import api from "../../../components/apiconfig/apiconfig";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -152,3 +152,4 @@ export default function SignIn() {
     </div>
   );
 }
+

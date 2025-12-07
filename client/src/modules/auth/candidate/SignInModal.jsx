@@ -4,9 +4,9 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "../../components/ui/card.jsx";
-import { Button } from "../../components/ui/button.jsx";
-import api from "../../components/apiconfig/apiconfig.jsx";
+} from "../../../components/ui/card.jsx";
+import { Button } from "../../../components/ui/button.jsx";
+import api from "../../../components/apiconfig/apiconfig.jsx";
 
 export default function SignInModal({ role = "user", onClose }) {
   const [loading, setLoading] = useState(false);
@@ -116,3 +116,4 @@ export default function SignInModal({ role = "user", onClose }) {
     </div>
   );
 }
+

@@ -3,7 +3,7 @@ import { Sparkles, User, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../ui/button";
 import api from "../../../components/apiconfig/apiconfig";
-import SignInModal from "../../../modules/auth/SignInModal";
+import SignInModal from "../../../modules/auth/candidate/SignInModal";
 
 /**
  * Guest Navbar - For public pages
