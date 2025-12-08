@@ -1,7 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import { Input } from "../../../components/ui/input";
-import { Button } from "../../../components/ui/button";
 import api from "../../../components/apiconfig/apiconfig";
 // Component for creating a new job posting
 export default function AdminPostJob() {
@@ -144,22 +141,23 @@ export default function AdminPostJob() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form column */}
         <div className="lg:col-span-2">
-          <Card className="rounded-2xl">
-            <CardHeader>
-              <CardTitle className="text-lg">Create Job Posting</CardTitle>
-            </CardHeader>
+          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-lg font-semibold">Create Job Posting</h2>
+            </div>
 
             <form onSubmit={handleSubmit}>
-              <CardContent className="p-6 space-y-4">
+              <div className="p-6 space-y-4">
                 {success && <div className="rounded-md bg-emerald-50 p-3 text-emerald-700">{success}</div>}
                 {errors.submit && <div className="rounded-md bg-red-50 p-3 text-red-700">{errors.submit}</div>}
 
                 <div>
                   <label className="block text-sm font-medium mb-1">Job Title *</label>
-                  <Input
+                  <input
                     value={form.title}
                     onChange={(e) => updateField("title", e.target.value)}
                     placeholder="e.g., Frontend Developer"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                   />
                   {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title}</p>}
                 </div>
@@ -167,10 +165,11 @@ export default function AdminPostJob() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">Company *</label>
-                    <Input
+                    <input
                       value={form.company}
                       onChange={(e) => updateField("company", e.target.value)}
                       placeholder="Company name"
+                      className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                     />
                     {errors.company && <p className="text-xs text-red-500 mt-1">{errors.company}</p>}
                   </div>
@@ -194,19 +193,20 @@ export default function AdminPostJob() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">City *</label>
-                    <Input value={form.city} onChange={(e) => updateField("city", e.target.value)} placeholder="City" />
+                    <input value={form.city} onChange={(e) => updateField("city", e.target.value)} placeholder="City" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
                     {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">Locality</label>
-                    <Input value={form.locality} onChange={(e) => updateField("locality", e.target.value)} placeholder="Locality / area" />
+                    <input value={form.locality} onChange={(e) => updateField("locality", e.target.value)} placeholder="Locality / area" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">Vacancies</label>
-                    <Input
+                    <input
                       type="number"
                       value={form.vacancies}
                       onChange={(e) => updateField("vacancies", Math.max(1, Number(e.target.value || 1)))}
+                      className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                     />
                     {errors.vacancies && <p className="text-xs text-red-500 mt-1">{errors.vacancies}</p>}
                   </div>
@@ -215,21 +215,21 @@ export default function AdminPostJob() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">Experience (min)</label>
-                    <Input value={form.minExperience} onChange={(e) => updateField("minExperience", e.target.value)} placeholder="e.g., 0" />
+                    <input value={form.minExperience} onChange={(e) => updateField("minExperience", e.target.value)} placeholder="e.g., 0" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">Experience (max)</label>
-                    <Input value={form.maxExperience} onChange={(e) => updateField("maxExperience", e.target.value)} placeholder="e.g., 3" />
+                    <input value={form.maxExperience} onChange={(e) => updateField("maxExperience", e.target.value)} placeholder="e.g., 3" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">Salary</label>
-                    <Input value={form.salary} onChange={(e) => updateField("salary", e.target.value)} placeholder="e.g., 3 LPA" />
+                    <input value={form.salary} onChange={(e) => updateField("salary", e.target.value)} placeholder="e.g., 3 LPA" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-1">Skills / Technologies (comma separated)</label>
-                  <Input value={form.skills} onChange={(e) => updateField("skills", e.target.value)} placeholder="React, Node.js, SQL, Docker" />
+                  <input value={form.skills} onChange={(e) => updateField("skills", e.target.value)} placeholder="React, Node.js, SQL, Docker" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
                 </div>
 
                 <div>
@@ -245,17 +245,17 @@ export default function AdminPostJob() {
 
                 <div>
                   <label className="block text-sm font-medium mb-1">Interview Address / Office Address</label>
-                  <Input value={form.interviewAddress} onChange={(e) => updateField("interviewAddress", e.target.value)} placeholder="Full address" />
+                  <input value={form.interviewAddress} onChange={(e) => updateField("interviewAddress", e.target.value)} placeholder="Full address" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">Contact Email</label>
-                    <Input value={form.contactEmail} onChange={(e) => updateField("contactEmail", e.target.value)} placeholder="hr@company.com" />
+                    <input value={form.contactEmail} onChange={(e) => updateField("contactEmail", e.target.value)} placeholder="hr@company.com" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">Contact Phone</label>
-                    <Input value={form.contactPhone} onChange={(e) => updateField("contactPhone", e.target.value)} placeholder="+91 98xxxxxxxx" />
+                    <input value={form.contactPhone} onChange={(e) => updateField("contactPhone", e.target.value)} placeholder="+91 98xxxxxxxx" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
                   </div>
                 </div>
 
@@ -266,8 +266,8 @@ export default function AdminPostJob() {
                 </div>
 
                 <div className="flex items-center justify-end gap-3 mt-4">
-                  <Button
-                    variant="ghost"
+                  <button
+                    type="button"
                     onClick={() => {
                       // reset
                       setForm({
@@ -290,27 +290,28 @@ export default function AdminPostJob() {
                       setErrors({});
                       setSuccess(null);
                     }}
+                    className="px-6 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition-colors font-medium"
                   >
                     Reset
-                  </Button>
+                  </button>
 
-                  <Button type="submit" className="rounded-full px-6 py-2" disabled={submitting}>
+                  <button type="submit" className="rounded-full px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={submitting}>
                     {submitting ? "Publishing..." : "Publish Job"}
-                  </Button>
+                  </button>
                 </div>
-              </CardContent>
+              </div>
             </form>
-          </Card>
+          </div>
         </div>
 
         {/* Preview column */}
         <div>
-          <Card className="rounded-2xl">
-            <CardHeader>
-              <CardTitle className="text-base">Preview</CardTitle>
-            </CardHeader>
+          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-base font-semibold">Preview</h2>
+            </div>
 
-            <CardContent className="p-4 space-y-3">
+            <div className="p-4 space-y-3">
               <div className="flex items-start gap-3">
                 {logoPreview ? (
                   <img src={logoPreview} alt="logo" className="h-16 w-16 object-cover rounded-md border" />
@@ -352,8 +353,8 @@ export default function AdminPostJob() {
                 <div className="text-xs text-slate-500">Contact</div>
                 <div className="text-sm">{form.contactEmail || form.contactPhone || "No contact provided"}</div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>

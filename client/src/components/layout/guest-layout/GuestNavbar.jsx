@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Sparkles, User, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "../../ui/button";
 import api from "../../../components/apiconfig/apiconfig";
 import SignInModal from "../../../modules/auth/candidate/SignInModal";
 
@@ -218,21 +217,20 @@ export default function GuestNavbar() {
             ) : (
               <>
                 {/* Candidate = user (popup) */}
-                <Button
-                  variant="ghost"
-                  className="text-slate-800 hover:bg-slate-100 transition-colors hidden sm:flex"
+                <button
+                  className="text-slate-800 hover:bg-slate-100 transition-colors hidden sm:flex px-4 py-2 rounded-lg font-medium"
                   onClick={() => handleOpenAuth("user")}
                 >
                   Candidate Login
-                </Button>
+                </button>
 
                 {/* Recruiter (popup) */}
-                <Button
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md"
+                <button
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md px-4 py-2 rounded-lg"
                   onClick={() => handleOpenAuth("recruiter")}
                 >
                   Recruiter Login
-                </Button>
+                </button>
               </>
             )}
 
@@ -288,19 +286,18 @@ export default function GuestNavbar() {
               </Link>
               {!loading && !user && (
                 <div className="pt-4 border-t border-slate-200 space-y-3">
-                  <Button
-                    variant="ghost"
-                    className="w-full text-left text-slate-700 hover:text-blue-600 hover:bg-slate-50"
+                  <button
+                    className="w-full text-left text-slate-700 hover:text-blue-600 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium"
                     onClick={() => handleOpenAuth("user")}
                   >
                     Candidate Login
-                  </Button>
-                  <Button
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  </button>
+                  <button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg"
                     onClick={() => handleOpenAuth("recruiter")}
                   >
                     Recruiter Login
-                  </Button>
+                  </button>
                 </div>
               )}
             </nav>

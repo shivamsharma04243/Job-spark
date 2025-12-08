@@ -8,13 +8,13 @@ import CandidateLayout from "../components/layout/candidate-layout/CandidateLayo
 import RecruiterLayout from "../components/layout/recruiter-layout/RecruiterLayout.jsx";
 import AdminLayout from "../components/layout/admin-layout/AdminLayout.jsx";
 
-// Import Public/Candidate Components
-import Home from "../modules/candidate/Home.jsx";
-import Companies from "../modules/candidate/Companies.jsx";
-import CareerKit from "../modules/candidate/CareerKit.jsx";
-import Alerts from "../modules/candidate/alerts.jsx";
-import Jobs from "../modules/candidate/jobs/job-Index.jsx";
-import JobDetail from "../modules/candidate/jobs/job-details.jsx";
+// Import Public/Guest Components
+import Home from "../modules/guest/Home.jsx";
+import Companies from "../modules/guest/Companies.jsx";
+import CareerKit from "../modules/guest/CareerKit.jsx";
+import Alerts from "../modules/guest/alerts.jsx";
+import Jobs from "../modules/guest/jobs/job-Index.jsx";
+import JobDetail from "../modules/guest/jobs/job-details.jsx";
 import Profile from "../components/profile/profile.jsx";
 
 // Import Auth Components (Candidate)

@@ -1,6 +1,3 @@
-import { Card, CardContent } from "../../../components/ui/card";
-import { Badge } from "../../../components/ui/badge";
-import { Button } from "../../../components/ui/button";
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 
@@ -81,8 +78,8 @@ export default function Applied() {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="bg-white rounded-xl border border-slate-200 animate-pulse">
-            <CardContent className="p-4">
+          <div key={i} className="bg-white rounded-xl border border-slate-200 animate-pulse">
+            <div className="p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1">
                   <div className="w-12 h-12 bg-slate-200 rounded-lg"></div>
@@ -97,8 +94,8 @@ export default function Applied() {
                   <div className="h-3 bg-slate-200 rounded w-16"></div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
     );
@@ -106,19 +103,19 @@ export default function Applied() {
 
   if (error) {
     return (
-      <Card className="bg-white rounded-xl border border-slate-200">
-        <CardContent className="p-6 text-center">
+      <div className="bg-white rounded-xl border border-slate-200">
+        <div className="p-6 text-center">
           <div className="text-red-500 text-4xl mb-3">⚠️</div>
           <h3 className="font-semibold text-slate-900 mb-2">Unable to Load Applications</h3>
           <p className="text-red-600 mb-4 text-sm">{error}</p>
-          <Button 
+          <button 
             onClick={fetchAppliedJobs}
-            className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm"
+            className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm rounded-lg transition-colors"
           >
             Try Again
-          </Button>
-        </CardContent>
-      </Card>
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -136,8 +133,8 @@ export default function Applied() {
       </div>
 
       {applications.length === 0 ? (
-        <Card className="bg-white rounded-xl border border-slate-200">
-          <CardContent className="p-8 text-center">
+        <div className="bg-white rounded-xl border border-slate-200">
+          <div className="p-8 text-center">
             <div className="text-blue-400 text-5xl mb-4">📝</div>
             <h3 className="font-semibold text-slate-900 mb-2">No Applications Yet</h3>
             <p className="text-slate-600 text-sm mb-6 max-w-md mx-auto">
@@ -145,23 +142,23 @@ export default function Applied() {
             </p>
             <div className="flex gap-3 justify-center">
               <Link to="/jobs">
-                <Button className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm">
+                <button className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm rounded-lg transition-colors">
                   Browse Jobs
-                </Button>
+                </button>
               </Link>
               <Link to="/dashboard/profile">
-                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 text-sm">
+                <button className="border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 text-sm rounded-lg transition-colors">
                   Update Profile
-                </Button>
+                </button>
               </Link>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : (
         <div className="space-y-3">
           {applications.map((application) => (
-            <Card key={application.id} className="bg-white rounded-xl border border-slate-200 hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
+            <div key={application.id} className="bg-white rounded-xl border border-slate-200 hover:shadow-md transition-shadow">
+              <div className="p-4">
                 <div className="flex items-start justify-between gap-4">
                   {/* Job Details */}
                   <div className="flex items-start gap-3 flex-1">
@@ -195,9 +192,9 @@ export default function Applied() {
                   
                   {/* Status & Date */}
                   <div className="text-right space-y-2">
-                    <Badge className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[application.status] || 'bg-slate-100 text-slate-800 border border-slate-200'}`}>
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusColors[application.status] || 'bg-slate-100 text-slate-800 border border-slate-200'}`}>
                       {statusLabels[application.status] || application.status}
-                    </Badge>
+                    </span>
                     <div>
                       <p className="text-xs text-slate-500 font-medium">
                         Applied on
@@ -208,8 +205,8 @@ export default function Applied() {
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}

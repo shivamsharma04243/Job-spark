@@ -1,11 +1,4 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../components/ui/card.jsx";
-import { Button } from "../../../components/ui/button.jsx";
 import api from "../../../components/apiconfig/apiconfig.jsx";
 
 export default function SignInModal({ role = "user", onClose }) {
@@ -68,14 +61,14 @@ export default function SignInModal({ role = "user", onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       <div className="w-full max-w-lg">
-        <Card className="w-full rounded-2xl shadow-lg bg-white">
-          <CardHeader className="px-6 pt-6 flex items-center justify-between">
+        <div className="w-full rounded-2xl shadow-lg bg-white border border-gray-200">
+          <div className="px-6 pt-6 flex items-center justify-between border-b border-gray-200 pb-4">
             <div>
-              <CardTitle className="text-2xl">
+              <h2 className="text-2xl font-semibold">
                 {role === "recruiter"
                   ? "Sign in as Recruiter"
                   : "Sign in as Candidate"}
-              </CardTitle>
+              </h2>
               <p className="mt-1 text-sm text-slate-500">
                 Sign in with your Google account
               </p>
@@ -86,9 +79,9 @@ export default function SignInModal({ role = "user", onClose }) {
             >
               ×
             </button>
-          </CardHeader>
+          </div>
 
-          <CardContent className="px-6 pb-6 space-y-4">
+          <div className="px-6 pb-6 space-y-4">
             <div className="flex flex-col items-center gap-4">
               <div id="google-login-btn" className="flex justify-center w-full" />
 
@@ -110,8 +103,8 @@ export default function SignInModal({ role = "user", onClose }) {
                 <b>{role === "recruiter" ? "Recruiter" : "Candidate"}</b>
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

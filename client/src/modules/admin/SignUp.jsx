@@ -1,7 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
 import api from "../../components/apiconfig/apiconfig";
 
 export default function AdminSignUp() {
@@ -74,22 +71,22 @@ export default function AdminSignUp() {
           <p className="text-gray-600">Create your admin account</p>
         </div>
 
-        <Card className="w-full rounded-xl shadow-xl border-0">
-          <CardHeader className="px-8 pt-8 pb-6 text-center">
-            <CardTitle className="text-2xl font-bold text-gray-800">Admin Registration</CardTitle>
+        <div className="w-full rounded-xl shadow-xl border-0 bg-white">
+          <div className="px-8 pt-8 pb-6 text-center">
+            <h2 className="text-2xl font-bold text-gray-800">Admin Registration</h2>
             <p className="mt-2 text-sm text-gray-500">Fill in your details to create an admin account</p>
-          </CardHeader>
+          </div>
 
-          <CardContent className="px-8 pb-8 space-y-6">
+          <div className="px-8 pb-8 space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Full Name *
                   </label>
-                  <Input
+                  <input
                     name="full_name"
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                     placeholder="Enter your full name"
                     value={formData.full_name}
                     onChange={handleChange}
@@ -101,9 +98,9 @@ export default function AdminSignUp() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email Address *
                   </label>
-                  <Input
+                  <input
                     name="email"
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                     placeholder="admin@hirespark.com"
                     type="email"
                     value={formData.email}
@@ -116,9 +113,9 @@ export default function AdminSignUp() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Phone Number
                   </label>
-                  <Input
+                  <input
                     name="phone"
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                     placeholder="+1 (555) 123-4567"
                     type="tel"
                     value={formData.phone}
@@ -130,9 +127,9 @@ export default function AdminSignUp() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Password *
                   </label>
-                  <Input
+                  <input
                     name="password"
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                     placeholder="Create a strong password"
                     type="password"
                     value={formData.password}
@@ -146,9 +143,9 @@ export default function AdminSignUp() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Confirm Password *
                   </label>
-                  <Input
+                  <input
                     name="confirmPassword"
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                     placeholder="Confirm your password"
                     type="password"
                     value={formData.confirmPassword}
@@ -158,7 +155,7 @@ export default function AdminSignUp() {
                 </div>
               </div>
 
-              <Button
+              <button
                 type="submit"
                 disabled={loading}
                 className="w-full rounded-lg py-3 text-white font-semibold shadow-lg bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -174,7 +171,7 @@ export default function AdminSignUp() {
                 ) : (
                   "Create Admin Account"
                 )}
-              </Button>
+              </button>
             </form>
 
             {/* Messages */}
@@ -221,8 +218,8 @@ export default function AdminSignUp() {
                 </a>
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Footer */}
         <div className="text-center mt-8">

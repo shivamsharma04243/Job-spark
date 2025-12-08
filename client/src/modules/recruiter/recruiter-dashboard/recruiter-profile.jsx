@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../../components/apiconfig/apiconfig";
-import { Input } from "../../../components/ui/input";
 
 export default function RecruiterProfileView() {
   const [loading, setLoading] = useState(true);
@@ -237,35 +236,38 @@ export default function RecruiterProfileView() {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Company Name *
                         </label>
-                        <Input
+                        <input
                           name="company_name"
                           value={form.company_name}
                           onChange={handleChange}
                           required
                           placeholder="Enter company name"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                         />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Company Type
                         </label>
-                        <Input
+                        <input
                           name="company_type"
                           value={form.company_type}
                           onChange={handleChange}
                           placeholder="e.g., Technology, Healthcare"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                         />
                       </div>
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Company Website
                         </label>
-                        <Input
+                        <input
                           name="company_website"
                           value={form.company_website}
                           onChange={handleChange}
                           placeholder="https://yourcompany.com"
                           type="url"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                         />
                       </div>
                     </div>
@@ -278,66 +280,72 @@ export default function RecruiterProfileView() {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Address Line 1
                         </label>
-                        <Input
+                        <input
                           name="address_line1"
                           value={form.address_line1}
                           onChange={handleChange}
                           placeholder="Street address, P.O. box"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                         />
                       </div>
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Address Line 2
                         </label>
-                        <Input
+                        <input
                           name="address_line2"
                           value={form.address_line2}
                           onChange={handleChange}
                           placeholder="Apartment, suite, unit, building, floor, etc."
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                         />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           City
                         </label>
-                        <Input
+                        <input
                           name="city"
                           value={form.city}
                           onChange={handleChange}
                           placeholder="City"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                         />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           State
                         </label>
-                        <Input
+                        <input
                           name="state"
                           value={form.state}
                           onChange={handleChange}
                           placeholder="State / Province"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                         />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Country
                         </label>
-                        <Input
+                        <input
                           name="country"
                           value={form.country}
                           onChange={handleChange}
                           placeholder="Country"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                         />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Pincode
                         </label>
-                        <Input
+                        <input
                           name="pincode"
                           value={form.pincode}
                           onChange={handleChange}
                           placeholder="Postal code"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                         />
                       </div>
                     </div>

@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
 import api from "../../../components/apiconfig/apiconfig";
 
 export default function SignIn() {
@@ -97,33 +94,33 @@ export default function SignIn() {
           </div>
 
           <div className="flex justify-center">
-            <Card className="w-full max-w-md rounded-2xl shadow-lg">
-              <CardHeader className="px-8 pt-8">
-                <CardTitle className="text-2xl">Sign in to HireSpark</CardTitle>
+            <div className="w-full max-w-md rounded-2xl shadow-lg bg-white border border-gray-200">
+              <div className="px-8 pt-8 border-b border-gray-200 pb-4">
+                <h2 className="text-2xl font-semibold">Sign in to HireSpark</h2>
                 <p className="mt-1 text-sm text-slate-500">Welcome back!</p>
-              </CardHeader>
+              </div>
 
-              <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4">
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4 pt-6">
                 <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-                  <Input
-                    className="rounded-xl border p-3 text-sm"
+                  <input
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
                     placeholder="Email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
 
-                  <Input
-                    className="rounded-xl border p-3 text-sm"
+                  <input
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
                     placeholder="Password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
 
-                  <Button disabled={loading} className="w-full rounded-full py-3 bg-emerald-600 text-white">
+                  <button disabled={loading} className="w-full rounded-full py-3 bg-emerald-600 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     {loading ? "Please wait..." : "Sign In"}
-                  </Button>
+                  </button>
                 </form>
 
                 <div className="relative my-4">
@@ -144,8 +141,8 @@ export default function SignIn() {
                   No account? <a className="text-slate-800 hover:underline" href="/sign-up">Create one</a>
                 </p>
 
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>

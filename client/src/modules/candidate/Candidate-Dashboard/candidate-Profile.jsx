@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../components/apiconfig/apiconfig.jsx";
-import { Input } from "../../../components/ui/input";
-import { Button } from "../../../components/ui/button";
-import { Card, CardContent } from "../../../components/ui/card";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -177,17 +174,17 @@ export default function ProfilePage() {
             <p className="text-sm text-slate-600 mt-1">Update your professional details and contact information</p>
           </div>
           {!isEditing && (
-            <Button
+            <button
               onClick={handleEditClick}
-              className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm"
+              className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm rounded-lg transition-colors"
             >
               Edit Profile
-            </Button>
+            </button>
           )}
         </div>
       </div>
 
-      <CardContent className="p-6">
+      <div className="p-6">
         {!isEditing ? (
           <ProfileView user={user} onEdit={handleEditClick} />
         ) : (
@@ -204,46 +201,46 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-2">Full Name *</label>
-                  <Input 
+                  <input 
                     name="full_name" 
                     value={form.full_name} 
                     onChange={handleChange} 
                     required
                     placeholder="Enter your full name"
-                    className="text-sm"
+                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-2">Phone *</label>
-                  <Input 
+                  <input 
                     name="phone" 
                     value={form.phone} 
                     onChange={handleChange} 
                     required
                     placeholder="Enter your phone number"
-                    className="text-sm"
+                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-2">Highest Education</label>
-                  <Input 
+                  <input 
                     name="highest_education" 
                     value={form.highest_education} 
                     onChange={handleChange}
                     placeholder="e.g., Bachelor's Degree"
-                    className="text-sm"
+                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-2">Experience (years)</label>
-                  <Input 
+                  <input 
                     name="experience_years" 
                     value={form.experience_years} 
                     onChange={handleChange} 
                     type="number" 
                     min="0"
                     placeholder="Years of experience"
-                    className="text-sm"
+                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                   />
                 </div>
               </div>
@@ -255,32 +252,32 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-2">City</label>
-                  <Input 
+                  <input 
                     name="city" 
                     value={form.city} 
                     onChange={handleChange}
                     placeholder="Enter your city"
-                    className="text-sm"
+                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-2">State</label>
-                  <Input 
+                  <input 
                     name="state" 
                     value={form.state} 
                     onChange={handleChange}
                     placeholder="Enter your state"
-                    className="text-sm"
+                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-2">Country</label>
-                  <Input 
+                  <input 
                     name="country" 
                     value={form.country} 
                     onChange={handleChange}
                     placeholder="Enter your country"
-                    className="text-sm"
+                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                   />
                 </div>
               </div>
@@ -292,24 +289,24 @@ export default function ProfilePage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-2">LinkedIn URL</label>
-                  <Input 
+                  <input 
                     name="linkedin_url" 
                     value={form.linkedin_url} 
                     onChange={handleChange} 
                     placeholder="https://linkedin.com/in/yourprofile"
                     type="url"
-                    className="text-sm"
+                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-2">Portfolio URL</label>
-                  <Input 
+                  <input 
                     name="portfolio_url" 
                     value={form.portfolio_url} 
                     onChange={handleChange} 
                     placeholder="https://yourportfolio.com"
                     type="url"
-                    className="text-sm"
+                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
                   />
                 </div>
               </div>
@@ -345,25 +342,24 @@ export default function ProfilePage() {
 
             {/* Action Buttons */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-200">
-              <Button
+              <button
                 type="button"
                 onClick={handleCancel}
-                variant="outline"
-                className="border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 text-sm"
+                className="border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 text-sm rounded-lg transition-colors"
               >
                 Cancel
-              </Button>
-              <Button
+              </button>
+              <button
                 type="submit"
                 disabled={saving}
-                className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium"
+                className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? "Saving..." : "Save Changes"}
-              </Button>
+              </button>
             </div>
           </form>
         )}
-      </CardContent>
+      </div>
     </div>
   );
 }
@@ -379,12 +375,12 @@ function ProfileView({ user, onEdit }) {
         </div>
         <h3 className="text-lg font-semibold text-slate-900 mb-2">No Profile Found</h3>
         <p className="text-slate-600 text-sm mb-4">Create your professional profile to get started</p>
-        <Button 
+        <button 
           onClick={onEdit} 
-          className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm"
+          className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm rounded-lg transition-colors"
         >
           Create Profile
-        </Button>
+        </button>
       </div>
     );
   }

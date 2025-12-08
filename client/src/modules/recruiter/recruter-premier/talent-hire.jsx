@@ -1,6 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { Button } from "../../../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 
 // Sample student data only for testing purposes
 const SAMPLE_STUDENTS = [
@@ -77,8 +75,8 @@ export default function TalentHire() {
           <p className="text-slate-600 mt-1">Filter and view student profiles. Click "View Resume" to open the resume.</p>
         </header>
 
-        <Card className="rounded-2xl shadow-sm mb-6">
-          <CardContent className="grid md:grid-cols-3 gap-4">
+        <div className="rounded-2xl shadow-sm mb-6 bg-white border border-gray-200">
+          <div className="grid md:grid-cols-3 gap-4 p-6">
             <div className="col-span-1">
               <label className="block text-sm font-medium mb-1">Search</label>
               <input
@@ -114,17 +112,17 @@ export default function TalentHire() {
                 ))}
               </select>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((s) => (
-            <Card key={s.id} className="rounded-2xl bg-white shadow-sm">
-              <CardHeader className="pb-0">
-                <CardTitle className="text-lg">{s.name}</CardTitle>
+            <div key={s.id} className="rounded-2xl bg-white shadow-sm border border-gray-200">
+              <div className="pb-0 p-6">
+                <h3 className="text-lg font-semibold">{s.name}</h3>
                 <div className="text-sm text-slate-500">{s.role} • {s.experience}</div>
-              </CardHeader>
-              <CardContent>
+              </div>
+              <div className="px-6 pb-6">
                 <div className="text-sm text-slate-600">{s.location}</div>
 
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -134,11 +132,11 @@ export default function TalentHire() {
                 </div>
 
                 <div className="mt-5 flex items-center justify-between">
-                  <Button className="px-4" onClick={() => handleViewResume(s.resumeUrl)}>View Resume</Button>
-                  <Button variant="secondary" className="px-4">Shortlist</Button>
+                  <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors" onClick={() => handleViewResume(s.resumeUrl)}>View Resume</button>
+                  <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors">Shortlist</button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
 
           {filtered.length === 0 && (

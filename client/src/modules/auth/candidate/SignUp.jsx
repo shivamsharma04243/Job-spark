@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
 import api from "../../../components/apiconfig/apiconfig";
 
 export default function SignUp() {
@@ -85,17 +82,17 @@ export default function SignUp() {
           </div>
 
           <div className="flex justify-center">
-            <Card className="w-full max-w-md rounded-2xl shadow-lg">
-              <CardHeader className="px-8 pt-8">
-                <CardTitle className="text-2xl">Create Your Account</CardTitle>
-              </CardHeader>
+            <div className="w-full max-w-md rounded-2xl shadow-lg bg-white border border-gray-200">
+              <div className="px-8 pt-8 border-b border-gray-200 pb-4">
+                <h2 className="text-2xl font-semibold">Create Your Account</h2>
+              </div>
 
-              <CardContent className="px-8 pb-8 space-y-4">
+              <div className="px-8 pb-8 space-y-4 pt-6">
                 <form onSubmit={handleSubmit} className="space-y-4">
 
-                  <Input placeholder="Full name" value={name} onChange={e => setName(e.target.value)} />
-                  <Input placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
-                  <Input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
+                  <input placeholder="Full name" value={name} onChange={e => setName(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" />
+                  <input placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" />
+                  <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" />
 
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <label className="flex gap-2 p-2 border rounded-xl">
@@ -109,9 +106,9 @@ export default function SignUp() {
                     </label>
                   </div>
 
-                  <Button className="w-full rounded-full py-3 bg-emerald-600 text-white" disabled={loading}>
+                  <button className="w-full rounded-full py-3 bg-emerald-600 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={loading}>
                     {loading ? "Please wait..." : "Get Started »"}
-                  </Button>
+                  </button>
                 </form>
 
                 <div className="my-4 relative">
@@ -132,8 +129,8 @@ export default function SignUp() {
                   Already have an account? <a className="text-slate-800 hover:underline" href="/sign-in">Sign In</a>
                 </p>
 
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
         </div>

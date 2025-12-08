@@ -1,5 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import { Button } from "../../../components/ui/button";
 import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
@@ -76,8 +74,8 @@ export default function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {stats.map((stat, index) => (
-          <Card key={index} className="bg-white rounded-xl border border-slate-200">
-            <CardContent className="p-4">
+          <div key={index} className="bg-white rounded-xl border border-slate-200">
+            <div className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <p className="text-xs text-slate-500 mb-1">{stat.title}</p>
@@ -102,8 +100,8 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
 
