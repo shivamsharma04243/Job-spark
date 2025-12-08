@@ -8,13 +8,12 @@ import CandidateLayout from "../components/layout/candidate-layout/CandidateLayo
 import RecruiterLayout from "../components/layout/recruiter-layout/RecruiterLayout.jsx";
 import AdminLayout from "../components/layout/admin-layout/AdminLayout.jsx";
 
-// Import Public/Guest Components
+// Import Public/Guest Components (renamed)
 import Home from "../modules/guest/Home.jsx";
-import Companies from "../modules/guest/Companies.jsx";
-import CareerKit from "../modules/guest/CareerKit.jsx";
-import Alerts from "../modules/guest/alerts.jsx";
-import Jobs from "../modules/guest/jobs/job-Index.jsx";
-import JobDetail from "../modules/guest/jobs/job-details.jsx";
+import Companies from "../modules/guest/companies.jsx";
+import CareerGuide from "../modules/guest/career-guide.jsx";
+import Jobs from "../modules/guest/jobs/job-list.jsx";
+import JobDetail from "../modules/guest/jobs/job-list-details.jsx";
 import Profile from "../components/profile/profile.jsx";
 
 // Import Auth Components (Candidate/Recruiter - Google Login Only)
@@ -64,8 +63,7 @@ const router = createBrowserRouter([
       // Public pages (accessible without login)
       { path: "home", element: <Home /> },
       { path: "companies", element: <Companies /> },
-      { path: "career-kit", element: <CareerKit /> },
-      { path: "alerts", element: <Alerts /> },
+      { path: "career-guide", element: <CareerGuide /> },
       { path: "jobs", element: <Jobs /> },
       { path: "jobs/:id", element: <JobDetail /> },
 
