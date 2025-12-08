@@ -23,12 +23,11 @@ import SignUp from "../modules/auth/candidate-recruiter/SignUp.jsx";
 import Forgot from "../modules/auth/candidate-recruiter/Forgot.jsx";
 import SignInModal from "../modules/auth/candidate-recruiter/SignInModal.jsx";
 
-// Import Candidate Dashboard Components
-import Dashboard from "../modules/candidate/Candidate-Dashboard/candidate-Index.jsx";
-import UserProfile from "../modules/candidate/Candidate-Dashboard/candidate-Profile.jsx";
-import Saved from "../modules/candidate/Candidate-Dashboard/candidate-Saved.jsx";
-import Applied from "../modules/candidate/Candidate-Dashboard/candidate-Applied.jsx";
-import AlertsManage from "../modules/candidate/Candidate-Dashboard/candidate-Alerts.jsx";
+// Import Candidate Dashboard Components (renamed paths)
+import Dashboard from "../modules/candidate/dashboard/home.jsx";
+import UserProfile from "../modules/candidate/dashboard/profile.jsx";
+import Saved from "../modules/candidate/jobs/saved-list.jsx";
+import Applied from "../modules/candidate/jobs/applied-list.jsx";
 
 // Import Recruiter Components
 import RecruiterCreateJob from "../modules/recruiter/hire-jobs/create-job.jsx";
@@ -111,10 +110,6 @@ const router = createBrowserRouter([
       {
         path: "dashboard/applied",
         element: <Applied />,
-      },
-      {
-        path: "dashboard/alerts",
-        element: <AlertsManage />,
       },
     ],
   },
