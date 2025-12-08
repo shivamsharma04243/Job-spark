@@ -672,11 +672,11 @@ function HowItWorks() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {steps.map((step, index) => (
-            <Card
+            <div
               key={step.title}
               className="border border-slate-200 rounded-2xl bg-white shadow-sm"
             >
-              <CardContent className="p-5 space-y-3">
+              <div className="p-5 space-y-3">
                 <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
                   {index + 1}
                 </div>
@@ -684,8 +684,8 @@ function HowItWorks() {
                   {step.title}
                 </h3>
                 <p className="text-xs text-slate-600">{step.desc}</p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -729,8 +729,8 @@ function Categories() {
               onClick={() => handleClick(cat.id)}
               className="group text-left"
             >
-              <Card className="h-full border border-slate-200 rounded-2xl shadow-sm group-hover:shadow-lg group-hover:-translate-y-1 transition-all bg-slate-50/60">
-                <CardContent className="p-5 flex items-center gap-4">
+              <div className="h-full border border-slate-200 rounded-2xl shadow-sm group-hover:shadow-lg group-hover:-translate-y-1 transition-all bg-slate-50/60">
+                <div className="p-5 flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-blue-700 border border-blue-100">
                     {cat.icon}
                   </div>
@@ -743,8 +743,8 @@ function Categories() {
                     </p>
                   </div>
                   <ChevronRight className="text-slate-300 group-hover:text-blue-500 transition-colors" />
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </button>
           ))}
         </div>
@@ -802,18 +802,18 @@ function WhyChooseUs() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {items.map((item) => (
-            <Card
+            <div
               key={item.title}
-              className="border border-slate-200 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all"
+              className="border border-slate-200 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all bg-white"
             >
-              <CardContent className="p-5 space-y-3">
+              <div className="p-5 space-y-3">
             <CheckCircle2 className="text-blue-600" />
                 <h3 className="text-sm font-semibold text-slate-900">
                   {item.title}
                 </h3>
                 <p className="text-xs text-slate-600">{item.desc}</p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -841,8 +841,8 @@ function DualCTA() {
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="bg-white border border-blue-100 rounded-2xl shadow-lg">
-              <CardContent className="p-5 space-y-3">
+            <div className="bg-white border border-blue-100 rounded-2xl shadow-lg">
+              <div className="p-5 space-y-3">
                 <p className="text-xs font-semibold text-blue-700 uppercase">
                   For recruiters
                 </p>
@@ -851,18 +851,18 @@ function DualCTA() {
                   Publish roles, manage applicants, and collaborate with your team.
                 </p>
                 <Link to="/post-job">
-                  <Button
-                    className="mt-2 w-full bg-blue-600 text-white hover:bg-blue-700 font-semibold flex items-center justify-center gap-1.5"
+                  <button
+                    className="mt-2 w-full bg-blue-600 text-white hover:bg-blue-700 font-semibold flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg transition-colors"
                   >
                     Start Hiring
                     <ArrowRight size={16} />
-                  </Button>
+                  </button>
                 </Link>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="bg-white border border-blue-100 rounded-2xl shadow-lg">
-              <CardContent className="p-5 space-y-3">
+            <div className="bg-white border border-blue-100 rounded-2xl shadow-lg">
+              <div className="p-5 space-y-3">
                 <p className="text-xs font-semibold text-blue-700 uppercase">
                   For candidates
                 </p>
@@ -871,13 +871,13 @@ function DualCTA() {
                   Build a profile once and apply to multiple roles in minutes.
                 </p>
                 <Link to="/profile/upload-resume">
-                  <Button className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center justify-center gap-1.5">
+                  <button className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg transition-colors">
                     Upload Resume
                     <ChevronRight size={16} />
-          </Button>
+          </button>
                 </Link>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
