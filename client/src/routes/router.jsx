@@ -29,13 +29,13 @@ import Saved from "../modules/candidate/jobs/saved-list.jsx";
 import Applied from "../modules/candidate/jobs/applied-list.jsx";
 
 // Import Recruiter Components
-import RecruiterCreateJob from "../modules/recruiter/hire-jobs/create-job.jsx";
-import TalentHire from "../modules/recruiter/recruter-premier/talent-hire.jsx";
-import RecruiterProfileform from "../modules/recruiter/recruiter-dashboard/recruiter-profile-form.jsx";
-import JobPosted from "../modules/recruiter/recruiter-dashboard/job-posted.jsx";
-import RecruiterDashboard from "../modules/recruiter/recruiter-dashboard/recruiter-index.jsx";
-import RecruiterProfile from "../modules/recruiter/recruiter-dashboard/recruiter-profile.jsx";
-import JobApplicants from "../modules/recruiter/recruiter-dashboard/JobApplicants.jsx";
+import RecruiterCreateJob from "../modules/recruiter/create-job/create-job.jsx";
+import TalentHire from "../modules/recruiter/talent-hire/talent-hire.jsx";
+import RecruiterProfileform from "../modules/recruiter/recruiter-profile-form/recruiter-profile-form.jsx";
+import JobPosted from "../modules/recruiter/job-posted/job-posted.jsx";
+import RecruiterDashboard from "../modules/recruiter/home/home.jsx";
+import RecruiterProfile from "../modules/recruiter/recruiter-profile/recruiter-profile.jsx";
+import JobApplicants from "../modules/recruiter/job-applicants/JobApplicants.jsx";
 
 // Import Admin Auth Components (Username/Password Login)
 import AdminSignIn from "../modules/auth/admin/SignIn.jsx";
