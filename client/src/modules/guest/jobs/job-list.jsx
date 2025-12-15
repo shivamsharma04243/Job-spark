@@ -58,7 +58,17 @@ const parseSalaryValue = (salary) => {
   return Number(numeric);
 };
 
-const formatSalary = (salary) => {
+const formatSalary = (salary, minSalary, maxSalary) => {
+  // Use minSalary and maxSalary if available (preferred)
+  if (minSalary != null && maxSalary != null) {
+    return `₹ ${Number(minSalary).toLocaleString('en-IN')} - ${Number(maxSalary).toLocaleString('en-IN')}`;
+  } else if (minSalary != null) {
+    return `₹ ${Number(minSalary).toLocaleString('en-IN')}+`;
+  } else if (maxSalary != null) {
+    return `Up to ₹ ${Number(maxSalary).toLocaleString('en-IN')}`;
+  }
+
+  // Fallback: try to parse from salary string if min/max not available
   const numeric = parseSalaryValue(salary);
   if (!numeric) return salary || "";
   return `₹ ${numeric.toLocaleString("en-IN")}`;
@@ -124,10 +134,12 @@ export default function Jobs() {
             company: j.company || j.companyName || "",
             location: j.location || j.jobLocation || "",
             type: j.type || j.jobType || "Full Time",
-            mode: j.mode || j.workMode || j.workType || "",
+            workMode: j.workMode || j.mode || j.workType || "Office",
             experience: j.experience || j.experiance || j.exp || "",
             skills: j.skills || j.tags || [],
             salary: j.salary || "",
+            minSalary: j.minSalary,
+            maxSalary: j.maxSalary,
             vacancies: j.vacancies || "",
             description: j.description || "",
           }));
@@ -253,6 +265,10 @@ export default function Jobs() {
     if (salaryFilter) {
       const threshold = Number(salaryFilter);
       data = data.filter((job) => {
+        // Check min_salary first, then fallback to parsing salary string
+        if (job.minSalary != null) {
+          return job.minSalary >= threshold;
+        }
         const numeric = parseSalaryValue(job.salary);
         if (!numeric) return true; // keep jobs without salary info
         return numeric >= threshold;
@@ -309,45 +325,47 @@ export default function Jobs() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f6f8fb]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-10 md:py-12">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
-          <div>
-            <p className="text-sm text-slate-600">
-              {filtered.length || jobList.length} jobs near you
-            </p>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
-              Find Jobs
-            </h1>
-          </div>
-          <div className="w-full md:w-[420px]">
-            <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
-              <Search size={18} className="text-slate-500" />
-              <input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-                className="flex-1 text-sm outline-none"
-                placeholder="Search jobs here"
-              />
-              <button
-                onClick={applyFilters}
-                className="bg-blue-600 text-white text-sm font-semibold px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Search
-              </button>
+    <div className="min-h-screen bg-bg">
+      <div className="container-custom py-8 sm:py-10 md:py-12">
+        <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <p className="text-sm text-text-muted mb-1">
+                {filtered.length || jobList.length} jobs near you
+              </p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-dark">
+                Find Jobs
+              </h1>
+            </div>
+            <div className="w-full sm:w-auto sm:min-w-[320px] md:min-w-[420px]">
+              <div className="flex items-center gap-2 card px-3 sm:px-4 py-2.5">
+                <Search size={18} className="text-text-muted flex-shrink-0" />
+                <input
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && applyFilters()}
+                  className="flex-1 text-sm sm:text-base outline-none bg-transparent text-text-dark placeholder:text-text-muted"
+                  placeholder="Search jobs here"
+                />
+                <button
+                  onClick={applyFilters}
+                  className="btn btn-primary btn-sm flex-shrink-0"
+                >
+                  Search
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-6 lg:gap-8">
-          <aside className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold text-slate-900">Filters</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-[280px,1fr] gap-4 sm:gap-6 lg:gap-8">
+          <aside className="card card-padding lg:sticky lg:top-4 lg:self-start">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-semibold text-text-dark">Filters</h2>
               {hasSidebarFilters && (
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-blue-600 hover:text-blue-700"
+                  className="text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors"
                 >
                   Clear All
                 </button>
@@ -356,7 +374,7 @@ export default function Jobs() {
 
             <div className="space-y-6">
               <div>
-                <p className="text-sm font-semibold text-slate-900 mb-2">City</p>
+                <p className="text-sm font-semibold text-text-dark mb-3">City</p>
                 <div className="flex flex-wrap gap-2">
                   {CITY_OPTIONS.map((city) => {
                     const active = selectedCities.includes(city);
@@ -364,9 +382,9 @@ export default function Jobs() {
                       <button
                         key={city}
                         onClick={() => toggleValue(city, setSelectedCities)}
-                        className={`rounded-full border px-3 py-1 text-xs font-medium transition ${active
-                          ? "bg-blue-50 border-blue-200 text-blue-700"
-                          : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                        className={`rounded-chip px-3 py-1.5 text-xs font-medium transition-colors ${active
+                            ? "bg-primary-50 border-2 border-primary-200 text-primary-700"
+                            : "bg-white border-2 border-border text-text-muted hover:bg-gray-50"
                           }`}
                       >
                         {city}
@@ -377,7 +395,7 @@ export default function Jobs() {
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-slate-900 mb-2">
+                <p className="text-sm font-semibold text-text-dark mb-3">
                   Job Role(s)
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -387,9 +405,9 @@ export default function Jobs() {
                       <button
                         key={role.value}
                         onClick={() => toggleValue(role.value, setSelectedRoles)}
-                        className={`rounded-full border px-3 py-1 text-xs font-medium transition ${active
-                          ? "bg-blue-50 border-blue-200 text-blue-700"
-                          : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                        className={`rounded-chip px-3 py-1.5 text-xs font-medium transition-colors ${active
+                            ? "bg-primary-50 border-2 border-primary-200 text-primary-700"
+                            : "bg-white border-2 border-border text-text-muted hover:bg-gray-50"
                           }`}
                       >
                         {role.label}
@@ -400,12 +418,12 @@ export default function Jobs() {
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-slate-900 mb-2">Salary</p>
+                <p className="text-sm font-semibold text-text-dark mb-3">Salary</p>
                 <div className="space-y-2">
                   {SALARY_OPTIONS.map((opt) => (
                     <label
                       key={opt.value}
-                      className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"
+                      className="flex items-center gap-2.5 text-sm text-text-dark cursor-pointer hover:text-primary-600 transition-colors"
                     >
                       <input
                         type="radio"
@@ -413,9 +431,9 @@ export default function Jobs() {
                         value={opt.value}
                         checked={String(salaryFilter) === String(opt.value)}
                         onChange={(e) => setSalaryFilter(e.target.value)}
-                        className="text-blue-600"
+                        className="w-4 h-4 text-primary-600 focus:ring-primary-500 cursor-pointer"
                       />
-                      {opt.label}
+                      <span>{opt.label}</span>
                     </label>
                   ))}
                 </div>
@@ -423,30 +441,30 @@ export default function Jobs() {
             </div>
           </aside>
 
-          <section className="space-y-4">
+          <section className="space-y-4 sm:space-y-6">
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
+              <div className="text-sm text-error-600 bg-error-light border border-error-300 rounded-lg px-4 py-3">
                 {error}
               </div>
             )}
 
-            <div className="flex items-center justify-between text-sm text-slate-600">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-text-muted">
               <span>
                 Showing {startIdx}–{endIdx} of {filtered.length} roles
               </span>
               {hasSidebarFilters && (
-                <span className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded-full">
+                <span className="badge badge-primary">
                   Filters applied
                 </span>
               )}
             </div>
 
             {loading ? (
-              <div className="border border-slate-200 rounded-2xl bg-white p-10 text-center text-slate-500 text-sm shadow-sm">
-                Loading roles…
+              <div className="card card-padding text-center text-text-muted text-sm">
+                <div className="animate-pulse">Loading roles…</div>
               </div>
             ) : paginated.length === 0 ? (
-              <div className="border border-slate-200 rounded-2xl bg-white p-10 text-center text-slate-500 text-sm shadow-sm">
+              <div className="card card-padding text-center text-text-muted text-sm">
                 No roles match these filters.
               </div>
             ) : (
@@ -454,70 +472,73 @@ export default function Jobs() {
                 {paginated.map((r) => (
                   <article
                     key={r.id}
-                    className="relative bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition"
+                    className="relative card card-hover card-padding"
                   >
                     <button
                       onClick={() => toggleSaveJob(r.id, savedStatus[r.id])}
-                      className="absolute right-4 top-4 text-slate-500 hover:text-blue-600"
+                      className="absolute right-4 sm:right-6 top-4 sm:top-6 text-text-muted hover:text-primary-600 transition-colors z-10"
                       aria-label={savedStatus[r.id] ? "Unsave job" : "Save job"}
                     >
-                      {savedStatus[r.id] ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+                      {savedStatus[r.id] ? (
+                        <BookmarkCheck size={18} className="text-primary-600" />
+                      ) : (
+                        <Bookmark size={18} />
+                      )}
                     </button>
 
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
-                        <div className="space-y-1">
-                          <p className="text-xs text-slate-500 uppercase tracking-[0.08em]">
-                            Work from home
+                    <div className="flex flex-col gap-3 sm:gap-4 pr-8 sm:pr-10">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                        <div className="space-y-1.5 flex-1">
+                          <p className="text-xs text-text-muted uppercase tracking-wider font-medium">
+                            {r.workMode || "Work from home"}
                           </p>
-                          <h3 className="text-lg font-semibold text-slate-900">
+                          <h3 className="text-lg sm:text-xl font-semibold text-text-dark">
                             {r.title || "Untitled role"}
                           </h3>
-                          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                          <div className="flex flex-wrap items-center gap-3 text-sm text-text-muted">
                             {r.company && (
                               <span className="inline-flex items-center gap-1.5">
-                                <Building2 size={16} /> {r.company}
+                                <Building2 size={16} className="text-primary-500" /> {r.company}
                               </span>
                             )}
                             {r.location && (
                               <span className="inline-flex items-center gap-1.5">
-                                <MapPin size={16} /> {r.location}
+                                <MapPin size={16} className="text-primary-500" /> {r.location}
                               </span>
                             )}
                           </div>
                         </div>
 
-                        <div className="text-right">
-                          {r.salary && (
-                            <p className="text-lg font-semibold text-slate-900">
-                              {formatSalary(r.salary)}
-                              <span className="text-sm font-medium text-slate-600"> /Month</span>
+                        <div className="text-left sm:text-right">
+                          {(r.minSalary != null || r.maxSalary != null || r.salary) && (
+                            <p className="text-lg sm:text-xl font-semibold text-text-dark">
+                              {formatSalary(r.salary, r.minSalary, r.maxSalary)} /Month
                             </p>
                           )}
                           {r.vacancies && (
-                            <p className="text-xs text-slate-500">{r.vacancies} vacancies</p>
+                            <p className="text-xs text-text-muted mt-1">{r.vacancies} vacancies</p>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-2 text-xs text-slate-700">
+                      <div className="flex flex-wrap gap-2">
                         {r.type && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1">
+                          <span className="badge badge-gray inline-flex items-center gap-1">
                             <Briefcase size={14} /> {r.type}
                           </span>
                         )}
-                        {r.mode && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1">
-                            <Clock size={14} /> {r.mode}
+                        {r.workMode && (
+                          <span className="badge badge-gray inline-flex items-center gap-1">
+                            <Clock size={14} /> {r.workMode}
                           </span>
                         )}
                         {r.experience && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1">
+                          <span className="badge badge-gray inline-flex items-center gap-1">
                             <GraduationCap size={14} /> {r.experience}
                           </span>
                         )}
                         {r.vacancies && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1">
+                          <span className="badge badge-gray">
                             {r.vacancies} Vacancies
                           </span>
                         )}
@@ -528,7 +549,7 @@ export default function Jobs() {
                           {r.skills.map((skill) => (
                             <span
                               key={skill}
-                              className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] border border-slate-200 text-slate-600 bg-slate-50"
+                              className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs border border-border text-text-muted bg-gray-50"
                             >
                               {skill}
                             </span>
@@ -536,17 +557,17 @@ export default function Jobs() {
                         </div>
                       )}
 
-                      <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex flex-wrap gap-2 text-[11px] font-medium text-blue-700">
-                          <span className="inline-flex items-center bg-blue-50 border border-blue-100 px-2 py-1 rounded-full">
+                      <div className="flex flex-col gap-3 pt-2 border-t border-border sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-wrap gap-2">
+                          <span className="badge badge-primary text-xs">
                             New
                           </span>
                           {r.vacancies && (
-                            <span className="inline-flex items-center bg-orange-50 border border-orange-100 px-2 py-1 rounded-full text-orange-700">
+                            <span className="badge badge-warning text-xs">
                               {r.vacancies} Vacancies
                             </span>
                           )}
-                          <span className="inline-flex items-center bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-full text-emerald-700">
+                          <span className="badge badge-success text-xs">
                             Full Time
                           </span>
                         </div>
@@ -554,7 +575,7 @@ export default function Jobs() {
                         <div className="flex items-center gap-2">
                           <a
                             href={`/jobs/${r.id}`}
-                            className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:text-blue-800"
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors"
                           >
                             View details
                             <ArrowUpRight size={16} />
@@ -567,9 +588,9 @@ export default function Jobs() {
               </div>
             )}
 
-            <div className="flex justify-center items-center gap-2 mt-6">
+            <div className="flex justify-center items-center gap-2 mt-6 sm:mt-8">
               <button
-                className="rounded-full border border-slate-300 px-3 py-1.5 text-xs md:text-sm text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                className="btn btn-ghost btn-sm rounded-full"
                 disabled={page === 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
@@ -583,9 +604,9 @@ export default function Jobs() {
                   <button
                     key={pageNum}
                     onClick={() => setPage(pageNum)}
-                    className={`px-3 py-1.5 text-xs md:text-sm rounded-full border ${active
-                      ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                      : "bg-white text-slate-700 border-slate-300 hover:bg-blue-50"
+                    className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm rounded-full border transition-colors ${active
+                        ? "bg-primary-500 text-white border-primary-500 shadow-soft"
+                        : "bg-white text-text-dark border-border hover:bg-primary-50"
                       }`}
                   >
                     {pageNum}
@@ -594,7 +615,7 @@ export default function Jobs() {
               })}
 
               <button
-                className="rounded-full border border-slate-300 px-3 py-1.5 text-xs md:text-sm text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                className="btn btn-ghost btn-sm rounded-full"
                 disabled={page === totalPages || filtered.length === 0}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               >
@@ -602,15 +623,15 @@ export default function Jobs() {
               </button>
             </div>
 
-            <div className="mt-6 border border-slate-200 bg-white rounded-2xl p-5 shadow-sm">
-              <p className="flex items-center gap-2 text-sm font-semibold text-slate-900 mb-3">
+            <div className="mt-6 card card-padding">
+              <p className="flex items-center gap-2 text-sm font-semibold text-text-dark mb-4">
                 Explore jobs in other categories
               </p>
               <div className="flex flex-wrap gap-2">
                 {OTHER_CATEGORIES.map((cat) => (
                   <span
                     key={cat}
-                    className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 text-xs text-slate-700 px-3 py-1"
+                    className="badge badge-gray"
                   >
                     {cat}
                   </span>

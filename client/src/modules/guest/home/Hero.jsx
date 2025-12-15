@@ -94,169 +94,147 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className={`relative bg-white transition-all duration-1000 ease-out min-h-screen flex items-center justify-center ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      className={`relative bg-white transition-all duration-1000 ease-out min-h-[85vh] sm:min-h-screen flex items-center justify-center ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}
     >
-      <div
-        className="max-w-6xl w-full mx-auto px-4 sm:px-6 md:px-16 lg:px-20 
-             py-10 md:py-12 lg:py-16 
-             flex flex-col items-center justify-center text-center gap-6">
-        <div className="space-y-5 w-full flex flex-col items-center">
+      <div className="container-custom section-padding">
+        <div className="max-w-5xl mx-auto w-full flex flex-col items-center justify-center text-center gap-6 sm:gap-8">
+          <div className="space-y-4 sm:space-y-6 w-full flex flex-col items-center">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-text-dark">
+              Trusted Opportunities for{" "}
+              <span className="text-primary-500">Fresh Talent</span>
+            </h1>
 
-          <h1 className="text-[32px] sm:text-[36px] md:text-[40px] lg:text-[44px] font-bold tracking-tight leading-[1.4]" style={{ color: '#111111' }}>
-            Trusted Opportunities for {" "}
-            <span style={{ color: '#1769E0' }}>Fresh Talent</span>
-          </h1>
-
-
-          {/* Advanced search */}
-          <div className="bg-gray-200 rounded-[5px] w-full max-w-5xl mx-auto">
-            <div className="p-5 sm:p-6">
-              <form onSubmit={handleSubmit} className="space-y-10">
-                <div className="grid md:grid-cols-4 gap-1">
-                  <div className="relative">
-                    <label className="text-[13px] sm:text-[14px] font-medium mb-1.5 block" style={{ color: '#555555' }}>
-                      Job title or skill
-                    </label>
-                    <div className="flex items-center gap-3 rounded-[5px] px-3.5 py-3 bg-gray-50">
-                      <Search size={18} style={{ color: '#1769E0', strokeWidth: 2 }} />
-                      <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => {
-                          setSearchTerm(e.target.value);
-                          setActiveField("title");
-                          setShowSuggestions(true);
-                        }}
-                        onFocus={() => {
-                          setActiveField("title");
-                          setShowSuggestions(true);
-                        }}
-                        placeholder="e.g. Delivery, Telecaller"
-                        className="w-full bg-transparent text-[14px] sm:text-[15px] outline-none border-none"
-                        style={{ color: '#111111' }}
-                      />
-                    </div>
-                    {showSuggestions && filteredSuggestions.length > 0 && (
-                      <div className="absolute z-20 mt-1 w-full bg-white rounded-[10px] shadow-soft text-[14px] sm:text-[15px] max-h-52 overflow-auto border border-gray-200">
-                        {filteredSuggestions.map((s) => (
-                          <button
-                            key={s}
-                            type="button"
-                            onMouseDown={(e) => {
-                              e.preventDefault();
-                              handleSuggestionClick(s);
-                            }}
-                            className="w-full text-left px-3 py-2 hover:bg-chip-bg transition-colors"
-                            style={{ color: '#111111' }}
-                          >
-                            {s}
-                          </button>
-                        ))}
+            {/* Advanced search */}
+            <div className="w-full bg-gray-100 rounded-card border border-border">
+              <div className="p-4 sm:p-5 md:p-6">
+                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div className="relative sm:col-span-2 lg:col-span-1">
+                      <label className="label text-text-muted">
+                        Job title or skill
+                      </label>
+                      <div className="relative flex items-center gap-2.5 rounded-input px-3.5 py-2.5 sm:py-3 bg-white border border-border focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20 transition-all">
+                        <Search size={18} className="text-primary-500 flex-shrink-0" strokeWidth={2} />
+                        <input
+                          type="text"
+                          value={searchTerm}
+                          onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setActiveField("title");
+                            setShowSuggestions(true);
+                          }}
+                          onFocus={() => {
+                            setActiveField("title");
+                            setShowSuggestions(true);
+                          }}
+                          placeholder="e.g. Delivery, Telecaller"
+                          className="flex-1 bg-transparent text-sm sm:text-base outline-none border-none text-text-dark placeholder:text-text-muted"
+                        />
                       </div>
-                    )}
-                  </div>
+                      {showSuggestions && filteredSuggestions.length > 0 && (
+                        <div className="absolute z-20 mt-1 w-full bg-white rounded-lg shadow-large text-sm sm:text-base max-h-52 overflow-auto border border-border">
+                          {filteredSuggestions.map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                handleSuggestionClick(s);
+                              }}
+                              className="w-full text-left px-3 py-2 hover:bg-primary-50 transition-colors text-text-dark"
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
 
-                  <div>
-                    <label className="text-[13px] sm:text-[14px] font-medium mb-1.5 block" style={{ color: '#555555' }}>
-                      City / area
-                    </label>
-                    <div className="flex items-center gap-2 rounded-[5px] px-3.5 py-3 bg-gray-50">
-                      <MapPin size={18} style={{ color: '#1769E0', strokeWidth: 2 }} />
-                      <input
-                        type="text"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        onFocus={() => setActiveField("location")}
-                        placeholder="e.g. Delhi, Remote"
-                        className="w-full bg-transparent text-[14px] sm:text-[15px] outline-none border-none"
-                        style={{ color: '#111111' }}
-                      />
+                    <div>
+                      <label className="label text-text-muted">
+                        City / area
+                      </label>
+                      <div className="relative flex items-center gap-2.5 rounded-input px-3.5 py-2.5 sm:py-3 bg-white border border-border focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20 transition-all">
+                        <MapPin size={18} className="text-primary-500 flex-shrink-0" strokeWidth={2} />
+                        <input
+                          type="text"
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
+                          onFocus={() => setActiveField("location")}
+                          placeholder="e.g. Delhi, Remote"
+                          className="flex-1 bg-transparent text-sm sm:text-base outline-none border-none text-text-dark placeholder:text-text-muted"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="label text-text-muted">
+                        Category
+                      </label>
+                      <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        onFocus={() => setActiveField("category")}
+                        className="w-full rounded-input px-3.5 py-2.5 sm:py-3 bg-white border border-border text-sm sm:text-base outline-none text-text-dark focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all cursor-pointer"
+                      >
+                        <option value="">All categories</option>
+                        {jobCategories.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="label text-text-muted">
+                        Experience
+                      </label>
+                      <select
+                        value={experience}
+                        onChange={(e) => setExperience(e.target.value)}
+                        onFocus={() => setActiveField("experience")}
+                        className="w-full rounded-input px-3.5 py-2.5 sm:py-3 bg-white border border-border text-sm sm:text-base outline-none text-text-dark focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all cursor-pointer"
+                      >
+                        <option value="">Any</option>
+                        <option value="fresher">Fresher / Entry</option>
+                        <option value="mid">0–2 years</option>
+                        <option value="senior">2+ years</option>
+                      </select>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="text-[13px] sm:text-[14px] font-medium mb-1.5 block" style={{ color: '#555555' }}>
-                      Category
-                    </label>
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      onFocus={() => setActiveField("category")}
-                      className="w-full rounded-[5px] px-3.5 py-3 bg-gray-50 text-[14px] sm:text-[15px] outline-none border-none"
-                      style={{ color: '#111111' }}
-                    >
-                      <option value="">All categories</option>
-                      {jobCategories.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.label}
-                        </option>
+                  {/* Filter chips */}
+                  {chips.length > 0 && (
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {chips.map((chip) => (
+                        <button
+                          key={chip.key}
+                          type="button"
+                          onClick={() => removeChip(chip.key)}
+                          className="inline-flex items-center gap-1.5 rounded-chip px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium transition-colors bg-primary-50 text-primary-700 hover:bg-primary-100"
+                        >
+                          <span>{chip.value}</span>
+                          <span className="text-xs">✕</span>
+                        </button>
                       ))}
-                    </select>
-                  </div>
+                    </div>
+                  )}
 
-                  <div>
-                    <label className="text-[13px] sm:text-[14px] font-medium mb-1.5 block" style={{ color: '#555555' }}>
-                      Experience
-                    </label>
-                    <select
-                      value={experience}
-                      onChange={(e) => setExperience(e.target.value)}
-                      onFocus={() => setActiveField("experience")}
-                      className="w-full rounded-[5px] px-3.5 py-3 bg-gray-50 text-[14px] sm:text-[15px] outline-none border-none"
-                      style={{ color: '#111111' }}
+                  <div className="flex flex-col items-center gap-3">
+                    <button
+                      type="submit"
+                      className="btn btn-primary btn-md sm:btn-lg px-8 sm:px-10"
                     >
-                      <option value="">Any</option>
-                      <option value="fresher">Fresher / Entry</option>
-                      <option value="mid">0–2 years</option>
-                      <option value="senior">2+ years</option>
-                    </select>
+                      Search Jobs
+                    </button>
                   </div>
-                </div>
-
-                {/* Filter chips */}
-                {chips.length > 0 && (
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {chips.map((chip) => (
-                      <button
-                        key={chip.key}
-                        type="button"
-                        onClick={() => removeChip(chip.key)}
-                        className="inline-flex items-center gap-1.5 rounded-[20px] text-[13px] sm:text-[14px] font-medium transition-colors"
-                        style={{
-                          backgroundColor: '#E8F1FF',
-                          color: '#1769E0',
-                          padding: '7px 16px'
-                        }}
-                      >
-                        <span>{chip.value}</span>
-                        <span className="text-[11px]" style={{ color: '#1769E0' }}>✕</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                <div className="flex flex-col items-center gap-3">
-                  <button
-                    type="submit"
-                    className="text-white font-semibold shadow-soft hover:shadow-md transition-all rounded-[10px]"
-                    style={{
-                      backgroundColor: '#1769E0',
-                      padding: '10px 32px',
-                      fontSize: '15px'
-                    }}
-                  >
-                    Search Jobs
-                  </button>
-
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
-
-
         </div>
-
       </div>
     </section>
   );

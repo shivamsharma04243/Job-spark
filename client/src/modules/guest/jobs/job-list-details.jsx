@@ -198,6 +198,48 @@ export default function JobDetail() {
   const responsibilities = job?.responsibilities || [];
   const qualifications = job?.qualifications || [];
 
+  // Format salary (monthly) with rupee symbol
+  const formatSalaryMonthly = () => {
+    if (!job) return 'NA';
+
+    // Use minSalary and maxSalary if available (preferred)
+    const minSalary = job.minSalary;
+    const maxSalary = job.maxSalary;
+
+    if (minSalary != null && maxSalary != null) {
+      // Format monthly salary with rupee symbol
+      return `₹ ${Number(minSalary).toLocaleString('en-IN')} - ${Number(maxSalary).toLocaleString('en-IN')} /Month`;
+    } else if (minSalary != null) {
+      return `₹ ${Number(minSalary).toLocaleString('en-IN')}+ /Month`;
+    } else if (maxSalary != null) {
+      return `Up to ₹ ${Number(maxSalary).toLocaleString('en-IN')} /Month`;
+    }
+
+    // Fallback: try to parse from salary string if min/max not available
+    if (job.salary && typeof job.salary === 'string') {
+      const match = job.salary.match(/(\d+)-(\d+)\s*(?:per month|\/Month)/i);
+      if (match) {
+        const min = parseInt(match[1]);
+        const max = parseInt(match[2]);
+        return `₹ ${min.toLocaleString('en-IN')} - ${max.toLocaleString('en-IN')} /Month`;
+      }
+      const singleMatch = job.salary.match(/(\d+)\+\s*(?:per month|\/Month)/i);
+      if (singleMatch) {
+        const min = parseInt(singleMatch[1]);
+        return `₹ ${min.toLocaleString('en-IN')}+ /Month`;
+      }
+      // Also handle old LPA format for backward compatibility
+      const lpaMatch = job.salary.match(/(\d+)-(\d+)\s*LPA/i);
+      if (lpaMatch) {
+        const min = parseInt(lpaMatch[1]);
+        const max = parseInt(lpaMatch[2]);
+        return `₹ ${min.toLocaleString('en-IN')} - ${max.toLocaleString('en-IN')} /Month`;
+      }
+    }
+
+    return 'NA';
+  };
+
   // Basic client-side validation for file type/size
   const onFileChange = (e) => {
     const f = e.target.files?.[0] || null;
@@ -323,182 +365,215 @@ export default function JobDetail() {
   if (!job) return <div className="p-6 text-gray-600">Job not found</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      <div className="w-full mx-auto px-3 sm:px-4 py-6 grid lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="lg:col-span-2">
-          <div className="mb-3 text-sm text-gray-600">
-            <a href="/jobs" className="hover:underline text-blue-600">Jobs</a> / <span className="text-gray-700">{job.title}</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">{job.title}</h1>
-          <p className="mt-1 text-gray-600 flex flex-wrap items-center gap-2 sm:gap-3">
-            <span className="inline-flex items-center gap-1 text-sm"><Building2 size={16} className="text-blue-500" /> {job.company}</span>
-            <span className="inline-flex items-center gap-1 text-sm"><MapPin size={16} className="text-blue-500" /> {job.location}</span>
-            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><Clock size={14} /> {job.type}</span>
-            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><Briefcase size={14} /> {job.type}</span>
-            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><GraduationCap size={14} /> {job.experiance}</span>
-          </p>
-
-          <div className="mt-6 rounded-xl sm:rounded-2xl border border-blue-200 shadow-lg bg-white">
-            <div className="border-b border-blue-100 p-4 sm:p-6">
-              <h2 className="text-blue-900 text-lg sm:text-xl font-semibold">About the role</h2>
-            </div>
-            <div className="space-y-4 text-gray-700 p-4 sm:p-6">
-              <p className="text-sm sm:text-base">{job.description}</p>
-              <div>
-                <p className="font-semibold mb-1 text-blue-900 text-sm sm:text-base">Responsibilities</p>
-                <ul className="list-disc pl-4 sm:pl-5 space-y-1 text-sm sm:text-base">
-                  {responsibilities.length ? responsibilities.map((r) => <li key={r}>{r}</li>) : <li>Responsibilities not provided</li>}
-                </ul>
+    <div className="min-h-screen bg-bg">
+      <div className="container-custom py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <div>
+              <div className="mb-3 text-sm text-text-muted">
+                <a href="/jobs" className="hover:underline text-primary-600 font-medium">Jobs</a> / <span className="text-text-dark">{job.title}</span>
               </div>
-              <div>
-                <p className="font-semibold mb-1 text-blue-900 text-sm sm:text-base">Qualifications</p>
-                <ul className="list-disc pl-4 sm:pl-5 space-y-1 text-sm sm:text-base">
-                  {qualifications.length ? qualifications.map((q) => <li key={q}>{q}</li>) : <li>Qualifications not provided</li>}
-                </ul>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {skills.map((s) => (
-                  <span
-                    key={s}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs"
-                  >
-                    {s}
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-dark mb-3">{job.title}</h1>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <span className="badge badge-gray inline-flex items-center gap-1.5">
+                  <Building2 size={14} className="text-primary-500" /> {job.company}
+                </span>
+                <span className="badge badge-gray inline-flex items-center gap-1.5">
+                  <MapPin size={14} className="text-primary-500" /> {job.location}
+                </span>
+                <span className="badge badge-primary">
+                  <Clock size={14} className="inline mr-1" /> {job.type}
+                </span>
+                <span className="badge badge-primary">
+                  <Briefcase size={14} className="inline mr-1" /> {job.type}
+                </span>
+                {job.experiance && (
+                  <span className="badge badge-primary">
+                    <GraduationCap size={14} className="inline mr-1" /> {job.experiance}
                   </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside className="lg:sticky lg:top-4">
-          <div className="rounded-xl sm:rounded-2xl border border-blue-200 shadow-lg bg-white">
-            <div className="border-b border-blue-100 p-4 sm:p-6">
-              <div className="flex justify-between items-center text-blue-900 text-lg sm:text-xl">
-                <h2 className="font-semibold">Apply to this job</h2>
-                {!isApplied && (
-                  <button
-                    onClick={toggleSave}
-                    className="flex items-center gap-1 border border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800 text-xs px-3 py-1.5 rounded-lg transition-colors"
-                  >
-                    {isSaved ? (
-                      <>
-                        <BookmarkCheck size={14} className="text-blue-600" />
-                        Saved
-                      </>
-                    ) : (
-                      <>
-                        <Bookmark size={14} />
-                        Save
-                      </>
-                    )}
-                  </button>
                 )}
               </div>
             </div>
-            <div className="p-4 sm:p-6">
-              <div className="space-y-3 text-sm text-gray-700 mb-4 sm:mb-6">
-                <div className="flex justify-between"><span>Compensation</span><span className="font-semibold text-blue-700">{job.salary || 'NA'}</span></div>
-                <div className="flex justify-between"><span>Work Mode</span><span className="font-semibold text-blue-700">{job.type}</span></div>
-                <div className="flex justify-between"><span>Experience</span><span className="font-semibold text-blue-700">{job.experiance}</span></div>
+
+            <div className="card">
+              <div className="border-b border-border p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-semibold text-text-dark">About the role</h2>
               </div>
-
-              {isAuthenticated && candidateProfile ? (
-                // Logged-in user: Simplified form
-                <div className="space-y-3 sm:space-y-4">
-                  {/* Show profile info */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
-                    <div className="font-semibold text-blue-900 mb-1">Applying as:</div>
-                    <div className="text-gray-700">{candidateProfile.full_name || "Your name"}</div>
-                    <div className="text-gray-600 text-xs mt-1">{userEmail}</div>
-                    {candidateProfile.resume_path && (
-                      <div className="text-gray-600 text-xs mt-1">✓ Resume on file</div>
-                    )}
-                  </div>
-
-                  {/* Optional resume update */}
-                  {candidateProfile.resume_path && (
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="block text-sm text-gray-700">Resume</label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('update-resume-input')?.click()}
-                          className="text-xs text-blue-600 hover:text-blue-800 underline"
-                        >
-                          Update Resume
-                        </button>
-                      </div>
-                      <input
-                        id="update-resume-input"
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        onChange={(e) => {
-                          const f = e.target.files?.[0] || null;
-                          if (!f) {
-                            setUpdateResumeFile(null);
-                            return;
-                          }
-                          const allowed = [".pdf", ".doc", ".docx"];
-                          const ext = f.name.substring(f.name.lastIndexOf(".")).toLowerCase();
-                          if (!allowed.includes(ext)) {
-                            setApplyError("Only PDF / DOC / DOCX files are allowed for resume.");
-                            setUpdateResumeFile(null);
-                            return;
-                          }
-                          const maxSize = 5 * 1024 * 1024; // 5 MB
-                          if (f.size > maxSize) {
-                            setApplyError("Resume must be smaller than 5 MB.");
-                            setUpdateResumeFile(null);
-                            return;
-                          }
-                          setApplyError(null);
-                          setUpdateResumeFile(f);
-                        }}
-                        className="hidden"
-                      />
-                      {updateResumeFile && (
-                        <div className="text-xs mt-1 text-blue-600">New file: {updateResumeFile.name}</div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Cover letter */}
-                  <div>
-                    <label className="block text-sm mb-1 text-gray-700">Cover letter (optional)</label>
-                    <textarea
-                      rows={3}
-                      value={coverLetter}
-                      onChange={(e) => setCoverLetter(e.target.value)}
-                      className="w-full rounded-lg border border-blue-300 p-2 sm:p-3 text-sm focus:border-blue-500 focus:ring-blue-500"
-                      placeholder="Tell us why you're a good fit for this role..."
-                    />
-                  </div>
-
-                  {applyError && <div className="text-red-600 text-sm bg-red-50 p-2 rounded-lg">{applyError}</div>}
-                  {applySuccess && <div className="text-green-700 text-sm bg-green-50 p-2 rounded-lg">{applySuccess}</div>}
-
-                  <button
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={submitApplication}
-                    disabled={applying || applied || profileLoading}
-                  >
-                    {applied ? "Applied" : applying ? "Applying..." : "Apply Now"}
-                  </button>
+              <div className="space-y-5 text-text-dark p-4 sm:p-6">
+                <p className="text-sm sm:text-base leading-relaxed">{job.description}</p>
+                <div>
+                  <p className="font-semibold mb-2 text-text-dark text-base">Responsibilities</p>
+                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 text-sm sm:text-base text-text-muted">
+                    {responsibilities.length ? responsibilities.map((r) => <li key={r}>{r}</li>) : <li>Responsibilities not provided</li>}
+                  </ul>
                 </div>
-              ) : (
-                // Non-logged-in user: Just Sign in to Apply Now button (no form fields)
-                <div className="space-y-3 sm:space-y-4">
-                  <button
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base px-4 py-2 rounded-lg font-medium transition-colors"
-                    onClick={submitApplication}
-                  >
-                    Sign in to Apply Now
-                  </button>
+                <div>
+                  <p className="font-semibold mb-2 text-text-dark text-base">Qualifications</p>
+                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 text-sm sm:text-base text-text-muted">
+                    {qualifications.length ? qualifications.map((q) => <li key={q}>{q}</li>) : <li>Qualifications not provided</li>}
+                  </ul>
                 </div>
-              )}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {skills.map((s) => (
+                    <span
+                      key={s}
+                      className="badge badge-primary"
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </aside>
+
+          <aside className="lg:sticky lg:top-4 lg:self-start">
+            <div className="card">
+              <div className="border-b border-border p-4 sm:p-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg sm:text-xl font-semibold text-text-dark">Apply to this job</h2>
+                  {!isApplied && (
+                    <button
+                      onClick={toggleSave}
+                      className="flex items-center gap-1.5 border-2 border-primary-300 text-primary-700 hover:bg-primary-50 hover:text-primary-800 text-xs px-3 py-1.5 rounded-button transition-colors"
+                    >
+                      {isSaved ? (
+                        <>
+                          <BookmarkCheck size={14} className="text-primary-600" />
+                          Saved
+                        </>
+                      ) : (
+                        <>
+                          <Bookmark size={14} />
+                          Save
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="p-4 sm:p-6">
+                <div className="space-y-3 text-sm text-text-dark mb-5 sm:mb-6 pb-4 border-b border-border">
+                  <div className="flex justify-between items-center">
+                    <span className="text-text-muted">Compensation</span>
+                    <span className="font-semibold text-primary-600">{formatSalaryMonthly()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-text-muted">Work Mode</span>
+                    <span className="font-semibold text-primary-600">{job.workMode || job.mode || 'Office'}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-text-muted">Experience</span>
+                    <span className="font-semibold text-primary-600">{job.experiance || job.experience || 'Not specified'}</span>
+                  </div>
+                </div>
+
+                {isAuthenticated && candidateProfile ? (
+                  // Logged-in user: Simplified form
+                  <div className="space-y-4">
+                    {/* Show profile info */}
+                    <div className="bg-primary-50 border border-primary-200 rounded-lg p-3 sm:p-4 text-sm">
+                      <div className="font-semibold text-primary-900 mb-1.5">Applying as:</div>
+                      <div className="text-text-dark font-medium">{candidateProfile.full_name || "Your name"}</div>
+                      <div className="text-text-muted text-xs mt-1">{userEmail}</div>
+                      {candidateProfile.resume_path && (
+                        <div className="text-success-600 text-xs mt-1.5 font-medium">✓ Resume on file</div>
+                      )}
+                    </div>
+
+                    {/* Optional resume update */}
+                    {candidateProfile.resume_path && (
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="label text-sm">Resume</label>
+                          <button
+                            type="button"
+                            onClick={() => document.getElementById('update-resume-input')?.click()}
+                            className="text-xs text-primary-600 hover:text-primary-700 underline font-medium"
+                          >
+                            Update Resume
+                          </button>
+                        </div>
+                        <input
+                          id="update-resume-input"
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => {
+                            const f = e.target.files?.[0] || null;
+                            if (!f) {
+                              setUpdateResumeFile(null);
+                              return;
+                            }
+                            const allowed = [".pdf", ".doc", ".docx"];
+                            const ext = f.name.substring(f.name.lastIndexOf(".")).toLowerCase();
+                            if (!allowed.includes(ext)) {
+                              setApplyError("Only PDF / DOC / DOCX files are allowed for resume.");
+                              setUpdateResumeFile(null);
+                              return;
+                            }
+                            const maxSize = 5 * 1024 * 1024; // 5 MB
+                            if (f.size > maxSize) {
+                              setApplyError("Resume must be smaller than 5 MB.");
+                              setUpdateResumeFile(null);
+                              return;
+                            }
+                            setApplyError(null);
+                            setUpdateResumeFile(f);
+                          }}
+                          className="hidden"
+                        />
+                        {updateResumeFile && (
+                          <div className="text-xs mt-1.5 text-primary-600 font-medium">New file: {updateResumeFile.name}</div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Cover letter */}
+                    <div>
+                      <label className="label text-sm">Cover letter (optional)</label>
+                      <textarea
+                        rows={4}
+                        value={coverLetter}
+                        onChange={(e) => setCoverLetter(e.target.value)}
+                        className="textarea"
+                        placeholder="Tell us why you're a good fit for this role..."
+                      />
+                    </div>
+
+                    {applyError && (
+                      <div className="text-error-600 text-sm bg-error-light border border-error-300 p-3 rounded-lg">
+                        {applyError}
+                      </div>
+                    )}
+                    {applySuccess && (
+                      <div className="text-success-600 text-sm bg-success-light border border-success-300 p-3 rounded-lg">
+                        {applySuccess}
+                      </div>
+                    )}
+
+                    <button
+                      className="btn btn-primary btn-md w-full"
+                      onClick={submitApplication}
+                      disabled={applying || applied || profileLoading}
+                    >
+                      {applied ? "Applied" : applying ? "Applying..." : "Apply Now"}
+                    </button>
+                  </div>
+                ) : (
+                  // Non-logged-in user: Just Sign in to Apply Now button (no form fields)
+                  <div className="space-y-3">
+                    <button
+                      className="btn btn-primary btn-md w-full"
+                      onClick={submitApplication}
+                    >
+                      Sign in to Apply Now
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   );

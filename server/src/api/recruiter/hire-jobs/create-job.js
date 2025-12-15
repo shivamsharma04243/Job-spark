@@ -48,11 +48,13 @@ async function createJobHandler(req, res) {
         title = "",
         company = "",
         jobType = "Full-time",
+        workMode = "Office",
         city = "",
         locality = "",
         minExperience = null,
         maxExperience = null,
-        salary = "",
+        minSalary = null,
+        maxSalary = null,
         vacancies = "1",
         description = "",
         interviewAddress = "",
@@ -77,25 +79,33 @@ async function createJobHandler(req, res) {
       // convert numeric fields carefully
       const minExpNum = minExperience === null || minExperience === "" ? null : Number(minExperience);
       const maxExpNum = maxExperience === null || maxExperience === "" ? null : Number(maxExperience);
+      const minSalaryNum = minSalary === null || minSalary === "" ? null : Number(minSalary);
+      const maxSalaryNum = maxSalary === null || maxSalary === "" ? null : Number(maxSalary);
       const vacanciesNum = vacancies ? Math.max(1, parseInt(vacancies, 10) || 1) : 1;
+
+      // Validate work_mode
+      const validWorkModes = ['Office', 'Remote', 'Hybrid'];
+      const workModeValue = validWorkModes.includes(workMode) ? workMode : 'Office';
 
       // Insert into DB (use placeholders)
       // Set status to 'pending' by default - jobs need admin approval
       const sql = `
         INSERT INTO jobs
-          (title, company, job_type, city, locality, min_experience, max_experience, salary, vacancies, description, interview_address, contact_email, contact_phone, logo_path, recruiter_id, status, posted_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
+          (title, company, job_type, work_mode, city, locality, min_experience, max_experience, min_salary, max_salary, vacancies, description, interview_address, contact_email, contact_phone, logo_path, recruiter_id, status, posted_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
       `;
 
       const params = [
         title,
         company,
         jobType,
+        workModeValue,
         city,
         locality || null,
         minExpNum,
         maxExpNum,
-        salary || null,
+        minSalaryNum,
+        maxSalaryNum,
         vacanciesNum,
         description,
         interviewAddress || null,

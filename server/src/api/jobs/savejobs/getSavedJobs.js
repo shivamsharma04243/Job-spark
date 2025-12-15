@@ -4,7 +4,7 @@ const getSavedJobs = async (req, res) => {
   const connection = await pool.getConnection();
   try {
     const userId = req.user.id;
-  
+
 
     // Use the exact column names from my jobs table
     const [rows] = await connection.execute(`
@@ -15,11 +15,13 @@ const getSavedJobs = async (req, res) => {
         j.title,
         j.company,
         j.job_type as type,
+        j.work_mode,
         j.city,
         j.locality,
         j.min_experience,
         j.max_experience,
-        j.salary,
+        j.min_salary,
+        j.max_salary,
         j.vacancies,
         j.description,
         j.logo_path,
@@ -29,6 +31,17 @@ const getSavedJobs = async (req, res) => {
       WHERE sj.user_id = ?
       ORDER BY sj.saved_at DESC
     `, [userId]);
+
+    // Helper function to format salary range (monthly)
+    const formatSalary = (minSalary, maxSalary) => {
+      if (minSalary == null && maxSalary == null) return null;
+      if (minSalary != null && maxSalary != null) {
+        return `${minSalary}-${maxSalary} per month`;
+      }
+      if (minSalary != null) return `${minSalary}+ per month`;
+      if (maxSalary != null) return `Up to ${maxSalary} per month`;
+      return null;
+    };
 
     // Process the jobs to match my frontend format
     const processedJobs = rows.map(job => {
@@ -55,8 +68,11 @@ const getSavedJobs = async (req, res) => {
         company: job.company || 'Company',
         location: location || 'Location not specified',
         type: job.type || 'Full-time',
+        workMode: job.work_mode || 'Office',
         experience: experience,
-        salary: job.salary || null,
+        salary: formatSalary(job.min_salary, job.max_salary),
+        minSalary: job.min_salary,
+        maxSalary: job.max_salary,
         description: job.description || '',
         logo_path: job.logo_path || null,
         created_at: job.created_at,
@@ -65,8 +81,8 @@ const getSavedJobs = async (req, res) => {
       };
     });
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       data: processedJobs,
       count: processedJobs.length
     });
@@ -77,9 +93,9 @@ const getSavedJobs = async (req, res) => {
       code: error.code,
       sqlMessage: error.sqlMessage
     });
-    
-    res.status(500).json({ 
-      success: false, 
+
+    res.status(500).json({
+      success: false,
       message: 'Internal server error',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });

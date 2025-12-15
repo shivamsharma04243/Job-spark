@@ -13,9 +13,9 @@ export default function Saved() {
     try {
       setLoading(true);
       setError('');
-      
+
       const response = await api.get('/jobs/saved-jobs');
-      
+
       if (response.data.success) {
         setSavedJobs(response.data.data);
       } else {
@@ -23,7 +23,7 @@ export default function Saved() {
       }
     } catch (err) {
       console.error('Error fetching saved jobs:', err);
-      
+
       if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else if (err.message) {
@@ -39,7 +39,7 @@ export default function Saved() {
   const removeSavedJob = async (jobId) => {
     try {
       const response = await api.delete(`/jobs/save/${jobId}`);
-      
+
       if (response.data.success) {
         setSavedJobs(prev => prev.filter(job => job.job_id !== jobId));
       } else {
@@ -63,23 +63,22 @@ export default function Saved() {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white rounded-xl border border-slate-200 animate-pulse">
-            <div className="p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 space-y-3">
-                  <div className="h-4 bg-slate-200 rounded w-1/3"></div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="h-3 bg-slate-200 rounded w-3/4"></div>
-                    <div className="h-3 bg-slate-200 rounded w-2/3"></div>
-                    <div className="h-3 bg-slate-200 rounded w-1/2"></div>
-                    <div className="h-3 bg-slate-200 rounded w-3/5"></div>
+          <div key={i} className="card animate-pulse">
+            <div className="card-padding">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                <div className="flex-1 space-y-3 w-full">
+                  <div className="h-5 bg-gray-200 rounded w-1/3"></div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/5"></div>
                   </div>
-                  <div className="h-3 bg-slate-200 rounded w-1/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
                 </div>
-                <div className="space-y-2">
-                  <div className="h-8 bg-slate-200 rounded w-20"></div>
-                  <div className="h-8 bg-slate-200 rounded w-20"></div>
-                  <div className="h-8 bg-slate-200 rounded w-20"></div>
+                <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
+                  <div className="h-9 bg-gray-200 rounded w-full sm:w-24"></div>
+                  <div className="h-9 bg-gray-200 rounded w-full sm:w-24"></div>
                 </div>
               </div>
             </div>
@@ -91,59 +90,61 @@ export default function Saved() {
 
   if (error) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200">
-        <div className="p-6 text-center">
-          <div className="text-red-500 text-4xl mb-3">⚠️</div>
-          <h3 className="font-semibold text-slate-900 mb-2">Unable to Load Saved Jobs</h3>
-          <p className="text-red-600 mb-4 text-sm">{error}</p>
-          <button 
-            onClick={fetchSavedJobs}
-            className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm mr-2 rounded-lg transition-colors"
-          >
-            Try Again
-          </button>
-          <button 
-            onClick={() => navigate('/jobs')}
-            className="border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 text-sm rounded-lg transition-colors"
-          >
-            Browse Jobs
-          </button>
+      <div className="card">
+        <div className="card-padding text-center">
+          <div className="text-error-500 text-5xl mb-4">⚠️</div>
+          <h3 className="text-lg font-semibold text-text-dark mb-2">Unable to Load Saved Jobs</h3>
+          <p className="text-error-600 mb-6 text-sm">{error}</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={fetchSavedJobs}
+              className="btn btn-primary btn-md"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() => navigate('/jobs')}
+              className="btn btn-outline btn-md"
+            >
+              Browse Jobs
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Saved Jobs</h2>
-          <p className="text-sm text-slate-600">Your favorite job opportunities</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-text-dark">Saved Jobs</h2>
+          <p className="text-sm sm:text-base text-text-muted mt-1">Your favorite job opportunities</p>
         </div>
-        <div className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-sm font-medium">
+        <div className="badge badge-primary text-sm">
           {savedJobs.length} Saved Job{savedJobs.length !== 1 ? 's' : ''}
         </div>
       </div>
 
       {savedJobs.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200">
-          <div className="p-8 text-center">
-            <div className="text-yellow-400 text-5xl mb-4">⭐</div>
-            <h3 className="font-semibold text-slate-900 mb-2">No Saved Jobs Yet</h3>
-            <p className="text-slate-600 text-sm mb-6 max-w-md mx-auto">
+        <div className="card">
+          <div className="card-padding text-center">
+            <div className="text-warning-500 text-6xl mb-4">⭐</div>
+            <h3 className="text-xl font-semibold text-text-dark mb-2">No Saved Jobs Yet</h3>
+            <p className="text-text-muted text-sm sm:text-base mb-6 max-w-md mx-auto">
               Start building your job collection! Save positions that interest you to review and apply later.
             </p>
-            <div className="flex gap-3 justify-center">
-              <button 
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
                 onClick={() => navigate('/jobs')}
-                className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm rounded-lg transition-colors"
+                className="btn btn-primary btn-md"
               >
                 Browse Jobs
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/dashboard')}
-                className="border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 text-sm rounded-lg transition-colors"
+                className="btn btn-outline btn-md"
               >
                 Back to Dashboard
               </button>
@@ -151,72 +152,72 @@ export default function Saved() {
           </div>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {savedJobs.map((job) => (
-            <div key={job.job_id} className="bg-white rounded-xl border border-slate-200 hover:shadow-md transition-shadow">
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-4">
+            <div key={job.job_id} className="card card-hover">
+              <div className="card-padding">
+                <div className="flex flex-col lg:flex-row items-start justify-between gap-4">
                   {/* Job Details */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="font-semibold text-slate-900 text-sm mb-1">{job.title}</h3>
-                      <span className="inline-flex items-center bg-yellow-100 text-yellow-800 border border-yellow-200 px-2 py-0.5 text-xs rounded-full">
-                        <Star className="w-3 h-3 mr-1" />
+                  <div className="flex-1 w-full">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                      <h3 className="text-lg sm:text-xl font-semibold text-text-dark">{job.title}</h3>
+                      <span className="badge badge-warning inline-flex items-center gap-1 self-start">
+                        <Star size={14} />
                         Saved
                       </span>
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-3 mb-3">
-                      <div className="flex items-center gap-2 text-slate-700">
-                        <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                          <Building2 size={14} className="text-blue-600" />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary-50 rounded-button flex items-center justify-center flex-shrink-0">
+                          <Building2 size={18} className="text-primary-600" />
                         </div>
                         <div>
-                          <p className="font-medium text-slate-900 text-xs">{job.company}</p>
-                          <p className="text-slate-500 text-xs">Company</p>
+                          <p className="font-semibold text-text-dark text-sm">{job.company}</p>
+                          <p className="text-text-muted text-xs">Company</p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 text-slate-700">
-                        <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                          <MapPin size={14} className="text-blue-600" />
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary-50 rounded-button flex items-center justify-center flex-shrink-0">
+                          <MapPin size={18} className="text-primary-600" />
                         </div>
                         <div>
-                          <p className="font-medium text-slate-900 text-xs">{job.location}</p>
-                          <p className="text-slate-500 text-xs">Location</p>
+                          <p className="font-semibold text-text-dark text-sm">{job.location}</p>
+                          <p className="text-text-muted text-xs">Location</p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 text-slate-700">
-                        <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                          <Briefcase size={14} className="text-blue-600" />
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary-50 rounded-button flex items-center justify-center flex-shrink-0">
+                          <Briefcase size={18} className="text-primary-600" />
                         </div>
                         <div>
-                          <p className="font-medium text-slate-900 text-xs">{job.type}</p>
-                          <p className="text-slate-500 text-xs">Job Type</p>
+                          <p className="font-semibold text-text-dark text-sm">{job.type}</p>
+                          <p className="text-text-muted text-xs">Job Type</p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 text-slate-700">
-                        <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                          <GraduationCap size={14} className="text-blue-600" />
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary-50 rounded-button flex items-center justify-center flex-shrink-0">
+                          <GraduationCap size={18} className="text-primary-600" />
                         </div>
                         <div>
-                          <p className="font-medium text-slate-900 text-xs">{job.experience}</p>
-                          <p className="text-slate-500 text-xs">Experience</p>
+                          <p className="font-semibold text-text-dark text-sm">{job.experience || 'Not specified'}</p>
+                          <p className="text-text-muted text-xs">Experience</p>
                         </div>
                       </div>
                     </div>
 
                     {job.salary && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-2 mb-3">
-                        <p className="text-green-700 font-medium text-sm">
+                      <div className="bg-success-light border border-success-300 rounded-lg p-3 mb-4">
+                        <p className="text-success-dark font-semibold text-sm">
                           💰 {job.salary}
                         </p>
                       </div>
                     )}
 
-                    <p className="text-xs text-slate-500 font-medium mb-2">
+                    <p className="text-xs text-text-muted font-medium">
                       📅 Saved on {new Date(job.saved_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
@@ -224,21 +225,21 @@ export default function Saved() {
                       })}
                     </p>
                   </div>
-                  
+
                   {/* Action Buttons */}
-                  <div className="flex flex-col gap-2 min-w-[100px]">
-                    <button 
+                  <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto lg:min-w-[120px]">
+                    <button
                       onClick={() => handleViewJob(job.id)}
-                      className="border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs px-3 py-1.5 h-auto rounded-lg transition-colors flex items-center justify-center"
+                      className="btn btn-outline btn-sm flex-1 sm:flex-none flex items-center justify-center gap-1.5"
                     >
-                      <Eye className="w-3 h-3 mr-1" />
+                      <Eye size={16} />
                       View
                     </button>
-                    <button 
+                    <button
                       onClick={() => removeSavedJob(job.job_id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-300 text-xs px-3 py-1.5 h-auto rounded-lg transition-colors flex items-center justify-center"
+                      className="btn btn-ghost btn-sm text-error-600 hover:text-error-700 hover:bg-error-light border-error-300 flex-1 sm:flex-none flex items-center justify-center gap-1.5"
                     >
-                      <Trash2 className="w-3 h-3 mr-1" />
+                      <Trash2 size={16} />
                       Remove
                     </button>
                   </div>

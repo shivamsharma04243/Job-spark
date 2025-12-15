@@ -4,7 +4,7 @@ async function getJobApplicants(req, res) {
   try {
     const recruiterId = req.user?.id;
     const jobId = req.params.jobId;
-    
+
     if (!recruiterId) {
       return res.status(401).json({ ok: false, message: "Unauthorized" });
     }
@@ -31,9 +31,10 @@ async function getJobApplicants(req, res) {
         ja.cover_letter,
         ja.resume_path,
         ja.applied_at,
+        ja.updated_at,
         u.id as user_id,
         u.email,
-        u.username,
+        u.name,
         up.full_name,
         up.phone,
         up.city,
@@ -42,14 +43,15 @@ async function getJobApplicants(req, res) {
         up.experience_years,
         up.highest_education,
         up.linkedin_url,
-        up.portfolio_url
+        up.portfolio_url,
+        up.availability
       FROM job_applications ja
       INNER JOIN users u ON ja.user_id = u.id
       LEFT JOIN candidate_profiles up ON u.id = up.user_id
       WHERE ja.job_id = ?
       ORDER BY ja.applied_at DESC
     `;
-    
+
     const [applicants] = await pool.query(sql, [jobId]);
 
     const result = applicants.map(app => ({
@@ -58,10 +60,11 @@ async function getJobApplicants(req, res) {
       coverLetter: app.cover_letter,
       resumePath: app.resume_path,
       appliedAt: app.applied_at,
+      updatedAt: app.updated_at,
       user: {
         id: app.user_id,
         email: app.email,
-        username: app.username,
+        name: app.name,
         fullName: app.full_name,
         phone: app.phone,
         location: `${app.city || ''}${app.city && app.state ? ', ' : ''}${app.state || ''}`,
@@ -69,7 +72,8 @@ async function getJobApplicants(req, res) {
         experienceYears: app.experience_years,
         highestEducation: app.highest_education,
         linkedinUrl: app.linkedin_url,
-        portfolioUrl: app.portfolio_url
+        portfolioUrl: app.portfolio_url,
+        availability: app.availability
       }
     }));
 

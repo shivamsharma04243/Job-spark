@@ -10,11 +10,13 @@ const getAdminJobs = async (req, res) => {
         j.title,
         j.company,
         j.job_type,
+        j.work_mode,
         j.city,
         j.locality,
         j.min_experience,
         j.max_experience,
-        j.salary,
+        j.min_salary,
+        j.max_salary,
         j.vacancies,
         j.description,
         j.contact_email,
@@ -47,6 +49,17 @@ const getAdminJobs = async (req, res) => {
     const params = status && status !== 'all' ? [status] : [];
     const [jobs] = await pool.execute(sql, params);
 
+    // Helper function to format salary range (monthly)
+    const formatSalary = (minSalary, maxSalary) => {
+      if (minSalary == null && maxSalary == null) return 'Not specified';
+      if (minSalary != null && maxSalary != null) {
+        return `${minSalary}-${maxSalary} /Month`;
+      }
+      if (minSalary != null) return `${minSalary}+ /Month`;
+      if (maxSalary != null) return `Up to ${maxSalary} /Month`;
+      return 'Not specified';
+    };
+
     const jobsWithFormattedData = (jobs || []).map(job => {
       let experience = 'Not specified';
       if (job.min_experience == null && job.max_experience == null) experience = 'Fresher';
@@ -70,7 +83,9 @@ const getAdminJobs = async (req, res) => {
       return {
         ...job,
         experience,
-        location
+        location,
+        salary: formatSalary(job.min_salary, job.max_salary),
+        work_mode: job.work_mode || 'Office'
       };
     });
 

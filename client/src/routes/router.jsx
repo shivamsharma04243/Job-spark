@@ -2,6 +2,7 @@ import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import ProtectedRoute from "../protected/ProtectedRoute.jsx";
 import ProtectedRecruiterRoute from "../protected/ProtectedRecruiterRoute.jsx";
+import GuestOnlyRoute from "../protected/GuestOnlyRoute.jsx";
 
 // Import Layouts
 import GuestLayout from "../components/layout/guest-layout/GuestLayout.jsx";
@@ -63,7 +64,14 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="/home" replace /> },
 
       // Public pages (accessible without login)
-      { path: "home", element: <Home /> },
+      {
+        path: "home",
+        element: (
+          <GuestOnlyRoute>
+            <Home />
+          </GuestOnlyRoute>
+        )
+      },
       { path: "companies", element: <Companies /> },
       { path: "career-guide", element: <CareerGuide /> },
       { path: "jobs", element: <Jobs /> },

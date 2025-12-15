@@ -47,62 +47,56 @@ export default function HowItWorks() {
     <section
       ref={sectionRef}
       style={{ backgroundColor: '#FFFFFF' }}
-      className={`transition-all duration-1000 ease-out min-h-screen flex items-center ${
-        sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-      }`}
+      className={`transition-all duration-1000 ease-out section-padding ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
     >
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-16 lg:px-20 py-12 md:py-16" style={{ paddingTop: '40px', paddingBottom: '60px' }}>
-        <div className="max-w-2xl mb-8">
-          <h2 className="text-[24px] font-bold mb-2 leading-[1.4]" style={{ color: '#111111' }}>
+      <div className="container-custom">
+        <div className="max-w-2xl mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-text-dark mb-2">
             How it works
           </h2>
-          <p className="text-[14px] leading-[1.5]" style={{ color: '#555555' }}>
+          <p className="text-sm sm:text-base leading-relaxed text-text-muted">
             Same simple flow for job seekers and recruiters. No confusing steps.
           </p>
         </div>
 
-        <div className="mb-6 inline-flex rounded-full bg-white border p-1" style={{ borderColor: '#E5E7EB' }}>
+        <div className="mb-6 sm:mb-8 inline-flex rounded-full bg-white border-2 border-border p-1 shadow-soft">
           <button
             type="button"
             onClick={() => setTab("seekers")}
-            className={`px-4 sm:px-6 py-1.5 text-[14px] font-semibold rounded-full transition-colors ${
-              tab === "seekers"
-                ? "text-white shadow-soft"
-                : ""
-            }`}
-            style={tab === "seekers" ? { backgroundColor: '#1769E0' } : { color: '#555555' }}
+            className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold rounded-full transition-all ${tab === "seekers"
+                ? "text-white shadow-soft bg-primary-500"
+                : "text-text-muted hover:text-primary-600"
+              }`}
           >
             For Job Seekers
           </button>
           <button
             type="button"
             onClick={() => setTab("recruiters")}
-            className={`px-4 sm:px-6 py-1.5 text-[14px] font-semibold rounded-full transition-colors ${
-              tab === "recruiters"
-                ? "text-white shadow-soft"
-                : ""
-            }`}
-            style={tab === "recruiters" ? { backgroundColor: '#1769E0' } : { color: '#555555' }}
+            className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold rounded-full transition-all ${tab === "recruiters"
+                ? "text-white shadow-soft bg-primary-500"
+                : "text-text-muted hover:text-primary-600"
+              }`}
           >
             For Recruiters
           </button>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4" style={{ gap: '16px' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="border rounded-[12px] bg-white shadow-soft"
-              style={{ borderColor: '#E5E7EB' }}
+              className="card card-hover"
             >
-              <div className="p-4 space-y-3">
-                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full text-[12px] font-semibold" style={{ backgroundColor: '#E8F1FF', color: '#1769E0' }}>
+              <div className="p-4 sm:p-5 space-y-3">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold bg-primary-50 text-primary-700 border-2 border-primary-100">
                   {index + 1}
                 </div>
-                <h3 className="text-[18px] font-semibold leading-[1.4]" style={{ color: '#111111' }}>
+                <h3 className="text-lg sm:text-xl font-semibold leading-snug text-text-dark">
                   {step.title}
                 </h3>
-                <p className="text-[14px] leading-[1.5]" style={{ color: '#555555' }}>{step.desc}</p>
+                <p className="text-sm sm:text-base leading-relaxed text-text-muted">{step.desc}</p>
               </div>
             </div>
           ))}

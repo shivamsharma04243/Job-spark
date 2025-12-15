@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import { Building2, MapPin, Briefcase, Clock, CheckCircle2 } from 'lucide-react';
+import api from '../../../components/apiconfig/apiconfig';
 
 const statusColors = {
-  applied: "bg-blue-100 text-blue-800 border border-blue-200",
-  reviewed: "bg-purple-100 text-purple-800 border border-purple-200", 
-  shortlisted: "bg-green-100 text-green-800 border border-green-200",
-  rejected: "bg-red-100 text-red-800 border border-red-200",
-  hired: "bg-emerald-100 text-emerald-800 border border-emerald-200"
+  applied: "badge-primary",
+  reviewed: "badge badge bg-purple-50 text-purple-700 border border-purple-200",
+  shortlisted: "badge-success",
+  rejected: "badge badge bg-error-light text-error-dark border border-error-300",
+  hired: "badge badge bg-emerald-50 text-emerald-700 border border-emerald-200"
 };
 
 const statusLabels = {
   applied: "Applied",
-  reviewed: "Under Review", 
+  reviewed: "Under Review",
   shortlisted: "Shortlisted",
-  rejected: "Rejected", 
+  rejected: "Rejected",
   hired: "Hired"
 };
 
@@ -22,34 +24,21 @@ export default function Applied() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
   const fetchAppliedJobs = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await fetch(`${API_BASE_URL}/api/jobs/applied-jobs`, {
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch applications: ${response.status}`);
-      }
+      const response = await api.get('/jobs/applied-jobs');
 
-      const data = await response.json();
-      
-      if (data.ok) {
-        setApplications(data.applications || []);
+      if (response.data.ok) {
+        setApplications(response.data.applications || []);
       } else {
-        throw new Error(data.error || 'Failed to load applications');
+        throw new Error(response.data.error || 'Failed to load applications');
       }
     } catch (err) {
       console.error('Fetch error:', err);
-      setError(err.message);
+      setError(err?.response?.data?.error || err?.response?.data?.message || err.message || 'Failed to load applications');
     } finally {
       setLoading(false);
     }
@@ -78,20 +67,20 @@ export default function Applied() {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white rounded-xl border border-slate-200 animate-pulse">
-            <div className="p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="w-12 h-12 bg-slate-200 rounded-lg"></div>
+          <div key={i} className="card animate-pulse">
+            <div className="card-padding">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                <div className="flex items-start gap-3 flex-1 w-full">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
                   <div className="space-y-2 flex-1">
-                    <div className="h-4 bg-slate-200 rounded w-1/3"></div>
-                    <div className="h-3 bg-slate-200 rounded w-1/4"></div>
-                    <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                    <div className="h-5 bg-gray-200 rounded w-1/3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                   </div>
                 </div>
-                <div className="space-y-2 text-right">
-                  <div className="h-6 bg-slate-200 rounded-full w-20"></div>
-                  <div className="h-3 bg-slate-200 rounded w-16"></div>
+                <div className="flex flex-row sm:flex-col gap-2 text-left sm:text-right w-full sm:w-auto">
+                  <div className="h-7 bg-gray-200 rounded-full w-24"></div>
+                  <div className="h-4 bg-gray-200 rounded w-20"></div>
                 </div>
               </div>
             </div>
@@ -103,14 +92,14 @@ export default function Applied() {
 
   if (error) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200">
-        <div className="p-6 text-center">
-          <div className="text-red-500 text-4xl mb-3">⚠️</div>
-          <h3 className="font-semibold text-slate-900 mb-2">Unable to Load Applications</h3>
-          <p className="text-red-600 mb-4 text-sm">{error}</p>
-          <button 
+      <div className="card">
+        <div className="card-padding text-center">
+          <div className="text-error-500 text-5xl mb-4">⚠️</div>
+          <h3 className="text-lg font-semibold text-text-dark mb-2">Unable to Load Applications</h3>
+          <p className="text-error-600 mb-6 text-sm">{error}</p>
+          <button
             onClick={fetchAppliedJobs}
-            className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm rounded-lg transition-colors"
+            className="btn btn-primary btn-md"
           >
             Try Again
           </button>
@@ -120,86 +109,89 @@ export default function Applied() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">My Applications</h2>
-          <p className="text-sm text-slate-600">Track and manage your job applications</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-text-dark">My Applications</h2>
+          <p className="text-sm sm:text-base text-text-muted mt-1">Track and manage your job applications</p>
         </div>
-        <div className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-sm font-medium">
+        <div className="badge badge-primary text-sm">
           {applications.length} application{applications.length !== 1 ? 's' : ''}
         </div>
       </div>
 
       {applications.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200">
-          <div className="p-8 text-center">
-            <div className="text-blue-400 text-5xl mb-4">📝</div>
-            <h3 className="font-semibold text-slate-900 mb-2">No Applications Yet</h3>
-            <p className="text-slate-600 text-sm mb-6 max-w-md mx-auto">
+        <div className="card">
+          <div className="card-padding text-center">
+            <div className="text-primary-500 text-6xl mb-4">📝</div>
+            <h3 className="text-xl font-semibold text-text-dark mb-2">No Applications Yet</h3>
+            <p className="text-text-muted text-sm sm:text-base mb-6 max-w-md mx-auto">
               Start your job search journey! Apply to positions that match your skills and interests.
             </p>
-            <div className="flex gap-3 justify-center">
-              <Link to="/jobs">
-                <button className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm rounded-lg transition-colors">
-                  Browse Jobs
-                </button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link to="/jobs" className="btn btn-primary btn-md">
+                Browse Jobs
               </Link>
-              <Link to="/dashboard/profile">
-                <button className="border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 text-sm rounded-lg transition-colors">
-                  Update Profile
-                </button>
+              <Link to="/dashboard/profile" className="btn btn-outline btn-md">
+                Update Profile
               </Link>
             </div>
           </div>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {applications.map((application) => (
-            <div key={application.id} className="bg-white rounded-xl border border-slate-200 hover:shadow-md transition-shadow">
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-4">
+            <div key={application.id} className="card card-hover">
+              <div className="card-padding">
+                <div className="flex flex-col lg:flex-row items-start justify-between gap-4">
                   {/* Job Details */}
-                  <div className="flex items-start gap-3 flex-1">
-                    {application.logo_path && (
-                      <img 
-                        src={application.logo_path} 
+                  <div className="flex items-start gap-4 flex-1 w-full">
+                    {application.logo_path ? (
+                      <img
+                        src={application.logo_path}
                         alt={application.company}
-                        className="w-12 h-12 rounded-lg object-cover border border-slate-200"
+                        className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg object-cover border border-border flex-shrink-0"
                       />
+                    ) : (
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-primary-50 border border-primary-200 flex items-center justify-center flex-shrink-0">
+                        <Building2 size={24} className="text-primary-600" />
+                      </div>
                     )}
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-slate-900 text-sm mb-1">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg sm:text-xl font-semibold text-text-dark mb-1.5">
                         {application.title}
                       </h3>
-                      <p className="text-slate-700 font-medium text-sm mb-2">{application.company}</p>
-                      <div className="flex items-center gap-3 text-xs text-slate-600">
-                        <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-100">
+                      <p className="text-text-dark font-medium text-sm sm:text-base mb-3">{application.company}</p>
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                        <span className="badge badge-primary">
+                          <Briefcase size={12} className="inline mr-1" />
                           {application.job_type}
                         </span>
-                        <span className="flex items-center gap-1">
-                          📍 {getLocation(application)}
+                        <span className="badge badge-gray inline-flex items-center gap-1">
+                          <MapPin size={12} />
+                          {getLocation(application)}
                         </span>
                         {application.salary && (
-                          <span className="text-green-600 font-medium">
+                          <span className="badge badge-success">
                             💰 {application.salary}
                           </span>
                         )}
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Status & Date */}
-                  <div className="text-right space-y-2">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusColors[application.status] || 'bg-slate-100 text-slate-800 border border-slate-200'}`}>
+                  <div className="flex flex-row sm:flex-col items-center sm:items-end gap-3 sm:gap-2 w-full sm:w-auto lg:min-w-[140px]">
+                    <span className={`${statusColors[application.status] || 'badge badge-gray'} text-xs`}>
                       {statusLabels[application.status] || application.status}
                     </span>
-                    <div>
-                      <p className="text-xs text-slate-500 font-medium">
+                    <div className="text-left sm:text-right">
+                      <p className="text-xs text-text-muted font-medium mb-0.5">
                         Applied on
                       </p>
-                      <p className="text-slate-700 font-medium text-sm">
+                      <p className="text-text-dark font-semibold text-sm inline-flex items-center gap-1">
+                        <Clock size={14} />
                         {formatDate(application.applied_at)}
                       </p>
                     </div>

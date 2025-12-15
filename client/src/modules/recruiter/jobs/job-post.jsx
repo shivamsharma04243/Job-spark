@@ -7,12 +7,14 @@ export default function AdminPostJob() {
     title: "",
     company: "",
     jobType: "Full-time",
+    workMode: "Office",
     city: "",
     locality: "",
     skills: "",
     minExperience: "",
     maxExperience: "",
-    salary: "",
+    minSalary: "",
+    maxSalary: "",
     vacancies: 1,
     description: "",
     interviewAddress: "",
@@ -81,12 +83,14 @@ export default function AdminPostJob() {
       payload.append("title", normalizedTitle);
       payload.append("company", normalizedCompany);
       payload.append("jobType", form.jobType);
+      payload.append("workMode", form.workMode);
       payload.append("city", form.city);
       payload.append("locality", form.locality);
       payload.append("skills", form.skills);
       payload.append("minExperience", form.minExperience);
       payload.append("maxExperience", form.maxExperience);
-      payload.append("salary", form.salary);
+      payload.append("minSalary", form.minSalary);
+      payload.append("maxSalary", form.maxSalary);
       payload.append("vacancies", form.vacancies.toString());
       payload.append("description", form.description);
       payload.append("interviewAddress", form.interviewAddress);
@@ -111,12 +115,14 @@ export default function AdminPostJob() {
         title: "",
         company: "",
         jobType: "Full-time",
+        workMode: "Office",
         city: "",
         locality: "",
         skills: "",
         minExperience: "",
         maxExperience: "",
-        salary: "",
+        minSalary: "",
+        maxSalary: "",
         vacancies: 1,
         description: "",
         interviewAddress: "",
@@ -143,51 +149,59 @@ export default function AdminPostJob() {
   const previewCompany = form.company ? capitalizeFirst(form.company) : "";
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
-      <h1 className="text-2xl font-bold mb-6">Post a Job</h1>
+    <div className="container-custom py-8 sm:py-10">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-text-dark">Post a Job</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Form column */}
         <div className="lg:col-span-2">
-          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold">Create Job Posting</h2>
+          <div className="card">
+            <div className="p-4 sm:p-6 border-b border-border">
+              <h2 className="text-lg sm:text-xl font-semibold text-text-dark">Create Job Posting</h2>
             </div>
 
             <form onSubmit={handleSubmit}>
-              <div className="p-6 space-y-4">
-                {success && <div className="rounded-md bg-emerald-50 p-3 text-emerald-700">{success}</div>}
-                {errors.submit && <div className="rounded-md bg-red-50 p-3 text-red-700">{errors.submit}</div>}
+              <div className="p-4 sm:p-6 space-y-5 sm:space-y-6">
+                {success && (
+                  <div className="rounded-lg bg-success-light border border-success-300 p-3 sm:p-4 text-success-700 text-sm">
+                    {success}
+                  </div>
+                )}
+                {errors.submit && (
+                  <div className="rounded-lg bg-error-light border border-error-300 p-3 sm:p-4 text-error-700 text-sm">
+                    {errors.submit}
+                  </div>
+                )}
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Job Title *</label>
+                  <label className="label">Job Title *</label>
                   <input
                     value={form.title}
                     onChange={(e) => updateField("title", e.target.value)}
                     placeholder="e.g., Frontend Developer"
-                    className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className={`input ${errors.title ? 'input-error' : ''}`}
                   />
-                  {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title}</p>}
+                  {errors.title && <p className="text-xs text-error-600 mt-1.5">{errors.title}</p>}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Company *</label>
+                    <label className="label">Company *</label>
                     <input
                       value={form.company}
                       onChange={(e) => updateField("company", e.target.value)}
                       placeholder="Company name"
-                      className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                      className={`input ${errors.company ? 'input-error' : ''}`}
                     />
-                    {errors.company && <p className="text-xs text-red-500 mt-1">{errors.company}</p>}
+                    {errors.company && <p className="text-xs text-error-600 mt-1.5">{errors.company}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">Job Type</label>
+                    <label className="label">Job Type</label>
                     <select
                       value={form.jobType}
                       onChange={(e) => updateField("jobType", e.target.value)}
-                      className="rounded-xl border p-3 w-full text-sm"
+                      className="select"
                     >
                       <option>Full-time</option>
                       <option>Part-time</option>
@@ -196,104 +210,188 @@ export default function AdminPostJob() {
                       <option>Work from Home</option>
                     </select>
                   </div>
+
+                  <div>
+                    <label className="label">Work Mode</label>
+                    <select
+                      value={form.workMode}
+                      onChange={(e) => updateField("workMode", e.target.value)}
+                      className="select"
+                    >
+                      <option>Office</option>
+                      <option>Remote</option>
+                      <option>Hybrid</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">City *</label>
-                    <input value={form.city} onChange={(e) => updateField("city", e.target.value)} placeholder="City" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
-                    {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city}</p>}
+                    <label className="label">City *</label>
+                    <input
+                      value={form.city}
+                      onChange={(e) => updateField("city", e.target.value)}
+                      placeholder="City"
+                      className={`input ${errors.city ? 'input-error' : ''}`}
+                    />
+                    {errors.city && <p className="text-xs text-error-600 mt-1.5">{errors.city}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Locality</label>
-                    <input value={form.locality} onChange={(e) => updateField("locality", e.target.value)} placeholder="Locality / area" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
+                    <label className="label">Locality</label>
+                    <input
+                      value={form.locality}
+                      onChange={(e) => updateField("locality", e.target.value)}
+                      placeholder="Locality / area"
+                      className="input"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Vacancies</label>
+                    <label className="label">Vacancies</label>
                     <input
                       type="number"
                       value={form.vacancies}
                       onChange={(e) => updateField("vacancies", Math.max(1, Number(e.target.value || 1)))}
-                      className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                      className={`input ${errors.vacancies ? 'input-error' : ''}`}
                     />
-                    {errors.vacancies && <p className="text-xs text-red-500 mt-1">{errors.vacancies}</p>}
+                    {errors.vacancies && <p className="text-xs text-error-600 mt-1.5">{errors.vacancies}</p>}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Experience (min)</label>
-                    <input value={form.minExperience} onChange={(e) => updateField("minExperience", e.target.value)} placeholder="e.g., 0" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="label">Experience (min)</label>
+                      <input
+                        value={form.minExperience}
+                        onChange={(e) => updateField("minExperience", e.target.value)}
+                        placeholder="e.g., 0"
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label className="label">Experience (max)</label>
+                      <input
+                        value={form.maxExperience}
+                        onChange={(e) => updateField("maxExperience", e.target.value)}
+                        placeholder="e.g., 3"
+                        className="input"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Experience (max)</label>
-                    <input value={form.maxExperience} onChange={(e) => updateField("maxExperience", e.target.value)} placeholder="e.g., 3" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Salary</label>
-                    <input value={form.salary} onChange={(e) => updateField("salary", e.target.value)} placeholder="e.g., 3 LPA" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="label">Salary (min) /Month</label>
+                      <input
+                        type="number"
+                        value={form.minSalary}
+                        onChange={(e) => updateField("minSalary", e.target.value)}
+                        placeholder="e.g., 20000"
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label className="label">Salary (max) /Month</label>
+                      <input
+                        type="number"
+                        value={form.maxSalary}
+                        onChange={(e) => updateField("maxSalary", e.target.value)}
+                        placeholder="e.g., 40000"
+                        className="input"
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Skills / Technologies (comma separated)</label>
-                  <input value={form.skills} onChange={(e) => updateField("skills", e.target.value)} placeholder="React, Node.js, SQL, Docker" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
+                  <label className="label">Skills / Technologies (comma separated)</label>
+                  <input
+                    value={form.skills}
+                    onChange={(e) => updateField("skills", e.target.value)}
+                    placeholder="React, Node.js, SQL, Docker"
+                    className="input"
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Job Description *</label>
+                  <label className="label">Job Description *</label>
                   <textarea
                     value={form.description}
                     onChange={(e) => updateField("description", e.target.value)}
-                    className="w-full rounded-xl border p-3 text-sm min-h-[140px]"
+                    className={`textarea ${errors.description ? 'input-error' : ''}`}
                     placeholder="Describe responsibilities, requirements, benefits..."
                   />
-                  {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description}</p>}
+                  {errors.description && <p className="text-xs text-error-600 mt-1.5">{errors.description}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Interview Address / Office Address</label>
-                  <input value={form.interviewAddress} onChange={(e) => updateField("interviewAddress", e.target.value)} placeholder="Full address" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
+                  <label className="label">Interview Address / Office Address</label>
+                  <input
+                    value={form.interviewAddress}
+                    onChange={(e) => updateField("interviewAddress", e.target.value)}
+                    placeholder="Full address"
+                    className="input"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Contact Email</label>
-                    <input value={form.contactEmail} onChange={(e) => updateField("contactEmail", e.target.value)} placeholder="hr@company.com" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
+                    <label className="label">Contact Email</label>
+                    <input
+                      value={form.contactEmail}
+                      onChange={(e) => updateField("contactEmail", e.target.value)}
+                      placeholder="hr@company.com"
+                      className="input"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Contact Phone</label>
-                    <input value={form.contactPhone} onChange={(e) => updateField("contactPhone", e.target.value)} placeholder="+91 98xxxxxxxx" className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none" />
+                    <label className="label">Contact Phone</label>
+                    <input
+                      value={form.contactPhone}
+                      onChange={(e) => updateField("contactPhone", e.target.value)}
+                      placeholder="+91 98xxxxxxxx"
+                      className="input"
+                    />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Company / Job Logo</label>
-                  <input type="file" accept="image/*" onChange={handleLogoChange} className="text-sm" />
-                  {logoPreview && <img src={logoPreview} alt="logo" className="mt-3 h-16 w-16 object-contain rounded-md border" />}
+                  <label className="label">Company / Job Logo</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-button file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer"
+                  />
+                  {logoPreview && (
+                    <img
+                      src={logoPreview}
+                      alt="logo preview"
+                      className="mt-3 h-20 w-20 object-contain rounded-lg border border-border"
+                    />
+                  )}
                 </div>
 
                 {/* Terms & Conditions Acceptance */}
-                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="flex items-start gap-2">
+                <div className="p-4 sm:p-5 bg-gray-50 rounded-lg border border-border">
+                  <div className="flex items-start gap-2.5">
                     <input
                       type="checkbox"
                       id="terms-checkbox-job"
                       checked={termsAccepted}
                       onChange={(e) => setTermsAccepted(e.target.checked)}
-                      className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      className="mt-0.5 h-4 w-4 text-primary-600 focus:ring-primary-500 border-border rounded cursor-pointer"
                       required
                     />
-                    <label htmlFor="terms-checkbox-job" className="text-sm text-gray-700 cursor-pointer">
+                    <label htmlFor="terms-checkbox-job" className="text-sm text-text-dark cursor-pointer leading-relaxed">
                       I confirm this is a genuine job opening and I agree to HireSpark's{" "}
-                      <Link to="/terms" target="_blank" className="text-blue-600 hover:underline">
+                      <Link to="/terms" target="_blank" className="text-primary-600 hover:text-primary-700 hover:underline font-medium">
                         job posting policies
                       </Link>.
                     </label>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 mt-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 border-t border-border">
                   <button
                     type="button"
                     onClick={() => {
@@ -302,12 +400,14 @@ export default function AdminPostJob() {
                         title: "",
                         company: "",
                         jobType: "Full-time",
+                        workMode: "Office",
                         city: "",
                         locality: "",
                         skills: "",
                         minExperience: "",
                         maxExperience: "",
-                        salary: "",
+                        minSalary: "",
+                        maxSalary: "",
                         vacancies: 1,
                         description: "",
                         interviewAddress: "",
@@ -317,13 +417,18 @@ export default function AdminPostJob() {
                       });
                       setErrors({});
                       setSuccess(null);
+                      setTermsAccepted(false);
                     }}
-                    className="px-6 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                    className="btn btn-outline btn-md sm:w-auto w-full"
                   >
                     Reset
                   </button>
 
-                  <button type="submit" className="rounded-full px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={submitting || !termsAccepted}>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-md sm:w-auto w-full"
+                    disabled={submitting || !termsAccepted}
+                  >
                     {submitting ? "Publishing..." : "Publish Job"}
                   </button>
                 </div>
@@ -333,53 +438,67 @@ export default function AdminPostJob() {
         </div>
 
         {/* Preview column */}
-        <div>
-          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm">
-            <div className="p-4 border-b border-gray-200">
-              <h2 className="text-base font-semibold">Preview</h2>
+        <div className="lg:sticky lg:top-4 lg:self-start">
+          <div className="card">
+            <div className="p-4 sm:p-5 border-b border-border">
+              <h2 className="text-base sm:text-lg font-semibold text-text-dark">Preview</h2>
             </div>
 
-            <div className="p-4 space-y-3">
+            <div className="p-4 sm:p-5 space-y-4">
               <div className="flex items-start gap-3">
                 {logoPreview ? (
-                  <img src={logoPreview} alt="logo" className="h-16 w-16 object-cover rounded-md border" />
+                  <img src={logoPreview} alt="logo preview" className="h-16 w-16 object-cover rounded-lg border border-border flex-shrink-0" />
                 ) : (
-                  <div className="h-16 w-16 rounded-md bg-slate-100 grid place-items-center text-slate-400">Logo</div>
+                  <div className="h-16 w-16 rounded-lg bg-gray-100 grid place-items-center text-text-light text-xs border border-border flex-shrink-0">Logo</div>
                 )}
-                <div>
-                  <div className="font-semibold text-lg">{previewTitle || "Job title preview"}</div>
-                  <div className="text-sm text-slate-600">{previewCompany || "Company name"}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold text-base sm:text-lg text-text-dark">{previewTitle || "Job title preview"}</div>
+                  <div className="text-sm text-text-muted mt-0.5">{previewCompany || "Company name"}</div>
                 </div>
               </div>
 
-              <div className="text-sm text-slate-600">
+              <div className="text-sm text-text-dark space-y-2">
                 <div>
-                  <strong>Location:</strong> {form.city || "City"} {form.locality ? `— ${form.locality}` : ""}
+                  <strong className="text-text-muted">Location:</strong>{" "}
+                  <span className="text-text-dark">{form.city || "City"}{form.locality ? ` — ${form.locality}` : ""}</span>
                 </div>
                 <div>
-                  <strong>Type:</strong> {form.jobType}
+                  <strong className="text-text-muted">Type:</strong> <span className="text-text-dark">{form.jobType}</span>
                 </div>
                 <div>
-                  <strong>Experience:</strong> {(form.minExperience || "0") + (form.maxExperience ? ` - ${form.maxExperience} yrs` : " yrs")}
+                  <strong className="text-text-muted">Work Mode:</strong> <span className="text-text-dark">{form.workMode}</span>
                 </div>
                 <div>
-                  <strong>Salary:</strong> {form.salary || "NA"}
+                  <strong className="text-text-muted">Experience:</strong>{" "}
+                  <span className="text-text-dark">{(form.minExperience || "0") + (form.maxExperience ? ` - ${form.maxExperience} yrs` : " yrs")}</span>
+                </div>
+                <div>
+                  <strong className="text-text-muted">Salary:</strong>{" "}
+                  <span className="text-text-dark">
+                    {form.minSalary && form.maxSalary
+                      ? `₹ ${Number(form.minSalary).toLocaleString('en-IN')} - ${Number(form.maxSalary).toLocaleString('en-IN')} /Month`
+                      : form.minSalary
+                        ? `₹ ${Number(form.minSalary).toLocaleString('en-IN')}+ /Month`
+                        : form.maxSalary
+                          ? `Up to ₹ ${Number(form.maxSalary).toLocaleString('en-IN')} /Month`
+                          : "NA"}
+                  </span>
                 </div>
                 <div className="mt-2">
-                  <strong>Skills:</strong> {form.skills || "—"}
+                  <strong className="text-text-muted">Skills:</strong> <span className="text-text-dark">{form.skills || "—"}</span>
                 </div>
               </div>
 
-              <div className="text-sm mt-2">
-                <div className="font-medium">Short description</div>
-                <div className="text-slate-600 text-sm">
+              <div className="text-sm pt-2 border-t border-border">
+                <div className="font-medium text-text-dark mb-1.5">Short description</div>
+                <div className="text-text-muted text-sm leading-relaxed">
                   {form.description ? (form.description.length > 220 ? form.description.slice(0, 220) + "..." : form.description) : "Job description will appear here."}
                 </div>
               </div>
 
-              <div className="pt-3 border-t">
-                <div className="text-xs text-slate-500">Contact</div>
-                <div className="text-sm">{form.contactEmail || form.contactPhone || "No contact provided"}</div>
+              <div className="pt-3 border-t border-border">
+                <div className="text-xs text-text-muted mb-1">Contact</div>
+                <div className="text-sm text-text-dark">{form.contactEmail || form.contactPhone || "No contact provided"}</div>
               </div>
             </div>
           </div>

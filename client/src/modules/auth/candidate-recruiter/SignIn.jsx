@@ -248,31 +248,35 @@ export default function SignIn() {
   }, [role, termsAccepted]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4 py-12">
-      <div className="w-full max-w-6xl rounded-2xl bg-[#eefcfb] p-8 md:p-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div className="px-4 md:px-8">
-            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-slate-800">
+    <div className="min-h-screen flex items-center justify-center bg-bg px-4 py-8 sm:py-12">
+      <div className="w-full max-w-6xl">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="px-4 lg:px-8 text-center lg:text-left">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-text-dark">
               Talk to HR directly & get a job with better salary!
             </h1>
-            <p className="mt-4 text-lg text-slate-500">Get local jobs in your city!</p>
+            <p className="mt-4 sm:mt-6 text-base sm:text-lg text-text-muted">
+              Get local jobs in your city!
+            </p>
           </div>
 
           <div className="flex justify-center">
-            <div className="w-full max-w-md rounded-2xl shadow-lg bg-white border border-gray-200">
-              <div className="px-8 pt-8 border-b border-gray-200 pb-4">
-                <h2 className="text-2xl font-semibold">Sign in to HireSpark</h2>
-                <p className="mt-1 text-sm text-slate-500">Welcome back! Sign in with Google</p>
+            <div className="w-full max-w-md card shadow-medium">
+              <div className="px-6 sm:px-8 pt-6 sm:pt-8 border-b border-border pb-4 sm:pb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold text-text-dark">Sign in to HireSpark</h2>
+                <p className="mt-1.5 text-sm text-text-muted">Welcome back! Sign in with Google</p>
               </div>
 
-              <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4 pt-6">
+              <div className="px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 space-y-4 sm:space-y-5 pt-6">
                 {/* Role Selection */}
                 <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="label text-text-dark">
                     I want to sign in as:
                   </label>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <label className={`flex gap-2 p-3 border-2 rounded-xl cursor-pointer transition-colors ${role === "candidate" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className={`flex items-center gap-2.5 p-3 sm:p-4 border-2 rounded-card cursor-pointer transition-all ${role === "candidate"
+                        ? "border-primary-500 bg-primary-50 shadow-soft"
+                        : "border-border hover:border-primary-300 hover:bg-gray-50"
                       }`}>
                       <input
                         type="radio"
@@ -280,12 +284,14 @@ export default function SignIn() {
                         value="candidate"
                         checked={role === "candidate"}
                         onChange={() => setRole("candidate")}
-                        className="mt-0.5"
+                        className="w-4 h-4 text-primary-600 focus:ring-primary-500 cursor-pointer"
                       />
-                      <span className="font-medium">Candidate</span>
+                      <span className="font-semibold text-sm sm:text-base text-text-dark">Candidate</span>
                     </label>
 
-                    <label className={`flex gap-2 p-3 border-2 rounded-xl cursor-pointer transition-colors ${role === "recruiter" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                    <label className={`flex items-center gap-2.5 p-3 sm:p-4 border-2 rounded-card cursor-pointer transition-all ${role === "recruiter"
+                        ? "border-primary-500 bg-primary-50 shadow-soft"
+                        : "border-border hover:border-primary-300 hover:bg-gray-50"
                       }`}>
                       <input
                         type="radio"
@@ -293,9 +299,9 @@ export default function SignIn() {
                         value="recruiter"
                         checked={role === "recruiter"}
                         onChange={() => setRole("recruiter")}
-                        className="mt-0.5"
+                        className="w-4 h-4 text-primary-600 focus:ring-primary-500 cursor-pointer"
                       />
-                      <span className="font-medium">Recruiter</span>
+                      <span className="font-semibold text-sm sm:text-base text-text-dark">Recruiter</span>
                     </label>
                   </div>
                 </div>
@@ -303,35 +309,38 @@ export default function SignIn() {
                 <div id="google-login-btn" className="flex justify-center"></div>
 
                 {/* Terms & Conditions Checkbox */}
-                <div className="flex items-start gap-2 pt-2">
+                <div className="flex items-start gap-2.5 pt-2">
                   <input
                     type="checkbox"
                     id="terms-checkbox"
                     checked={termsAccepted}
                     onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="mt-0.5 h-4 w-4 text-primary-600 focus:ring-primary-500 border-border rounded cursor-pointer"
                     required
                   />
-                  <label htmlFor="terms-checkbox" className="text-xs text-gray-700 cursor-pointer">
+                  <label htmlFor="terms-checkbox" className="text-xs sm:text-sm text-text-muted cursor-pointer leading-relaxed">
                     I agree to the{" "}
-                    <Link to="/terms" target="_blank" className="text-blue-600 hover:underline">
+                    <Link to="/terms" target="_blank" className="text-primary-600 hover:text-primary-700 hover:underline font-medium">
                       Terms & Conditions
                     </Link>{" "}
                     and{" "}
-                    <Link to="/privacy" target="_blank" className="text-blue-600 hover:underline">
+                    <Link to="/privacy" target="_blank" className="text-primary-600 hover:text-primary-700 hover:underline font-medium">
                       Privacy Policy
                     </Link>{" "}
                     of HireSpark.
                   </label>
                 </div>
 
-                {message && <p className="text-green-600 text-sm text-center">{message}</p>}
-                {error && <p className="text-red-600 text-sm text-center">{error}</p>}
-
-                <p className="text-sm text-center">
-                  No account? <a className="text-slate-800 hover:underline" href="/sign-up">Create one</a>
-                </p>
-
+                {message && (
+                  <div className="text-success-600 text-sm text-center bg-success-light border border-success-300 rounded-lg px-4 py-2.5">
+                    {message}
+                  </div>
+                )}
+                {error && (
+                  <div className="text-error-600 text-sm text-center bg-error-light border border-error-300 rounded-lg px-4 py-2.5">
+                    {error}
+                  </div>
+                )}
               </div>
             </div>
           </div>

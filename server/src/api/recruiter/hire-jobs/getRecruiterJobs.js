@@ -19,11 +19,13 @@ async function getRecruiterJobs(req, res) {
         title,
         company,
         job_type,
+        work_mode,
         city,
         locality,
         min_experience,
         max_experience,
-        salary,
+        min_salary,
+        max_salary,
         vacancies,
         description,
         logo_path,
@@ -59,6 +61,17 @@ async function getRecruiterJobs(req, res) {
       }
     }
 
+    // Helper function to format salary range (monthly)
+    const formatSalary = (minSalary, maxSalary) => {
+      if (minSalary == null && maxSalary == null) return 'Not specified';
+      if (minSalary != null && maxSalary != null) {
+        return `${minSalary}-${maxSalary} /Month`;
+      }
+      if (minSalary != null) return `${minSalary}+ /Month`;
+      if (maxSalary != null) return `Up to ${maxSalary} /Month`;
+      return 'Not specified';
+    };
+
     const jobs = rows.map(r => {
       let experience = 'Not specified';
       if (r.min_experience == null && r.max_experience == null) experience = 'Fresher';
@@ -84,9 +97,12 @@ async function getRecruiterJobs(req, res) {
         title: r.title,
         company: r.company,
         type: r.job_type || 'Full-time',
+        workMode: r.work_mode || 'Office',
         location,
         tags: tagMap[r.id] || [],
-        salary: r.salary || 'Not specified',
+        salary: formatSalary(r.min_salary, r.max_salary),
+        minSalary: r.min_salary,
+        maxSalary: r.max_salary,
         vacancies: r.vacancies,
         description: r.description,
         logoPath: r.logo_path || null,

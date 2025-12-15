@@ -13,11 +13,13 @@ async function getjobdetails(req, res) {
         title,
         company,
         job_type,
+        work_mode,
         city,
         locality,
         min_experience,
         max_experience,
-        salary,
+        min_salary,
+        max_salary,
         vacancies,
         description,
         logo_path,
@@ -65,14 +67,28 @@ async function getjobdetails(req, res) {
       location = 'Not specified';
     }
 
+    // Format salary range (monthly)
+    const formatSalary = (minSalary, maxSalary) => {
+      if (minSalary == null && maxSalary == null) return null;
+      if (minSalary != null && maxSalary != null) {
+        return `${minSalary}-${maxSalary} /Month`;
+      }
+      if (minSalary != null) return `${minSalary}+ /Month`;
+      if (maxSalary != null) return `Up to ${maxSalary} /Month`;
+      return null;
+    };
+
     const job = {
       id: r.id,
       title: r.title,
       company: r.company,
       type: r.job_type || 'Full-time',
+      workMode: r.work_mode || 'Office',
       location,
       tags: tags.length ? tags : (r.skills || '').split(',').map(s => s.trim()).filter(Boolean),
-      salary: r.salary || null,
+      salary: formatSalary(r.min_salary, r.max_salary),
+      minSalary: r.min_salary,
+      maxSalary: r.max_salary,
       vacancies: r.vacancies,
       description: r.description,
       logoPath: r.logo_path || null,

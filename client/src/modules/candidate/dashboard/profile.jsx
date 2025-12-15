@@ -320,24 +320,24 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div className="card overflow-hidden">
       {/* Card Header */}
-      <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
-        <div className="flex items-center justify-between">
+      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-border bg-gray-50">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Candidate Profile Information</h3>
-            <p className="text-sm text-slate-600 mt-1">Update your professional details and contact information</p>
+            <h3 className="text-xl sm:text-2xl font-semibold text-text-dark">Candidate Profile Information</h3>
+            <p className="text-sm sm:text-base text-text-muted mt-1">Update your professional details and contact information</p>
           </div>
           {!isEditing && (
             <button
               onClick={handleEditClick}
-              className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm rounded-lg transition-colors"
+              className="btn btn-primary btn-md self-start sm:self-auto"
             >
               Edit Profile
             </button>
@@ -345,45 +345,45 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {!isEditing ? (
           <ProfileView user={user} onEdit={handleEditClick} />
         ) : (
-          <form onSubmit={handleSave} className="space-y-6">
+          <form onSubmit={handleSave} className="space-y-6 sm:space-y-8">
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              <div className="p-4 bg-error-light border border-error-300 rounded-lg text-error-700 text-sm">
                 {error}
               </div>
             )}
 
             {/* Personal Information */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-slate-900 mb-4">Personal Information</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-border rounded-card card-padding">
+              <h4 className="text-base font-semibold text-text-dark mb-5">Personal Information</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Full Name *</label>
+                  <label className="label">Full Name *</label>
                   <input
                     name="full_name"
                     value={form.full_name}
                     onChange={handleChange}
                     required
                     placeholder="Enter your full name"
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Phone Number *</label>
+                  <label className="label">Phone Number *</label>
                   <input
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
                     required
                     placeholder="Enter your phone number"
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Date of Birth *</label>
+                  <label className="label">Date of Birth *</label>
                   <div className="relative">
                     <input
                       name="date_of_birth"
@@ -392,21 +392,21 @@ export default function ProfilePage() {
                       onChange={handleChange}
                       required
                       placeholder="dd-mm-yyyy"
-                      className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 pr-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                      className="input pr-10"
                     />
-                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Gender *</label>
+                  <label className="label">Gender *</label>
                   <select
                     name="gender"
                     value={form.gender}
                     onChange={handleChange}
                     required
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     {genderOptions.map(opt => (
                       <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
@@ -417,57 +417,57 @@ export default function ProfilePage() {
             </div>
 
             {/* Location */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-slate-900 mb-4">Location</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="border border-border rounded-card card-padding">
+              <h4 className="text-base font-semibold text-text-dark mb-5">Location</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">City *</label>
+                  <label className="label">City *</label>
                   <input
                     name="city"
                     value={form.city}
                     onChange={handleChange}
                     required
                     placeholder="Enter your city"
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">State *</label>
+                  <label className="label">State *</label>
                   <input
                     name="state"
                     value={form.state}
                     onChange={handleChange}
                     required
                     placeholder="Enter your state"
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Country *</label>
+                  <label className="label">Country *</label>
                   <input
                     name="country"
                     value={form.country}
                     onChange={handleChange}
                     required
                     placeholder="Enter your country"
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="input"
                   />
                 </div>
               </div>
             </div>
 
             {/* Education & Skills */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-slate-900 mb-4">Education & Skills</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-border rounded-card card-padding">
+              <h4 className="text-base font-semibold text-text-dark mb-5">Education & Skills</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Highest Qualification *</label>
+                  <label className="label">Highest Qualification *</label>
                   <select
                     name="highest_qualification"
                     value={form.highest_qualification}
                     onChange={handleChange}
                     required
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     {qualificationOptions.map(opt => (
                       <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
@@ -475,18 +475,18 @@ export default function ProfilePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Trade / Stream *</label>
+                  <label className="label">Trade / Stream *</label>
                   <input
                     name="trade_stream"
                     value={form.trade_stream}
                     onChange={handleChange}
                     required
                     placeholder="e.g. Electrician, Computer"
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Key Skills *</label>
+                  <label className="label">Key Skills *</label>
                   <select
                     name="key_skills"
                     multiple
@@ -494,22 +494,22 @@ export default function ProfilePage() {
                     onChange={handleSkillsChange}
                     required
                     size="4"
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     {skillOptions.map(skill => (
                       <option key={skill} value={skill}>{skill}</option>
                     ))}
                   </select>
-                  <p className="text-xs text-slate-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+                  <p className="text-xs text-text-muted mt-1.5">Hold Ctrl/Cmd to select multiple</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Skill Level *</label>
+                  <label className="label">Skill Level *</label>
                   <select
                     name="skill_level"
                     value={form.skill_level}
                     onChange={handleChange}
                     required
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     {skillLevelOptions.map(opt => (
                       <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
@@ -520,17 +520,17 @@ export default function ProfilePage() {
             </div>
 
             {/* Experience */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-slate-900 mb-4">Experience</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-border rounded-card card-padding">
+              <h4 className="text-base font-semibold text-text-dark mb-5">Experience</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Experience Type *</label>
+                  <label className="label">Experience Type *</label>
                   <select
                     name="experience_type"
                     value={form.experience_type}
                     onChange={handleChange}
                     required
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     {experienceTypeOptions.map(opt => (
                       <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
@@ -538,7 +538,7 @@ export default function ProfilePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Experience Years</label>
+                  <label className="label">Experience Years</label>
                   <input
                     name="experience_years"
                     type="number"
@@ -548,24 +548,24 @@ export default function ProfilePage() {
                     value={form.experience_years}
                     onChange={handleChange}
                     placeholder="e.g., 2.5"
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="input"
                   />
                 </div>
               </div>
             </div>
 
             {/* Job Preferences */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-slate-900 mb-4">Job Preferences</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-border rounded-card card-padding">
+              <h4 className="text-base font-semibold text-text-dark mb-5">Job Preferences</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Job Type *</label>
+                  <label className="label">Job Type *</label>
                   <select
                     name="job_type"
                     value={form.job_type}
                     onChange={handleChange}
                     required
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     {jobTypeOptions.map(opt => (
                       <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
@@ -573,13 +573,13 @@ export default function ProfilePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Preferred Work Type *</label>
+                  <label className="label">Preferred Work Type *</label>
                   <select
                     name="preferred_work_type"
                     value={form.preferred_work_type}
                     onChange={handleChange}
                     required
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     {workTypeOptions.map(opt => (
                       <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
@@ -587,13 +587,13 @@ export default function ProfilePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Availability *</label>
+                  <label className="label">Availability *</label>
                   <select
                     name="availability"
                     value={form.availability}
                     onChange={handleChange}
                     required
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     {availabilityOptions.map(opt => (
                       <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
@@ -601,12 +601,12 @@ export default function ProfilePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Expected Salary</label>
+                  <label className="label">Expected Salary</label>
                   <select
                     name="expected_salary"
                     value={form.expected_salary}
                     onChange={handleChange}
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     <option value="">Optional</option>
                     <option value="0-20000">₹0 - ₹20,000</option>
@@ -622,13 +622,13 @@ export default function ProfilePage() {
 
 
             {/* Documents */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-slate-900 mb-4">Documents</h4>
+            <div className="border border-border rounded-card card-padding">
+              <h4 className="text-base font-semibold text-text-dark mb-5">Documents</h4>
 
               {/* Resume Option Radio Buttons */}
-              <div className="mb-4">
-                <label className="block text-xs font-medium text-slate-700 mb-3">Resume Option</label>
-                <div className="flex gap-6">
+              <div className="mb-5">
+                <label className="label mb-3">Resume Option</label>
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                   <label className="flex items-center cursor-pointer">
                     <input
                       type="radio"
@@ -636,9 +636,9 @@ export default function ProfilePage() {
                       value="have_resume"
                       checked={resumeOption === "have_resume"}
                       onChange={(e) => setResumeOption(e.target.value)}
-                      className="mr-2"
+                      className="mr-2 w-4 h-4 text-primary-600 focus:ring-primary-500 cursor-pointer"
                     />
-                    <span className="text-sm text-slate-700">I have a resume</span>
+                    <span className="text-sm text-text-dark">I have a resume</span>
                   </label>
                   <label className="flex items-center cursor-pointer">
                     <input
@@ -647,34 +647,34 @@ export default function ProfilePage() {
                       value="create_for_me"
                       checked={resumeOption === "create_for_me"}
                       onChange={(e) => setResumeOption(e.target.value)}
-                      className="mr-2"
+                      className="mr-2 w-4 h-4 text-primary-600 focus:ring-primary-500 cursor-pointer"
                     />
-                    <span className="text-sm text-slate-700">Create for me</span>
+                    <span className="text-sm text-text-dark">Create for me</span>
                   </label>
                 </div>
               </div>
 
               {/* Resume Upload (shown when "I have a resume" is selected) */}
               {resumeOption === "have_resume" && (
-                <div className="mb-4">
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Upload Resume / Certificate (Optional)</label>
-                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 hover:border-slate-400 transition-colors bg-slate-50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                <div className="mb-5">
+                  <label className="label mb-3">Upload Resume / Certificate (Optional)</label>
+                  <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-5 hover:border-primary-300 transition-colors bg-gray-50">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <div className="flex items-center flex-1 min-w-0">
+                        <div className="w-10 h-10 rounded-button bg-primary-50 flex items-center justify-center text-primary-600 mr-3 flex-shrink-0">
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-900">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-text-dark truncate">
                             {selectedResumeFile ? selectedResumeFile.name : (form.resume_path || 'No file chosen')}
                           </p>
-                          <p className="text-xs text-slate-500">PDF, DOC, DOCX up to 10MB</p>
+                          <p className="text-xs text-text-muted">PDF, DOC, DOCX up to 10MB</p>
                         </div>
                       </div>
-                      <label className="cursor-pointer">
-                        <span className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
+                      <label className="cursor-pointer flex-shrink-0">
+                        <span className="btn btn-primary btn-sm">
                           Choose File
                         </span>
                         <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileSelect} className="hidden" />
@@ -686,30 +686,30 @@ export default function ProfilePage() {
 
               {/* Create Resume Button (shown when "Create for me" is selected) */}
               {resumeOption === "create_for_me" && (
-                <div className="mb-4">
+                <div className="mb-5">
                   <button
                     type="button"
                     onClick={handleCreateResume}
                     disabled={creatingResume}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn btn-primary btn-md"
                   >
                     {creatingResume ? "Creating Resume..." : "Create Resume"}
                   </button>
                   {form.resume_path && (
-                    <p className="text-xs text-green-600 mt-2">Resume created: {form.resume_path}</p>
+                    <p className="text-xs text-success-600 mt-2 font-medium">Resume created: {form.resume_path}</p>
                   )}
                 </div>
               )}
 
               {/* ID Proof Available */}
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-2">ID Proof Available *</label>
+                <label className="label">ID Proof Available *</label>
                 <select
                   name="id_proof_available"
                   value={form.id_proof_available}
                   onChange={handleChange}
                   required
-                  className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                  className="select"
                 >
                   {idProofOptions.map(opt => (
                     <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
@@ -719,17 +719,17 @@ export default function ProfilePage() {
             </div>
 
             {/* Contact Preference */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-slate-900 mb-4">Contact Preference</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-border rounded-card card-padding">
+              <h4 className="text-base font-semibold text-text-dark mb-5">Contact Preference</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Preferred Contact Method *</label>
+                  <label className="label">Preferred Contact Method *</label>
                   <select
                     name="preferred_contact_method"
                     value={form.preferred_contact_method}
                     onChange={handleChange}
                     required
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     {contactMethodOptions.map(opt => (
                       <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
@@ -737,7 +737,7 @@ export default function ProfilePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">Willing to Relocate *</label>
+                  <label className="label">Willing to Relocate *</label>
                   <select
                     name="willing_to_relocate"
                     value={form.willing_to_relocate === true || form.willing_to_relocate === "Yes" ? "Yes" : form.willing_to_relocate === false || form.willing_to_relocate === "No" ? "No" : ""}
@@ -746,7 +746,7 @@ export default function ProfilePage() {
                       setForm((s) => ({ ...s, willing_to_relocate: value === "Yes" }));
                     }}
                     required
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="select"
                   >
                     {relocateOptions.map(opt => (
                       <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
@@ -756,46 +756,46 @@ export default function ProfilePage() {
               </div>
             </div>
             {/* Professional Links */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-slate-900 mb-4">Professional Links</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-border rounded-card card-padding">
+              <h4 className="text-base font-semibold text-text-dark mb-5">Professional Links</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">LinkedIn URL</label>
+                  <label className="label">LinkedIn URL</label>
                   <input
                     name="linkedin_url"
                     value={form.linkedin_url}
                     onChange={handleChange}
                     placeholder="https://linkedin.com/in/yourprofile"
                     type="url"
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-2">GitHub URL</label>
+                  <label className="label">GitHub URL</label>
                   <input
                     name="github_url"
                     value={form.github_url}
                     onChange={handleChange}
                     placeholder="https://github.com/yourusername"
                     type="url"
-                    className="w-full text-sm rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors outline-none"
+                    className="input"
                   />
                 </div>
               </div>
             </div>
             {/* Action Buttons */}
-            <div className="flex items-center justify-start gap-3 pt-6 border-t border-slate-200">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 pt-6 border-t border-border">
               <button
                 type="submit"
                 disabled={saving}
-                className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn btn-primary btn-md sm:w-auto w-full"
               >
                 {saving ? "Saving..." : "Save Profile"}
               </button>
               <button
                 type="button"
                 onClick={handleCancel}
-                className="border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 text-sm rounded-lg transition-colors"
+                className="btn btn-outline btn-md sm:w-auto w-full"
               >
                 Cancel
               </button>
@@ -810,17 +810,17 @@ export default function ProfilePage() {
 function ProfileView({ user, onEdit }) {
   if (!user) {
     return (
-      <div className="text-center py-8">
-        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mx-auto mb-4">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="text-center py-8 sm:py-12">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary-50 flex items-center justify-center text-primary-600 mx-auto mb-4">
+          <svg className="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-slate-900 mb-2">No Profile Found</h3>
-        <p className="text-slate-600 text-sm mb-4">Create your professional profile to get started</p>
+        <h3 className="text-xl font-semibold text-text-dark mb-2">No Profile Found</h3>
+        <p className="text-text-muted text-sm sm:text-base mb-6">Create your professional profile to get started</p>
         <button
           onClick={onEdit}
-          className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm rounded-lg transition-colors"
+          className="btn btn-primary btn-md"
         >
           Create Profile
         </button>
@@ -829,28 +829,28 @@ function ProfileView({ user, onEdit }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* User Info Card */}
-      <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl">
+      <div className="bg-primary-50 rounded-card card-padding border border-primary-200">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-bold text-xl sm:text-2xl flex-shrink-0">
             {user.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
           </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-slate-900 text-lg">{user.full_name}</h3>
-            <p className="text-slate-600 text-sm">{user.highest_qualification || "Add education"}</p>
-            <div className="flex items-center gap-4 mt-2 text-sm">
-              <span className="text-slate-700">{user.experience_years ?? 0} years experience</span>
-              <span className="text-slate-700">{user.phone || "No phone"}</span>
+          <div className="flex-1 text-center sm:text-left">
+            <h3 className="font-semibold text-text-dark text-lg sm:text-xl mb-1">{user.full_name}</h3>
+            <p className="text-text-muted text-sm sm:text-base mb-2">{user.highest_qualification || "Add education"}</p>
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4 text-sm">
+              <span className="text-text-dark">{user.experience_years ?? 0} years experience</span>
+              <span className="text-text-dark">{user.phone || "No phone"}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Info Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <div>
-          <h4 className="text-sm font-semibold text-slate-900 mb-3">Personal Information</h4>
+          <h4 className="text-base font-semibold text-text-dark mb-4">Personal Information</h4>
           <div className="space-y-3">
             <InfoItem label="Full Name" value={user.full_name} />
             <InfoItem label="Phone" value={user.phone} />
@@ -864,7 +864,7 @@ function ProfileView({ user, onEdit }) {
         </div>
 
         <div>
-          <h4 className="text-sm font-semibold text-slate-900 mb-3">Location & Preferences</h4>
+          <h4 className="text-base font-semibold text-text-dark mb-4">Location & Preferences</h4>
           <div className="space-y-3">
             <InfoItem label="City" value={user.city} />
             <InfoItem label="State" value={user.state} />
@@ -880,9 +880,9 @@ function ProfileView({ user, onEdit }) {
       </div>
 
       {/* Contact & Documents */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <div>
-          <h4 className="text-sm font-semibold text-slate-900 mb-3">Contact Preference</h4>
+          <h4 className="text-base font-semibold text-text-dark mb-4">Contact Preference</h4>
           <div className="space-y-3">
             <InfoItem label="Preferred Contact Method" value={user.preferred_contact_method} />
             <InfoItem label="Willing to Relocate" value={user.willing_to_relocate === 1 || user.willing_to_relocate === true || user.willing_to_relocate === "Yes" ? "Yes" : user.willing_to_relocate === 0 || user.willing_to_relocate === false || user.willing_to_relocate === "No" ? "No" : "—"} />
@@ -893,7 +893,7 @@ function ProfileView({ user, onEdit }) {
 
       {/* Professional Links */}
       <div>
-        <h4 className="text-sm font-semibold text-slate-900 mb-3">Professional Links</h4>
+        <h4 className="text-base font-semibold text-text-dark mb-4">Professional Links</h4>
         <div className="space-y-3">
           <LinkItem label="LinkedIn" url={user.linkedin_url} />
           <LinkItem label="GitHub" url={user.github_url} />
@@ -935,9 +935,9 @@ function ProfileView({ user, onEdit }) {
 
 function InfoItem({ label, value }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
-      <span className="text-sm text-slate-600">{label}</span>
-      <span className="text-sm font-medium text-slate-900">{value || "—"}</span>
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2.5 border-b border-border last:border-0 gap-1 sm:gap-2">
+      <span className="text-sm text-text-muted">{label}</span>
+      <span className="text-sm font-semibold text-text-dark text-left sm:text-right">{value || "—"}</span>
     </div>
   );
 }
@@ -945,21 +945,21 @@ function InfoItem({ label, value }) {
 function LinkItem({ label, url }) {
   if (!url) {
     return (
-      <div className="flex items-center justify-between py-2 border-b border-slate-100">
-        <span className="text-sm text-slate-600">{label}</span>
-        <span className="text-sm text-slate-400">Not provided</span>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2.5 border-b border-border gap-1 sm:gap-2">
+        <span className="text-sm text-text-muted">{label}</span>
+        <span className="text-sm text-text-light">Not provided</span>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-between py-2 border-b border-slate-100">
-      <span className="text-sm text-slate-600">{label}</span>
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2.5 border-b border-border gap-1 sm:gap-2">
+      <span className="text-sm text-text-muted">{label}</span>
       <a
         href={url}
         target="_blank"
         rel="noreferrer"
-        className="text-sm text-blue-600 hover:text-blue-700 font-medium truncate max-w-[200px]"
+        className="text-sm text-primary-600 hover:text-primary-700 font-medium truncate max-w-full sm:max-w-[200px] text-left sm:text-right"
       >
         {url}
       </a>

@@ -131,13 +131,13 @@ export default AdminLayout;
 === FILE: C:\Users\CreativeStudio24\Desktop\Job-spark\client\src\components\layout\admin-layout\AdminSidebar.jsx ===
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  Briefcase, 
-  User, 
-  Users, 
-  Menu, 
-  Clock, 
+import {
+  LayoutDashboard,
+  Briefcase,
+  User,
+  Users,
+  Menu,
+  Clock,
   CheckCircle,
   FileText,
   XCircle,
@@ -170,7 +170,6 @@ const AdminSidebar = () => {
   const handleLogout = async () => {
     try {
       await api.post('/admin/auth/logout');
-      localStorage.removeItem('token');
       navigate('/admin/signin');
     } catch (error) {
       console.error('Logout error:', error);
@@ -288,7 +287,7 @@ export default function CandidateHeader() {
 
   const fetchUserData = async () => {
     try {
-      const response = await api.get('/auth/authcheck');
+      const response = await api.get('/auth/session');
       if (response.data?.user) {
         setUserData(response.data.user);
       }
@@ -307,7 +306,6 @@ export default function CandidateHeader() {
   const handleLogout = async () => {
     try {
       await api.post('/auth/logout');
-      localStorage.removeItem('token');
       navigate('/sign-in');
     } catch (error) {
       console.error('Logout error:', error);
@@ -371,8 +369,8 @@ export default function CandidateHeader() {
                 key={item.path}
                 to={item.path}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive(item.path)
-                    ? 'border-2 border-slate-900 text-slate-900'
-                    : 'text-slate-700 hover:bg-slate-100'
+                  ? 'border-2 border-slate-900 text-slate-900'
+                  : 'text-slate-700 hover:bg-slate-100'
                   }`}
               >
                 {item.label}
@@ -761,7 +759,7 @@ const GuestLayout = () => {
 
     async function checkAuth() {
       try {
-        const { data } = await api.get("/auth/authcheck");
+        const { data } = await api.get("/auth/session");
         if (mounted) setUser(data?.user || null);
       } catch (err) {
         if (mounted) setUser(null);
@@ -837,7 +835,7 @@ export default function GuestNavbar() {
 
     async function fetchProfile() {
       try {
-        const res = await api.get("/auth/me");
+        const res = await api.get("/auth/session");
         if (mounted) setUser(res.data.user || null);
       } catch (err) {
         if (mounted) setUser(null);
@@ -1137,7 +1135,7 @@ export default function RecruiterHeader() {
 
     async function fetchUser() {
       try {
-        const res = await api.get("/auth/me");
+        const res = await api.get("/auth/session");
         if (mounted) setUser(res.data.user || null);
       } catch (err) {
         if (mounted) setUser(null);
@@ -1407,10 +1405,10 @@ export default function RecruiterLayout() {
 === FILE: C:\Users\CreativeStudio24\Desktop\Job-spark\client\src\components\layout\recruiter-layout\RecruiterSidebar.jsx ===
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  Briefcase, 
-  Users, 
+import {
+  LayoutDashboard,
+  Briefcase,
+  Users,
   Building,
   UserPlus,
   Bell,
@@ -1435,37 +1433,36 @@ export default function RecruiterSidebar() {
 
   // Menu items with icons
   const menuItems = [
-    { 
-      title: "Dashboard", 
-      icon: <LayoutDashboard size={20} />, 
-      path: "/recruiter-dashboard" 
+    {
+      title: "Dashboard",
+      icon: <LayoutDashboard size={20} />,
+      path: "/recruiter-dashboard"
     },
-    { 
-      title: "Post Job", 
-      icon: <Briefcase size={20} />, 
-      path: "/create-job" 
+    {
+      title: "Post Job",
+      icon: <Briefcase size={20} />,
+      path: "/create-job"
     },
-    { 
-      title: "Jobs", 
-      icon: <Briefcase size={20} />, 
-      path: "/job-posted" 
+    {
+      title: "Jobs",
+      icon: <Briefcase size={20} />,
+      path: "/job-posted"
     },
-    { 
-      title: "Company Profile", 
-      icon: <Building size={20} />, 
-      path: "/recruiter-profile" 
+    {
+      title: "Company Profile",
+      icon: <Building size={20} />,
+      path: "/recruiter-profile"
     },
-    { 
-      title: "Complete Profile", 
-      icon: <UserPlus size={20} />, 
-      path: "/recruiter-profile-form" 
+    {
+      title: "Complete Profile",
+      icon: <UserPlus size={20} />,
+      path: "/recruiter-profile-form"
     },
   ];
 
   const handleLogout = async () => {
     try {
       await api.post('/auth/logout');
-      localStorage.removeItem('token');
       navigate('/sign-in');
     } catch (error) {
       console.error('Logout error:', error);
@@ -1501,12 +1498,12 @@ export default function RecruiterSidebar() {
       {/* Navigation Menu */}
       <nav className="flex-1 px-2 py-4 space-y-1">
         {menuItems.map((item) => (
-          <Link 
+          <Link
             key={item.title}
-            to={item.path} 
+            to={item.path}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
-              ${isActive(item.path) 
-                ? 'bg-slate-900 text-white font-medium' 
+              ${isActive(item.path)
+                ? 'bg-slate-900 text-white font-medium'
                 : 'text-slate-700 hover:bg-slate-100'
               }
               ${!isOpen ? "justify-center" : ""}
@@ -1525,7 +1522,7 @@ export default function RecruiterSidebar() {
 
       {/* Bottom Section - Logout */}
       <div className="px-2 py-4 border-t border-slate-200">
-        <button 
+        <button
           onClick={handleLogout}
           className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-red-600 hover:bg-red-50 transition-all duration-200
             ${!isOpen ? "justify-center" : ""}
@@ -1558,7 +1555,7 @@ export default function Profile() {
 
   async function fetchProfile() {
     try {
-      const res = await api.get('/auth/me');
+      const res = await api.get('/auth/session');
       const data = res.data;
       setUser(data.user);
     } catch (err) {
@@ -5723,7 +5720,7 @@ export default function Forgot() {
 --- END OF FILE ---
 
 === FILE: C:\Users\CreativeStudio24\Desktop\Job-spark\client\src\modules\auth\candidate-recruiter\SignIn.jsx ===
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useSearchParams, Link } from "react-router-dom";
 import api from "../../../components/apiconfig/apiconfig";
 
@@ -5738,6 +5735,7 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const location = useLocation();
+  const handleGoogleSuccessRef = useRef(null);
 
   // Update role when query parameter changes
   useEffect(() => {
@@ -5749,7 +5747,7 @@ export default function SignIn() {
   }, [roleParam]);
 
   // Decide where to send the user based on role + profile existence
-  const resolveRedirect = async (resolvedRole) => {
+  const resolveRedirect = useCallback(async (resolvedRole) => {
     try {
       if (resolvedRole === "recruiter") {
         // Recruiter profile exists?
@@ -5776,9 +5774,9 @@ export default function SignIn() {
       // Fallback to default destinations on other errors
       return resolvedRole === "recruiter" ? "/create-job" : "/dashboard";
     }
-  };
+  }, [redirectParam]);
 
-  const consumePostLoginTasks = async (userRoleFallback) => {
+  const consumePostLoginTasks = useCallback(async (userRoleFallback) => {
     const getItem = (key) => {
       try {
         return window.localStorage.getItem(key);
@@ -5796,8 +5794,10 @@ export default function SignIn() {
     };
 
     const pendingJobId = getItem("postLoginSaveJobId");
+    const pendingApplyJobId = getItem("postLoginApplyJobId");
     const pendingRedirect = getItem("postLoginRedirect");
 
+    // Handle save job flow
     if (pendingJobId) {
       try {
         await api.post(`/jobs/save/${pendingJobId}`);
@@ -5805,9 +5805,50 @@ export default function SignIn() {
       } catch (err) {
         setMessage("Signed in, but we could not save the job automatically.");
       }
+      removeItem("postLoginSaveJobId");
     }
 
-    removeItem("postLoginSaveJobId");
+    // Handle apply job flow (only for candidates)
+    // Don't auto-apply, just redirect back to job page so user can click Apply Now manually
+    if (pendingApplyJobId && userRoleFallback === "candidate") {
+      // Check if profile exists and is complete
+      let profileComplete = false;
+      try {
+        const profileRes = await api.get("/profile/user");
+        if (profileRes?.data?.success && profileRes.data.user) {
+          const profile = profileRes.data.user;
+          const sessionRes = await api.get("/auth/session");
+          const userEmail = sessionRes?.data?.user?.email;
+          // Check if profile has required fields: name, email, and resume
+          profileComplete = !!(
+            profile.full_name &&
+            userEmail &&
+            profile.resume_path
+          );
+        }
+      } catch (err) {
+        // Profile doesn't exist or incomplete
+        profileComplete = false;
+      }
+
+      if (!profileComplete) {
+        // Profile incomplete - redirect to complete profile
+        // Keep the apply job ID and redirect path for after profile completion
+        // Don't remove them yet - profile page will handle the apply and cleanup
+        return "/dashboard/profile";
+      }
+
+      // Profile is complete - just redirect back to job page
+      // User will need to click Apply Now button manually
+      removeItem("postLoginApplyJobId");
+      if (pendingRedirect) {
+        removeItem("postLoginRedirect");
+        return pendingRedirect;
+      }
+      // Fallback: redirect to jobs page if no redirect path
+      return "/jobs";
+    }
+
     removeItem("postLoginRedirect");
 
     const fallbackRedirect = await resolveRedirect(userRoleFallback);
@@ -5818,10 +5859,10 @@ export default function SignIn() {
       "/dashboard";
 
     return next;
-  };
+  }, [resolveRedirect, location.state?.from?.pathname, setMessage]);
 
   // GOOGLE LOGIN SUCCESS HANDLER
-  const handleGoogleSuccess = async (response) => {
+  const handleGoogleSuccess = useCallback(async (response) => {
     if (!termsAccepted) {
       setError("Please accept the Terms & Conditions and Privacy Policy to continue.");
       return;
@@ -5832,29 +5873,50 @@ export default function SignIn() {
     setMessage("");
 
     try {
+      console.log("Google sign-in: Sending credential to backend...");
       const { data } = await api.post("/auth/google", {
         credential: response.credential,
         role: role,
       });
 
+      console.log("Google sign-in: Backend response received", data);
       const userRole = data?.user?.role || role;
-      const next = await consumePostLoginTasks(userRole);
-      window.location.href = next;
+
+      // Determine redirect path
+      let redirectPath = null;
+
+      try {
+        redirectPath = await consumePostLoginTasks(userRole);
+        console.log("Google sign-in: Post-login tasks completed, redirect path:", redirectPath);
+      } catch (redirectErr) {
+        console.error("Google sign-in: Error in post-login tasks", redirectErr);
+        // Continue with fallback even if post-login tasks fail
+      }
+
+      // Ensure we always have a redirect path
+      if (!redirectPath) {
+        redirectPath = userRole === "recruiter" ? "/create-job" : "/dashboard";
+        console.log("Google sign-in: Using fallback redirect path", redirectPath);
+      }
+
+      // Perform redirect - use replace to avoid adding to history
+      console.log("Google sign-in: Redirecting to", redirectPath);
+      // Use replace instead of href to avoid back button issues
+      window.location.replace(redirectPath);
     } catch (err) {
+      console.error("Google sign-in: Error", err);
       setError(err?.response?.data?.message || "Google login failed");
-    } finally {
       setLoading(false);
     }
-  };
+  }, [termsAccepted, role, consumePostLoginTasks]);
+
+  // Keep ref updated
+  useEffect(() => {
+    handleGoogleSuccessRef.current = handleGoogleSuccess;
+  }, [handleGoogleSuccess]);
 
   // LOAD GOOGLE BUTTON
   useEffect(() => {
-    // Make sure we are in the browser and the Google script has loaded
-    if (typeof window === "undefined" || !window.google || !window.google.accounts?.id) {
-      console.error("Google Identity script not loaded or window.google is undefined.");
-      return;
-    }
-
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
     if (!clientId) {
@@ -5862,22 +5924,49 @@ export default function SignIn() {
       return;
     }
 
-    window.google.accounts.id.initialize({
-      client_id: clientId,
-      callback: handleGoogleSuccess,
-    });
+    // Wait for Google script to load
+    let retryCount = 0;
+    const maxRetries = 50; // 5 seconds max wait time
+    const initializeGoogleAuth = () => {
+      if (typeof window === "undefined" || !window.google || !window.google.accounts?.id) {
+        retryCount++;
+        if (retryCount < maxRetries) {
+          // Retry after a short delay if script not loaded yet
+          setTimeout(initializeGoogleAuth, 100);
+        } else {
+          console.error("Google Identity script failed to load after multiple retries.");
+        }
+        return;
+      }
 
-    const buttonContainer = document.getElementById("google-login-btn");
-    if (buttonContainer) {
-      // Clear previous button if exists
-      buttonContainer.innerHTML = "";
-      window.google.accounts.id.renderButton(buttonContainer, {
-        theme: "outline",
-        size: "large",
-        width: "100%",
-        disabled: !termsAccepted,
-      });
-    }
+      try {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: (response) => {
+            if (handleGoogleSuccessRef.current) {
+              handleGoogleSuccessRef.current(response);
+            }
+          },
+        });
+
+        const buttonContainer = document.getElementById("google-login-btn");
+        if (buttonContainer) {
+          // Clear previous button if exists
+          buttonContainer.innerHTML = "";
+          window.google.accounts.id.renderButton(buttonContainer, {
+            theme: "outline",
+            size: "large",
+            width: "100%",
+            disabled: !termsAccepted,
+          });
+        }
+      } catch (err) {
+        console.error("Error initializing Google auth:", err);
+      }
+    };
+
+    // Start initialization
+    initializeGoogleAuth();
   }, [role, termsAccepted]);
 
   return (
@@ -5977,7 +6066,7 @@ export default function SignIn() {
 --- END OF FILE ---
 
 === FILE: C:\Users\CreativeStudio24\Desktop\Job-spark\client\src\modules\auth\candidate-recruiter\SignInModal.jsx ===
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import api from "../../../components/apiconfig/apiconfig.jsx";
 
@@ -5986,9 +6075,10 @@ export default function SignInModal({ role = "user", onClose, redirectTo = null 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const handleGoogleSuccessRef = useRef(null);
 
   // Decide where to send based on role + profile existence
-  const resolveRedirect = async (resolvedRole) => {
+  const resolveRedirect = useCallback(async (resolvedRole) => {
     try {
       if (resolvedRole === "recruiter") {
         await api.get("/recruiter-profile/recruiter");
@@ -6011,10 +6101,10 @@ export default function SignInModal({ role = "user", onClose, redirectTo = null 
       }
       return resolvedRole === "recruiter" ? "/create-job" : "/dashboard";
     }
-  };
+  }, [redirectTo]);
 
   // GOOGLE LOGIN SUCCESS HANDLER
-  const handleGoogleSuccess = async (response) => {
+  const handleGoogleSuccess = useCallback(async (response) => {
     if (!termsAccepted) {
       setError("Please accept the Terms & Conditions and Privacy Policy to continue.");
       return;
@@ -6028,54 +6118,93 @@ export default function SignInModal({ role = "user", onClose, redirectTo = null 
       // Map role prop: "user" -> "candidate" for backend, "recruiter" -> "recruiter"
       const roleToSend = role === "recruiter" ? "recruiter" : "candidate";
 
+      console.log("Google sign-in (modal): Sending credential to backend...");
       const { data } = await api.post("/auth/google", {
         credential: response.credential,
         role: roleToSend
       });
 
+      console.log("Google sign-in (modal): Backend response received", data);
       const userRole = data?.user?.role || role;
-      const next = await resolveRedirect(userRole);
-      window.location.href = next;
+
+      let redirectPath = null;
+      try {
+        redirectPath = await resolveRedirect(userRole);
+        console.log("Google sign-in (modal): Redirect path determined:", redirectPath);
+      } catch (redirectErr) {
+        console.error("Google sign-in (modal): Error determining redirect", redirectErr);
+        // Use fallback
+        redirectPath = userRole === "recruiter" ? "/create-job" : "/dashboard";
+      }
+
+      if (!redirectPath) {
+        redirectPath = userRole === "recruiter" ? "/create-job" : "/dashboard";
+      }
+
+      console.log("Google sign-in (modal): Redirecting to", redirectPath);
+      window.location.replace(redirectPath);
     } catch (err) {
+      console.error("Google sign-in (modal): Error", err);
       setError(err?.response?.data?.message || "Google login failed");
-    } finally {
       setLoading(false);
     }
-  };
+  }, [termsAccepted, role, resolveRedirect]);
+
+  // Keep ref updated
+  useEffect(() => {
+    handleGoogleSuccessRef.current = handleGoogleSuccess;
+  }, [handleGoogleSuccess]);
 
   // LOAD GOOGLE BUTTON (Google Identity Services)
   useEffect(() => {
-    // Ensure we are in the browser and script is loaded
-    if (typeof window === "undefined" || !window.google || !window.google.accounts?.id) {
-      console.error("Google Identity script not loaded or window.google is undefined.");
-      return;
-    }
-
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     if (!clientId) {
       console.error("VITE_GOOGLE_CLIENT_ID is missing. Please set it in your client/.env file.");
       return;
     }
 
-    window.google.accounts.id.initialize({
-      client_id: clientId,
-      callback: handleGoogleSuccess,
-    });
+    // Wait for Google script to load
+    let retryCount = 0;
+    const maxRetries = 50; // 5 seconds max wait time
+    const initializeGoogleAuth = () => {
+      if (typeof window === "undefined" || !window.google || !window.google.accounts?.id) {
+        retryCount++;
+        if (retryCount < maxRetries) {
+          // Retry after a short delay if script not loaded yet
+          setTimeout(initializeGoogleAuth, 100);
+        } else {
+          console.error("Google Identity script failed to load after multiple retries.");
+        }
+        return;
+      }
 
-    const buttonContainer = document.getElementById("google-login-btn");
-    if (buttonContainer) {
-      // Clear previous button if exists
-      buttonContainer.innerHTML = "";
-      window.google.accounts.id.renderButton(buttonContainer, {
-        theme: "outline",
-        size: "large",
-        // width must be a number (px) per GIS docs; we handle 100% with CSS on the container
-        width: 320,
-        type: "standard",
-        text: "signin_with", // "Sign in with Google"
-        disabled: !termsAccepted,
-      });
-    }
+      try {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleGoogleSuccess,
+        });
+
+        const buttonContainer = document.getElementById("google-login-btn");
+        if (buttonContainer) {
+          // Clear previous button if exists
+          buttonContainer.innerHTML = "";
+          window.google.accounts.id.renderButton(buttonContainer, {
+            theme: "outline",
+            size: "large",
+            // width must be a number (px) per GIS docs; we handle 100% with CSS on the container
+            width: 320,
+            type: "standard",
+            text: "signin_with", // "Sign in with Google"
+            disabled: !termsAccepted,
+          });
+        }
+      } catch (err) {
+        console.error("Error initializing Google auth:", err);
+      }
+    };
+
+    // Start initialization
+    initializeGoogleAuth();
   }, [role, termsAccepted]);
 
   return (
@@ -6157,7 +6286,7 @@ export default function SignInModal({ role = "user", onClose, redirectTo = null 
 --- END OF FILE ---
 
 === FILE: C:\Users\CreativeStudio24\Desktop\Job-spark\client\src\modules\auth\candidate-recruiter\SignUp.jsx ===
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import api from "../../../components/apiconfig/apiconfig";
 
 export default function SignUp() {
@@ -6165,9 +6294,10 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const handleGoogleSuccessRef = useRef(null);
 
   // GOOGLE SIGNUP
-  const handleGoogleSuccess = async (response) => {
+  const handleGoogleSuccess = useCallback(async (response) => {
     setLoading(true);
     setError("");
     setMessage("");
@@ -6175,7 +6305,7 @@ export default function SignUp() {
     try {
       // Map role: "user" -> "candidate" for backend, "recruiter" -> "recruiter"
       const roleToSend = role === "recruiter" ? "recruiter" : "candidate";
-      
+
       const { data } = await api.post("/auth/google", {
         credential: response.credential,
         role: roleToSend
@@ -6192,14 +6322,14 @@ export default function SignUp() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [role]);
+
+  // Keep ref updated
+  useEffect(() => {
+    handleGoogleSuccessRef.current = handleGoogleSuccess;
+  }, [handleGoogleSuccess]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !window.google || !window.google.accounts?.id) {
-      console.error("Google Identity script not loaded or window.google is undefined.");
-      return;
-    }
-
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
     if (!clientId) {
@@ -6207,19 +6337,47 @@ export default function SignUp() {
       return;
     }
 
-    window.google.accounts.id.initialize({
-      client_id: clientId,
-      callback: handleGoogleSuccess,
-    });
+    // Wait for Google script to load
+    let retryCount = 0;
+    const maxRetries = 50; // 5 seconds max wait time
+    const initializeGoogleAuth = () => {
+      if (typeof window === "undefined" || !window.google || !window.google.accounts?.id) {
+        retryCount++;
+        if (retryCount < maxRetries) {
+          // Retry after a short delay if script not loaded yet
+          setTimeout(initializeGoogleAuth, 100);
+        } else {
+          console.error("Google Identity script failed to load after multiple retries.");
+        }
+        return;
+      }
 
-    const buttonContainer = document.getElementById("google-signup-btn");
-    if (buttonContainer) {
-      window.google.accounts.id.renderButton(buttonContainer, {
-        theme: "outline",
-        size: "large",
-        width: "100%",
-      });
-    }
+      try {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: (response) => {
+            if (handleGoogleSuccessRef.current) {
+              handleGoogleSuccessRef.current(response);
+            }
+          },
+        });
+
+        const buttonContainer = document.getElementById("google-signup-btn");
+        if (buttonContainer) {
+          buttonContainer.innerHTML = "";
+          window.google.accounts.id.renderButton(buttonContainer, {
+            theme: "outline",
+            size: "large",
+            width: "100%",
+          });
+        }
+      } catch (err) {
+        console.error("Error initializing Google auth:", err);
+      }
+    };
+
+    // Start initialization
+    initializeGoogleAuth();
   }, [role]);
 
   return (
@@ -6247,28 +6405,26 @@ export default function SignUp() {
                     I want to sign up as:
                   </label>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <label className={`flex gap-2 p-3 border-2 rounded-xl cursor-pointer transition-colors ${
-                      role === "user" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
-                    }`}>
-                      <input 
-                        type="radio" 
-                        name="role" 
-                        value="user" 
-                        checked={role === "user"} 
+                    <label className={`flex gap-2 p-3 border-2 rounded-xl cursor-pointer transition-colors ${role === "user" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                      }`}>
+                      <input
+                        type="radio"
+                        name="role"
+                        value="user"
+                        checked={role === "user"}
                         onChange={() => setRole("user")}
                         className="mt-0.5"
                       />
                       <span className="font-medium">Candidate</span>
                     </label>
 
-                    <label className={`flex gap-2 p-3 border-2 rounded-xl cursor-pointer transition-colors ${
-                      role === "recruiter" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
-                    }`}>
-                      <input 
-                        type="radio" 
-                        name="role" 
-                        value="recruiter" 
-                        checked={role === "recruiter"} 
+                    <label className={`flex gap-2 p-3 border-2 rounded-xl cursor-pointer transition-colors ${role === "recruiter" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                      }`}>
+                      <input
+                        type="radio"
+                        name="role"
+                        value="recruiter"
+                        checked={role === "recruiter"}
                         onChange={() => setRole("recruiter")}
                         className="mt-0.5"
                       />
@@ -6371,7 +6527,7 @@ export default function ProfilePage() {
       // Error loading profile
     } finally {
       try {
-        const auth = await api.get('/auth/authcheck');
+        const auth = await api.get('/auth/session');
         const authUser = auth?.data?.user;
         if (authUser) {
           setForm((s) => (s.user_id ? s : { ...s, user_id: authUser.id || authUser.sub || s.user_id }));
@@ -6491,7 +6647,7 @@ export default function ProfilePage() {
       let payloadUserId = form.user_id;
       if (!payloadUserId) {
         try {
-          const auth = await api.get('/auth/authcheck');
+          const auth = await api.get('/auth/session');
           const authUser = auth?.data?.user;
           if (authUser) {
             payloadUserId = authUser.id || authUser.sub || payloadUserId;
@@ -6579,7 +6735,22 @@ export default function ProfilePage() {
         setForm(mapUserToForm(res.data.user || payload));
         setIsEditing(false);
         setSelectedResumeFile(null);
-        alert("Profile saved successfully!");
+
+        // Check if user came from apply flow
+        const applyJobId = localStorage.getItem("postLoginApplyJobId");
+        const redirectPath = localStorage.getItem("postLoginRedirect");
+
+        if (applyJobId && redirectPath) {
+          // Profile is now complete - redirect back to job page
+          // User will need to click Apply Now button manually
+          localStorage.removeItem("postLoginApplyJobId");
+          localStorage.removeItem("postLoginRedirect");
+          alert("Profile saved successfully! You can now apply for the job.");
+          window.location.href = redirectPath;
+          return;
+        } else {
+          alert("Profile saved successfully!");
+        }
       } else {
         const errorMsg = res?.data?.message || res?.data?.error || "Unknown server response";
         setError(errorMsg);
@@ -8531,20 +8702,45 @@ export default function JobDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false); // Track if job is saved
+  const [isApplied, setIsApplied] = useState(false); // Track if job is already applied
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [candidateProfile, setCandidateProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [userEmail, setUserEmail] = useState(null);
 
-  // Application form state
+  // Application form state (only for non-logged-in users)
   const [applicantName, setApplicantName] = useState("");
   const [applicantEmail, setApplicantEmail] = useState("");
   const [resumeFile, setResumeFile] = useState(null);
   const [resumeLink, setResumeLink] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
 
+  // For logged-in users: optional resume update
+  const [updateResumeFile, setUpdateResumeFile] = useState(null);
+
   const [applying, setApplying] = useState(false);
   const [applyError, setApplyError] = useState(null);
   const [applySuccess, setApplySuccess] = useState(null);
   const [applied, setApplied] = useState(false); // set true after success
+
+  // Check if job is already applied
+  const checkAppliedStatus = async (jobId) => {
+    try {
+      const response = await api.get("/jobs/applied-jobs");
+      if (response.data?.ok && response.data.applications) {
+        const applied = response.data.applications.some(app => app.job_id === Number(jobId));
+        setIsApplied(applied);
+        // If applied, also set isSaved to false (since applied jobs can't be saved)
+        if (applied) {
+          setIsSaved(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking applied status:', error);
+      setIsApplied(false);
+    }
+  };
 
   useEffect(() => {
     let alive = true;
@@ -8555,7 +8751,7 @@ export default function JobDetail() {
         if (!alive) return;
         if (data.ok && data.job) {
           setJob(data.job);
-          
+
           // Check if job is saved
           await checkSavedStatus(id);
         } else {
@@ -8575,8 +8771,17 @@ export default function JobDetail() {
     let alive = true;
     (async () => {
       try {
-        const { data } = await api.get("/auth/authcheck");
-        if (alive) setIsAuthenticated(Boolean(data?.user));
+        const { data } = await api.get("/auth/session");
+        if (alive) {
+          setIsAuthenticated(Boolean(data?.user));
+          if (data?.user) {
+            setUserEmail(data.user.email);
+            // Fetch candidate profile if authenticated
+            await loadCandidateProfile();
+            // Check if job is already applied
+            await checkAppliedStatus(id);
+          }
+        }
       } catch (err) {
         if (alive) setIsAuthenticated(false);
       } finally {
@@ -8587,7 +8792,33 @@ export default function JobDetail() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [id]);
+
+  // Load candidate profile for logged-in users
+  const loadCandidateProfile = async () => {
+    setProfileLoading(true);
+    try {
+      const res = await api.get("/profile/user");
+      if (res?.data?.success && res.data.user) {
+        setCandidateProfile(res.data.user);
+      }
+    } catch (err) {
+      // Profile doesn't exist or error - that's okay, user will need to complete it
+      setCandidateProfile(null);
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  // Check if profile is complete (has name, email, and resume)
+  const isProfileComplete = () => {
+    if (!candidateProfile) return false;
+    return !!(
+      candidateProfile.full_name &&
+      userEmail &&
+      candidateProfile.resume_path
+    );
+  };
 
   // Check if job is saved
   const checkSavedStatus = async (jobId) => {
@@ -8615,7 +8846,7 @@ export default function JobDetail() {
     if (!isAuthenticated) {
       if (!authChecked) {
         try {
-          const { data } = await api.get("/auth/authcheck");
+          const { data } = await api.get("/auth/session");
           if (data?.user) {
             setIsAuthenticated(true);
           } else {
@@ -8644,7 +8875,14 @@ export default function JobDetail() {
       }
     } catch (error) {
       console.error('Error toggling save:', error);
-      alert('Error: ' + (error.response?.data?.message || error.message));
+      const errorMessage = error.response?.data?.message || error.message;
+      // Show specific message if trying to save an applied job
+      if (errorMessage.includes('already applied')) {
+        alert('Cannot save a job you have already applied to');
+        setIsApplied(true);
+      } else {
+        alert('Error: ' + errorMessage);
+      }
     }
   };
 
@@ -8676,17 +8914,43 @@ export default function JobDetail() {
     setResumeFile(f);
   };
 
+  // Redirect to login for non-logged-in users
+  const redirectToLoginForApply = () => {
+    try {
+      const currentPath = window.location.pathname + window.location.search;
+      localStorage.setItem("postLoginApplyJobId", id);
+      localStorage.setItem("postLoginRedirect", currentPath || `/jobs/${id}`);
+    } catch (err) {
+      // ignore storage failures
+    }
+    navigate("/sign-in?role=candidate");
+  };
+
   const submitApplication = async () => {
     setApplyError(null);
     setApplySuccess(null);
 
-    // Minimal validation: require job id (present) and either resume file or resume link or cover letter
-    if (!id) {
-      setApplyError("Job ID missing.");
+    // Check authentication first
+    if (!isAuthenticated) {
+      redirectToLoginForApply();
       return;
     }
-    if (!resumeFile && !resumeLink && !coverLetter) {
-      setApplyError("Please attach a resume or provide a resume link or a cover letter.");
+
+    // For logged-in users: check if profile is complete
+    if (isAuthenticated && !isProfileComplete()) {
+      // Redirect to complete profile, then come back to apply
+      try {
+        localStorage.setItem("postLoginApplyJobId", id);
+        localStorage.setItem("postLoginRedirect", window.location.pathname + window.location.search);
+      } catch (err) {
+        // ignore storage failures
+      }
+      navigate("/dashboard/profile");
+      return;
+    }
+
+    if (!id) {
+      setApplyError("Job ID missing.");
       return;
     }
 
@@ -8695,26 +8959,45 @@ export default function JobDetail() {
 
       const formData = new FormData();
       formData.append("job_id", id);
-      if (coverLetter) formData.append("cover_letter", coverLetter);
-      // optional: send applicant name/email (backend can ignore if not stored)
-      if (applicantName) formData.append("applicant_name", applicantName);
-      if (applicantEmail) formData.append("applicant_email", applicantEmail);
-      if (resumeFile) formData.append("resume", resumeFile);
-      if (!resumeFile && resumeLink) formData.append("resume_link", resumeLink);
+
+      if (isAuthenticated && candidateProfile) {
+        // For logged-in users: use profile data
+        // Only send cover letter and optional resume update
+        if (coverLetter) formData.append("cover_letter", coverLetter);
+
+        // If user wants to update resume, use the new file
+        if (updateResumeFile) {
+          formData.append("resume", updateResumeFile);
+        }
+        // Otherwise, backend should use resume_path from profile
+        // We'll send it in the body if backend supports it
+        if (!updateResumeFile && candidateProfile.resume_path) {
+          formData.append("resume_path", candidateProfile.resume_path);
+        }
+      } else {
+        // For non-logged-in users: use form data
+        if (coverLetter) formData.append("cover_letter", coverLetter);
+        if (applicantName) formData.append("applicant_name", applicantName);
+        if (applicantEmail) formData.append("applicant_email", applicantEmail);
+        if (resumeFile) formData.append("resume", resumeFile);
+        if (!resumeFile && resumeLink) formData.append("resume_link", resumeLink);
+      }
 
       const res = await api.post("/jobs/apply", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (res.data && res.data.ok) {
-        setApplySuccess("Application submitted successfully.");
+        setApplySuccess("You have successfully applied for this job");
         setApplied(true);
-        // optionally clear form
+        setIsApplied(true); // Mark as applied
+        // Remove from saved jobs (if it was saved) - backend handles this automatically
+        setIsSaved(false);
+        // Clear form
         setCoverLetter("");
         setResumeFile(null);
         setResumeLink("");
-        // you can navigate the user to their applications page if you have one:
-        // navigate('/my-applications');
+        setUpdateResumeFile(null);
       } else {
         setApplyError(res.data?.error || res.data?.message || "Failed to submit application");
       }
@@ -8740,11 +9023,11 @@ export default function JobDetail() {
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">{job.title}</h1>
           <p className="mt-1 text-gray-600 flex flex-wrap items-center gap-2 sm:gap-3">
-            <span className="inline-flex items-center gap-1 text-sm"><Building2 size={16} className="text-blue-500"/> {job.company}</span>
-            <span className="inline-flex items-center gap-1 text-sm"><MapPin size={16} className="text-blue-500"/> {job.location}</span>
-            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><Clock size={14}/> {job.type}</span>
-            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><Briefcase size={14}/> {job.type}</span>
-            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><GraduationCap size={14}/> {job.experiance}</span>
+            <span className="inline-flex items-center gap-1 text-sm"><Building2 size={16} className="text-blue-500" /> {job.company}</span>
+            <span className="inline-flex items-center gap-1 text-sm"><MapPin size={16} className="text-blue-500" /> {job.location}</span>
+            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><Clock size={14} /> {job.type}</span>
+            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><Briefcase size={14} /> {job.type}</span>
+            <span className="inline-flex items-center gap-1 text-xs border border-blue-200 rounded-full px-2 py-1 bg-blue-50 text-blue-700"><GraduationCap size={14} /> {job.experiance}</span>
           </p>
 
           <div className="mt-6 rounded-xl sm:rounded-2xl border border-blue-200 shadow-lg bg-white">
@@ -8767,8 +9050,8 @@ export default function JobDetail() {
               </div>
               <div className="flex flex-wrap gap-2">
                 {skills.map((s) => (
-                  <span 
-                    key={s} 
+                  <span
+                    key={s}
                     className="inline-flex items-center px-2.5 py-0.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs"
                   >
                     {s}
@@ -8784,22 +9067,24 @@ export default function JobDetail() {
             <div className="border-b border-blue-100 p-4 sm:p-6">
               <div className="flex justify-between items-center text-blue-900 text-lg sm:text-xl">
                 <h2 className="font-semibold">Apply to this job</h2>
-                <button 
-                  onClick={toggleSave}
-                  className="flex items-center gap-1 border border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800 text-xs px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  {isSaved ? (
-                    <>
-                      <BookmarkCheck size={14} className="text-blue-600" />
-                      Saved
-                    </>
-                  ) : (
-                    <>
-                      <Bookmark size={14} />
-                      Save
-                    </>
-                  )}
-                </button>
+                {!isApplied && (
+                  <button
+                    onClick={toggleSave}
+                    className="flex items-center gap-1 border border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800 text-xs px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    {isSaved ? (
+                      <>
+                        <BookmarkCheck size={14} className="text-blue-600" />
+                        Saved
+                      </>
+                    ) : (
+                      <>
+                        <Bookmark size={14} />
+                        Save
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
             <div className="p-4 sm:p-6">
@@ -8809,62 +9094,100 @@ export default function JobDetail() {
                 <div className="flex justify-between"><span>Experience</span><span className="font-semibold text-blue-700">{job.experiance}</span></div>
               </div>
 
-              <div className="space-y-3 sm:space-y-4">
-                <input 
-                  placeholder="Your name (optional)" 
-                  value={applicantName} 
-                  onChange={(e) => setApplicantName(e.target.value)}
-                  className="w-full rounded-lg border border-blue-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                />
-                <input 
-                  placeholder="Email (optional)" 
-                  value={applicantEmail} 
-                  onChange={(e) => setApplicantEmail(e.target.value)}
-                  className="w-full rounded-lg border border-blue-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                />
+              {isAuthenticated && candidateProfile ? (
+                // Logged-in user: Simplified form
+                <div className="space-y-3 sm:space-y-4">
+                  {/* Show profile info */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+                    <div className="font-semibold text-blue-900 mb-1">Applying as:</div>
+                    <div className="text-gray-700">{candidateProfile.full_name || "Your name"}</div>
+                    <div className="text-gray-600 text-xs mt-1">{userEmail}</div>
+                    {candidateProfile.resume_path && (
+                      <div className="text-gray-600 text-xs mt-1">✓ Resume on file</div>
+                    )}
+                  </div>
 
-                <div>
-                  <label className="block text-sm mb-1 text-gray-700">Resume (PDF / DOC / DOCX)</label>
-                  <input 
-                    type="file" 
-                    accept=".pdf,.doc,.docx" 
-                    onChange={onFileChange}
-                    className="w-full text-xs sm:text-sm text-gray-600 file:mr-2 file:py-1 file:px-3 sm:file:py-2 sm:file:px-4 file:rounded-full file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  />
-                  {resumeFile && <div className="text-xs mt-1 text-blue-600">{resumeFile.name}</div>}
-                </div>
+                  {/* Optional resume update */}
+                  {candidateProfile.resume_path && (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm text-gray-700">Resume</label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('update-resume-input')?.click()}
+                          className="text-xs text-blue-600 hover:text-blue-800 underline"
+                        >
+                          Update Resume
+                        </button>
+                      </div>
+                      <input
+                        id="update-resume-input"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0] || null;
+                          if (!f) {
+                            setUpdateResumeFile(null);
+                            return;
+                          }
+                          const allowed = [".pdf", ".doc", ".docx"];
+                          const ext = f.name.substring(f.name.lastIndexOf(".")).toLowerCase();
+                          if (!allowed.includes(ext)) {
+                            setApplyError("Only PDF / DOC / DOCX files are allowed for resume.");
+                            setUpdateResumeFile(null);
+                            return;
+                          }
+                          const maxSize = 5 * 1024 * 1024; // 5 MB
+                          if (f.size > maxSize) {
+                            setApplyError("Resume must be smaller than 5 MB.");
+                            setUpdateResumeFile(null);
+                            return;
+                          }
+                          setApplyError(null);
+                          setUpdateResumeFile(f);
+                        }}
+                        className="hidden"
+                      />
+                      {updateResumeFile && (
+                        <div className="text-xs mt-1 text-blue-600">New file: {updateResumeFile.name}</div>
+                      )}
+                    </div>
+                  )}
 
-                <input 
-                  placeholder="Or paste a resume link" 
-                  value={resumeLink} 
-                  onChange={(e) => setResumeLink(e.target.value)}
-                  className="w-full rounded-lg border border-blue-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                />
+                  {/* Cover letter */}
+                  <div>
+                    <label className="block text-sm mb-1 text-gray-700">Cover letter (optional)</label>
+                    <textarea
+                      rows={3}
+                      value={coverLetter}
+                      onChange={(e) => setCoverLetter(e.target.value)}
+                      className="w-full rounded-lg border border-blue-300 p-2 sm:p-3 text-sm focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="Tell us why you're a good fit for this role..."
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm mb-1 text-gray-700">Cover letter (optional)</label>
-                  <textarea
-                    rows={3}
-                    value={coverLetter}
-                    onChange={(e) => setCoverLetter(e.target.value)}
-                    className="w-full rounded-lg border border-blue-300 p-2 sm:p-3 text-sm focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Tell us why you're a good fit for this role..."
-                  />
-                </div>
+                  {applyError && <div className="text-red-600 text-sm bg-red-50 p-2 rounded-lg">{applyError}</div>}
+                  {applySuccess && <div className="text-green-700 text-sm bg-green-50 p-2 rounded-lg">{applySuccess}</div>}
 
-                {applyError && <div className="text-red-600 text-sm bg-red-50 p-2 rounded-lg">{applyError}</div>}
-                {applySuccess && <div className="text-green-700 text-sm bg-green-50 p-2 rounded-lg">{applySuccess}</div>}
-
-                <div className="flex gap-2">
-                  <button 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
-                    onClick={submitApplication} 
-                    disabled={applying || applied}
+                  <button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={submitApplication}
+                    disabled={applying || applied || profileLoading}
                   >
-                    {applied ? "Applied" : applying ? "Applying..." : "Quick Apply"}
+                    {applied ? "Applied" : applying ? "Applying..." : "Apply Now"}
                   </button>
                 </div>
-              </div>
+              ) : (
+                // Non-logged-in user: Just Sign in to Apply Now button (no form fields)
+                <div className="space-y-3 sm:space-y-4">
+                  <button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base px-4 py-2 rounded-lg font-medium transition-colors"
+                    onClick={submitApplication}
+                  >
+                    Sign in to Apply Now
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </aside>
@@ -8964,7 +9287,7 @@ export default function Jobs() {
     let alive = true;
     (async () => {
       try {
-        const { data } = await api.get("/auth/authcheck");
+        const { data } = await api.get("/auth/session");
         if (alive) setIsAuthenticated(Boolean(data?.user));
       } catch (err) {
         if (alive) setIsAuthenticated(false);
@@ -9056,7 +9379,7 @@ export default function Jobs() {
       // If auth status is still being checked, try one more quick check
       if (!authChecked) {
         try {
-          const { data } = await api.get("/auth/authcheck");
+          const { data } = await api.get("/auth/session");
           if (data?.user) {
             setIsAuthenticated(true);
           } else {
@@ -11821,7 +12144,7 @@ export default function ProtectedRoute({ children, roles }) {
     let alive = true;
     (async () => {
       try {
-        const { data } = await api.get("/auth/authcheck");
+        const { data } = await api.get("/auth/session");
         if (alive) setUser(data?.user || null);
       } catch (e) {
         if (alive) setUser(null);
@@ -12821,7 +13144,30 @@ const postApplication = async (req, res) => {
       return res.status(409).json({ ok: false, error: "You have already applied to this job" });
     }
 
-    const resumePath = req.file ? path.join("uploads", "resumes", req.file.filename) : null;
+    // Determine resume path: prioritize uploaded file, then body resume_path, then profile resume_path
+    let resumePath = null;
+    if (req.file) {
+      // New file uploaded
+      resumePath = path.join("uploads", "resumes", req.file.filename);
+    } else if (req.body.resume_path) {
+      // Resume path provided in body (from profile)
+      resumePath = req.body.resume_path;
+    } else {
+      // Try to get resume from user's profile
+      try {
+        const [profileRows] = await conn.query(
+          "SELECT resume_path FROM candidate_profiles WHERE user_id = ? LIMIT 1",
+          [userId]
+        );
+        if (profileRows.length > 0 && profileRows[0].resume_path) {
+          resumePath = profileRows[0].resume_path;
+        }
+      } catch (profileErr) {
+        // Profile doesn't exist or error - resume will be null
+        console.error("Error fetching profile resume:", profileErr);
+      }
+    }
+
     const status = "applied";
 
     const insertSql = `
@@ -12839,6 +13185,17 @@ const postApplication = async (req, res) => {
     ]);
 
     const insertedId = result.insertId;
+
+    // Remove job from saved jobs if it exists (since user has now applied)
+    try {
+      await conn.query(
+        'DELETE FROM saved_jobs WHERE user_id = ? AND job_id = ?',
+        [userId, job_id]
+      );
+    } catch (savedJobErr) {
+      // Log error but don't fail the application if removing from saved jobs fails
+      console.error("Error removing from saved jobs:", savedJobErr);
+    }
 
     res.status(201).json({
       ok: true,
@@ -12971,40 +13328,89 @@ module.exports = getjobdetails;
 --- END OF FILE ---
 
 === FILE: C:\Users\CreativeStudio24\Desktop\Job-spark\server\src\api\jobs\get-jobs.js ===
-const express = require('express');
 const pool = require('../config/db');
-const router = express.Router();
+const jwt = require('jsonwebtoken');
 
 function parseSkills(skills) {
   if (!skills) return [];
   return skills.split(',').map(s => s.trim()).filter(Boolean);
 }
 
+// Helper function to optionally get user ID from token
+function getUserIdFromToken(req) {
+  try {
+    const token = req.cookies?.token;
+    if (!token) return null;
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    return payload.sub || null;
+  } catch (err) {
+    // Token invalid or expired - return null (user not authenticated)
+    return null;
+  }
+}
+
 async function getjobs(req, res) {
   try {
     const limit = Math.max(1, Math.min(100, parseInt(req.query.limit || '10', 10)));
-    const sql = `
-      SELECT
-        id,
-        title,
-        company,
-        job_type,
-        city,
-        locality,
-        min_experience,
-        max_experience,
-        salary,
-        vacancies,
-        description,
-        logo_path,
-        status, -- Add status field
-        created_at
-      FROM jobs
-      WHERE status = 'approved' -- Only show approved jobs
-      ORDER BY created_at DESC
-      LIMIT ?
-    `;
-    const [rows] = await pool.query(sql, [limit]);
+    const userId = getUserIdFromToken(req);
+
+    // Build SQL query - exclude jobs user has already applied for if authenticated
+    let sql;
+    let params;
+
+    if (userId) {
+      // User is authenticated - exclude applied jobs
+      sql = `
+        SELECT
+          j.id,
+          j.title,
+          j.company,
+          j.job_type,
+          j.city,
+          j.locality,
+          j.min_experience,
+          j.max_experience,
+          j.salary,
+          j.vacancies,
+          j.description,
+          j.logo_path,
+          j.status,
+          j.created_at
+        FROM jobs j
+        LEFT JOIN job_applications ja ON j.id = ja.job_id AND ja.user_id = ?
+        WHERE j.status = 'approved' 
+          AND ja.id IS NULL
+        ORDER BY j.created_at DESC
+        LIMIT ?
+      `;
+      params = [userId, limit];
+    } else {
+      // User not authenticated - show all approved jobs
+      sql = `
+        SELECT
+          id,
+          title,
+          company,
+          job_type,
+          city,
+          locality,
+          min_experience,
+          max_experience,
+          salary,
+          vacancies,
+          description,
+          logo_path,
+          status,
+          created_at
+        FROM jobs
+        WHERE status = 'approved'
+        ORDER BY created_at DESC
+        LIMIT ?
+      `;
+      params = [limit];
+    }
+
+    const [rows] = await pool.query(sql, params);
 
     // Fetch tags from normalized tables when available (silent fallback)
     let tagMap = {};
@@ -13306,7 +13712,7 @@ const saveJob = async (req, res) => {
   const connection = await pool.getConnection();
   try {
     const userId = req.user.id;
-    const { job_id } = req.params; 
+    const { job_id } = req.params;
 
     if (!job_id) {
       return res.status(400).json({ success: false, message: 'Job ID is required' });
@@ -13320,6 +13726,16 @@ const saveJob = async (req, res) => {
 
     if (jobExists.length === 0) {
       return res.status(404).json({ success: false, message: 'Job not found' });
+    }
+
+    // Check if user has already applied to this job
+    const [applicationExists] = await connection.execute(
+      'SELECT id FROM job_applications WHERE user_id = ? AND job_id = ? LIMIT 1',
+      [userId, job_id]
+    );
+
+    if (applicationExists.length > 0) {
+      return res.status(409).json({ success: false, message: 'Cannot save a job you have already applied to' });
     }
 
     // Check if job is already saved
@@ -13338,8 +13754,8 @@ const saveJob = async (req, res) => {
       [userId, job_id]
     );
 
-    res.status(201).json({ 
-      success: true, 
+    res.status(201).json({
+      success: true,
       message: 'Job saved successfully',
       data: { user_id: userId, job_id, saved_at: new Date().toISOString() }
     });
@@ -14874,8 +15290,8 @@ const { requireAuth, authCheck } = require('../../../middlewares/auth');
  * So the final endpoints become:
  *   POST   /api/auth/signup
  *   POST   /api/auth/login
- *   GET    /api/auth/authcheck
- *   ( optional alias ) /api/auth/me
+ *   GET    /api/auth/session
+ *   PUT    /api/auth/me (update profile)
  */
 
 // Create new user
@@ -14887,11 +15303,9 @@ router.post('/login', signIn);
 // Google OAuth authentication
 router.post('/google', googleAuth);
 
-// Validate token + return currently authenticated user
-router.get('/authcheck', requireAuth, authCheck);
+// Get current session (validates cookie and returns authenticated user)
+router.get('/session', requireAuth, authCheck);
 
-// Alias if you want cleaner endpoint:
-router.get('/me', requireAuth, authCheck);
 // Update profile (authenticated)
 router.put('/me', requireAuth, updateProfile);
 // Logout user by clearing the cookie

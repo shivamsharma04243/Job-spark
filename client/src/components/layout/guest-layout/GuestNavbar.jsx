@@ -98,189 +98,193 @@ export default function GuestNavbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white text-slate-900 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-3 md:py-4 flex items-center justify-between">
-          {/* Logo */}
-          <div>
+      <header className="sticky top-0 z-50 border-b border-border bg-white text-text-dark shadow-sm backdrop-blur-sm bg-white/95">
+        <div className="container-custom py-3 md:py-4">
+          <div className="flex items-center justify-between gap-4">
+            {/* Logo */}
             <Link
               to="/"
-              className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+              className="flex items-center gap-2.5 sm:gap-3 hover:opacity-90 transition-opacity flex-shrink-0"
             >
-              <div className="h-10 w-10 rounded-xl bg-blue-600 text-white grid place-items-center shadow-md">
-                <Sparkles size={20} />
+              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-primary-500 text-white grid place-items-center shadow-soft flex-shrink-0">
+                <Sparkles size={18} className="sm:w-5 sm:h-5" />
               </div>
-              <b className="text-xl font-bold tracking-tight">
-                Hire<span className="text-blue-600">Spark</span>
+              <b className="text-lg sm:text-xl font-bold tracking-tight">
+                Hire<span className="text-primary-500">Spark</span>
               </b>
             </Link>
-          </div>
 
-          {/* Desktop Navigation Menu */}
-          <nav className="hidden md:flex items-center gap-3">
-            <Link to="/" className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-              Home
-            </Link>
-            <Link
-              to="/jobs"
-              className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-            >
-              Browse Jobs
-            </Link>
-            <Link
-              to="/sign-in?role=recruiter&redirect=post-job"
-              className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-            >
-              Post a Job
-            </Link>
+            {/* Desktop Navigation Menu */}
+            <nav className="hidden md:flex items-center gap-2 lg:gap-3">
+              <Link
+                to="/"
+                className="px-3 lg:px-4 py-2 rounded-button text-sm font-semibold text-text-muted hover:bg-primary-50 hover:text-primary-600 transition-colors"
+              >
+                Home
+              </Link>
+              <Link
+                to="/jobs"
+                className="px-3 lg:px-4 py-2 rounded-button text-sm font-semibold text-text-muted hover:bg-primary-50 hover:text-primary-600 transition-colors"
+              >
+                Browse Jobs
+              </Link>
+              <Link
+                to="/sign-in?role=recruiter&redirect=post-job"
+                className="px-3 lg:px-4 py-2 rounded-button text-sm font-semibold text-text-muted hover:bg-primary-50 hover:text-primary-600 transition-colors"
+              >
+                Post a Job
+              </Link>
+            </nav>
 
-          </nav>
+            {/* Buttons / Profile */}
+            <div className="flex gap-2 sm:gap-3 items-center">
+              {!loading && user ? (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setOpen((v) => !v)}
+                    className="flex items-center gap-2 px-2 sm:px-3 py-2 rounded-button hover:bg-gray-100 transition-colors"
+                    aria-haspopup="true"
+                    aria-expanded={open}
+                  >
+                    <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary-50 grid place-items-center text-sm font-semibold text-primary-700 flex-shrink-0">
+                      {user.username ? (
+                        user.username.charAt(0).toUpperCase()
+                      ) : (
+                        <User size={16} className="sm:w-[18px] sm:h-[18px]" />
+                      )}
+                    </div>
+                    <span className="hidden sm:block text-sm font-medium text-text-dark">
+                      {user.name || user.fullname || user.username}
+                    </span>
+                  </button>
 
-          {/* Buttons / Profile */}
-          <div className="flex gap-3 items-center">
-            {!loading && user ? (
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => setOpen((v) => !v)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
-                  aria-haspopup="true"
-                  aria-expanded={open}
-                >
-                  <div className="h-9 w-9 rounded-full bg-slate-100 grid place-items-center text-sm font-semibold text-slate-700">
-                    {user.username ? (
-                      user.username.charAt(0).toUpperCase()
-                    ) : (
-                      <User size={18} />
-                    )}
-                  </div>
-                  <span className="hidden sm:block text-sm font-medium text-slate-800">
-                    {user.name || user.fullname || user.username}
-                  </span>
-                </button>
-
-                {open && (
-                  <div className="absolute right-0 mt-3 w-72 bg-white text-slate-900 rounded-xl shadow-2xl p-5 z-50 border border-slate-200">
-                    <div className="mb-4">
-                      <div className="text-xs text-slate-500">Name</div>
-                      <div className="font-semibold text-lg">
-                        {user.name || user.fullname || user.username || "-"}
+                  {open && (
+                    <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white text-text-dark rounded-xl shadow-large p-5 z-50 border border-border">
+                      <div className="mb-4">
+                        <div className="text-xs text-text-muted mb-1">Name</div>
+                        <div className="font-semibold text-base">
+                          {user.name || user.fullname || user.username || "-"}
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <div className="text-xs text-text-muted mb-1">Username</div>
+                        <div className="font-medium text-sm">{user.username || user.email || "-"}</div>
+                      </div>
+                      <div className="mb-4">
+                        <div className="text-xs text-text-muted mb-1">Role</div>
+                        <div className="font-medium text-sm capitalize">{user.role || "-"}</div>
+                      </div>
+                      <div className="mb-4">
+                        <div className="text-xs text-text-muted mb-1">Member since</div>
+                        <div className="font-medium text-sm">
+                          {formatCreatedDate(user)}
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <div className="text-xs text-text-muted mb-1">Last login</div>
+                        <div className="font-medium text-sm">
+                          {formatLoginTime(user)}
+                        </div>
+                      </div>
+                      <div className="pt-4 border-t border-border space-y-2">
+                        <Link
+                          to="/profile"
+                          onClick={() => setOpen(false)}
+                          className="block w-full text-left px-4 py-2.5 rounded-button bg-gray-50 hover:bg-gray-100 transition-colors font-medium text-sm"
+                        >
+                          View Profile
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left px-4 py-2.5 rounded-button bg-error-500 hover:bg-error-600 transition-colors font-medium text-sm text-white"
+                        >
+                          Logout
+                        </button>
                       </div>
                     </div>
-                    <div className="mb-4">
-                      <div className="text-xs text-slate-500">Username</div>
-                      <div className="font-medium text-sm">{user.username || user.email || "-"}</div>
-                    </div>
-                    <div className="mb-4">
-                      <div className="text-xs text-slate-500">Role</div>
-                      <div className="font-medium text-sm">{user.role || "-"}</div>
-                    </div>
-                    <div className="mb-4">
-                      <div className="text-xs text-slate-500">Member since</div>
-                      <div className="font-medium text-sm">
-                        {formatCreatedDate(user)}
-                      </div>
-                    </div>
-                    <div className="mb-4">
-                      <div className="text-xs text-slate-500">Last login</div>
-                      <div className="font-medium text-sm">
-                        {formatLoginTime(user)}
-                      </div>
-                    </div>
-                    <div className="pt-4 border-t border-slate-200 space-y-3">
-                      <Link
-                        to="/profile"
-                        onClick={() => setOpen(false)}
-                        className="block w-full text-left px-4 py-3 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors font-medium text-sm"
-                      >
-                        View Profile
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition-colors font-medium text-sm text-white"
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                {/* Candidate = user (popup) */}
-                <button
-                  className="hidden sm:flex px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                  onClick={() => handleOpenAuth("user")}
-                >
-                  Candidate Login
-                </button>
+                  )}
+                </div>
+              ) : (
+                <>
+                  {/* Candidate Login - Navigate to sign-in page */}
+                  <Link
+                    to="/sign-in?role=candidate"
+                    className="hidden sm:inline-flex btn btn-ghost btn-sm"
+                  >
+                    Candidate Login
+                  </Link>
 
-                {/* Recruiter (popup) */}
-                <button
-                  className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                  onClick={() => handleOpenAuth("recruiter")}
-                >
-                  Recruiter Login
-                </button>
-              </>
-            )}
+                  {/* Recruiter Login - Navigate to sign-in page */}
+                  <Link
+                    to="/sign-in?role=recruiter"
+                    className="btn btn-primary btn-sm"
+                  >
+                    <span className="hidden sm:inline">Recruiter Login</span>
+                    <span className="sm:hidden">Login</span>
+                  </Link>
+                </>
+              )}
 
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setMobileMenuOpen((v) => !v)}
-              className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
-              aria-label="Toggle mobile menu"
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setMobileMenuOpen((v) => !v)}
+                className="md:hidden p-2 rounded-button hover:bg-gray-100 transition-colors flex-shrink-0"
+                aria-label="Toggle mobile menu"
+              >
+                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Mobile Navigation Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-slate-200">
-            <nav className="px-6 py-4 space-y-4">
+          <div className="md:hidden bg-white border-t border-border animate-in slide-in-from-top">
+            <nav className="px-4 sm:px-6 py-4 space-y-3">
               <Link
                 to="/"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                className="block py-2 text-text-dark hover:text-primary-600 transition-colors font-medium text-base"
               >
                 Home
               </Link>
               <Link
                 to="/jobs"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                className="block py-2 text-text-dark hover:text-primary-600 transition-colors font-medium text-base"
               >
                 Browse Jobs
               </Link>
               <Link
                 to="/sign-in?role=recruiter&redirect=post-job"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                className="block py-2 text-text-dark hover:text-primary-600 transition-colors font-medium text-base"
               >
                 Post a Job
               </Link>
-
               <Link
                 to="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                className="block py-2 text-text-dark hover:text-primary-600 transition-colors font-medium text-base"
               >
                 Contact
               </Link>
               {!loading && !user && (
-                <div className="pt-4 border-t border-slate-200 space-y-3">
-                  <button
-                    className="w-full text-left px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                    onClick={() => handleOpenAuth("user")}
+                <div className="pt-4 border-t border-border space-y-2">
+                  <Link
+                    to="/sign-in?role=candidate"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block w-full text-center px-4 py-2.5 rounded-button text-sm font-semibold text-primary-600 border-2 border-primary-500 hover:bg-primary-50 transition-colors"
                   >
                     Candidate Login
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                    onClick={() => handleOpenAuth("recruiter")}
+                  </Link>
+                  <Link
+                    to="/sign-in?role=recruiter"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block w-full text-center px-4 py-2.5 rounded-button btn-primary btn-sm"
                   >
                     Recruiter Login
-                  </button>
+                  </Link>
                 </div>
               )}
             </nav>
