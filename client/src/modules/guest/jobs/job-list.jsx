@@ -288,9 +288,15 @@ export default function Jobs() {
     applyFilters();
   }, [applyFilters]);
 
+  // Filter out saved jobs from the list
+  const filteredWithoutSaved = useMemo(
+    () => filtered.filter((job) => !savedStatus[job.id]),
+    [filtered, savedStatus]
+  );
+
   const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(filtered.length / pageSize)),
-    [filtered.length]
+    () => Math.max(1, Math.ceil(filteredWithoutSaved.length / pageSize)),
+    [filteredWithoutSaved.length]
   );
 
   useEffect(() => {
@@ -300,11 +306,11 @@ export default function Jobs() {
   }, [page, totalPages]);
 
   const paginated = useMemo(
-    () => filtered.slice((page - 1) * pageSize, page * pageSize),
-    [filtered, page]
+    () => filteredWithoutSaved.slice((page - 1) * pageSize, page * pageSize),
+    [filteredWithoutSaved, page]
   );
 
-  const startIdx = filtered.length === 0 ? 0 : (page - 1) * pageSize + 1;
+  const startIdx = filteredWithoutSaved.length === 0 ? 0 : (page - 1) * pageSize + 1;
   const endIdx = (page - 1) * pageSize + paginated.length;
 
   const hasSidebarFilters =
@@ -326,12 +332,12 @@ export default function Jobs() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <div className="container-custom py-8 sm:py-10 md:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <p className="text-sm text-text-muted mb-1">
-                {filtered.length || jobList.length} jobs near you
+                {filteredWithoutSaved.length || jobList.length} jobs near you
               </p>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-dark">
                 Find Jobs
@@ -450,7 +456,7 @@ export default function Jobs() {
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-text-muted">
               <span>
-                Showing {startIdx}–{endIdx} of {filtered.length} roles
+                Showing {startIdx}–{endIdx} of {filteredWithoutSaved.length} roles
               </span>
               {hasSidebarFilters && (
                 <span className="badge badge-primary">
@@ -616,7 +622,7 @@ export default function Jobs() {
 
               <button
                 className="btn btn-ghost btn-sm rounded-full"
-                disabled={page === totalPages || filtered.length === 0}
+                disabled={page === totalPages || filteredWithoutSaved.length === 0}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               >
                 Next

@@ -54,7 +54,7 @@ export default function Categories() {
         }`}
       style={{ backgroundColor: '#F7FAFF' }}
     >
-      <div className="container-custom">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 sm:mb-10">
           <div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-text-dark">

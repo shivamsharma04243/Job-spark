@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { User, Mail, Phone, MapPin, Briefcase, GraduationCap, FileText, Edit2, Save, X } from 'lucide-react';
 import api from "../../../components/apiconfig/apiconfig.jsx";
 
 export default function ProfilePage() {
@@ -9,7 +10,6 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [creatingResume, setCreatingResume] = useState(false);
 
-  // form state
   const [form, setForm] = useState({
     user_id: "",
     full_name: "",
@@ -38,9 +38,8 @@ export default function ProfilePage() {
   });
 
   const [selectedResumeFile, setSelectedResumeFile] = useState(null);
-  const [resumeOption, setResumeOption] = useState("have_resume"); // "have_resume" or "create_for_me"
+  const [resumeOption, setResumeOption] = useState("have_resume");
 
-  // Available options for dropdowns - matching database schema enums
   const genderOptions = ["Select", "Male", "Female", "Other"];
   const qualificationOptions = ["Select", "High School", "Diploma", "Bachelor's Degree", "Master's Degree", "PhD", "Other"];
   const skillOptions = ["Computer Basics", "Excel / Data Entry", "Software / IT", "Electrical", "Mechanical", "Plumbing", "Carpentry", "Welding", "Driving", "Communication", "Customer Service"];
@@ -81,24 +80,20 @@ export default function ProfilePage() {
   }
 
   function mapUserToForm(u) {
-    // Handle key_skills - could be JSON array or comma-separated string
     let keySkillsArray = [];
     if (u.key_skills) {
       if (Array.isArray(u.key_skills)) {
         keySkillsArray = u.key_skills;
       } else if (typeof u.key_skills === 'string') {
         try {
-          // Try parsing as JSON first
           const parsed = JSON.parse(u.key_skills);
           keySkillsArray = Array.isArray(parsed) ? parsed : [];
         } catch (e) {
-          // If not JSON, treat as comma-separated string
           keySkillsArray = u.key_skills.split(",").map(s => s.trim()).filter(s => s);
         }
       }
     }
 
-    // Handle willing_to_relocate - convert tinyint to boolean/string
     let willingToRelocateValue = false;
     if (u.willing_to_relocate !== undefined && u.willing_to_relocate !== null) {
       if (typeof u.willing_to_relocate === 'boolean') {
@@ -211,7 +206,6 @@ export default function ProfilePage() {
       if (selectedResumeFile && resumeOption === "have_resume") {
         resumePathToSend = await uploadResume(selectedResumeFile);
       } else if (resumeOption === "create_for_me" && !form.resume_path) {
-        // Create resume if user selected "Create for me" and doesn't have one
         try {
           const createResumeRes = await api.post("/profile/create-resume", {
             user_id: payloadUserId,
@@ -225,7 +219,6 @@ export default function ProfilePage() {
         }
       }
 
-      // Convert willing_to_relocate to boolean
       let willingToRelocateBool = false;
       if (form.willing_to_relocate !== undefined && form.willing_to_relocate !== null) {
         if (typeof form.willing_to_relocate === 'boolean') {
@@ -238,7 +231,6 @@ export default function ProfilePage() {
         }
       }
 
-      // Helper to convert empty strings to null
       const toNullIfEmpty = (value) => {
         if (value === undefined || value === null || value === '') return null;
         return value;
@@ -279,13 +271,10 @@ export default function ProfilePage() {
         setIsEditing(false);
         setSelectedResumeFile(null);
 
-        // Check if user came from apply flow
         const applyJobId = localStorage.getItem("postLoginApplyJobId");
         const redirectPath = localStorage.getItem("postLoginRedirect");
 
         if (applyJobId && redirectPath) {
-          // Profile is now complete - redirect back to job page
-          // User will need to click Apply Now button manually
           localStorage.removeItem("postLoginApplyJobId");
           localStorage.removeItem("postLoginRedirect");
           alert("Profile saved successfully! You can now apply for the job.");
@@ -319,484 +308,499 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="card overflow-hidden">
-      {/* Card Header */}
-      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-border bg-gray-50">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-xl sm:text-2xl font-semibold text-text-dark">Candidate Profile Information</h3>
-            <p className="text-sm sm:text-base text-text-muted mt-1">Update your professional details and contact information</p>
+            <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+            <p className="text-gray-600 mt-1">Manage your professional information</p>
           </div>
-          {!isEditing && (
-            <button
-              onClick={handleEditClick}
-              className="btn btn-primary btn-md self-start sm:self-auto"
-            >
+          {!isEditing && user && (
+            <button onClick={handleEditClick} className="btn btn-primary px-4 py-2 inline-flex items-center gap-2">
+              <Edit2 size={18} />
               Edit Profile
             </button>
           )}
         </div>
-      </div>
 
-      <div className="p-4 sm:p-6">
         {!isEditing ? (
           <ProfileView user={user} onEdit={handleEditClick} />
         ) : (
-          <form onSubmit={handleSave} className="space-y-6 sm:space-y-8">
+          <form onSubmit={handleSave} className="space-y-6">
             {error && (
-              <div className="p-4 bg-error-light border border-error-300 rounded-lg text-error-700 text-sm">
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                 {error}
               </div>
             )}
 
             {/* Personal Information */}
-            <div className="border border-border rounded-card card-padding">
-              <h4 className="text-base font-semibold text-text-dark mb-5">Personal Information</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                <div>
-                  <label className="label">Full Name *</label>
-                  <input
-                    name="full_name"
-                    value={form.full_name}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your full name"
-                    className="input"
-                  />
-                </div>
-                <div>
-                  <label className="label">Phone Number *</label>
-                  <input
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your phone number"
-                    className="input"
-                  />
-                </div>
-                <div>
-                  <label className="label">Date of Birth *</label>
-                  <div className="relative">
+            <div className="card">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <User size={20} />
+                  Personal Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
+                    <input
+                      name="full_name"
+                      value={form.full_name}
+                      onChange={handleChange}
+                      required
+                      placeholder="Enter your full name"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number *</label>
+                    <input
+                      name="phone"
+                      value={form.phone}
+                      onChange={handleChange}
+                      required
+                      placeholder="Enter your phone number"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Date of Birth *</label>
                     <input
                       name="date_of_birth"
                       type="date"
                       value={form.date_of_birth}
                       onChange={handleChange}
                       required
-                      placeholder="dd-mm-yyyy"
-                      className="input pr-10"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
-                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
                   </div>
-                </div>
-                <div>
-                  <label className="label">Gender *</label>
-                  <select
-                    name="gender"
-                    value={form.gender}
-                    onChange={handleChange}
-                    required
-                    className="select"
-                  >
-                    {genderOptions.map(opt => (
-                      <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
-                    ))}
-                  </select>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Gender *</label>
+                    <select
+                      name="gender"
+                      value={form.gender}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {genderOptions.map(opt => (
+                        <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Location */}
-            <div className="border border-border rounded-card card-padding">
-              <h4 className="text-base font-semibold text-text-dark mb-5">Location</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
-                <div>
-                  <label className="label">City *</label>
-                  <input
-                    name="city"
-                    value={form.city}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your city"
-                    className="input"
-                  />
-                </div>
-                <div>
-                  <label className="label">State *</label>
-                  <input
-                    name="state"
-                    value={form.state}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your state"
-                    className="input"
-                  />
-                </div>
-                <div>
-                  <label className="label">Country *</label>
-                  <input
-                    name="country"
-                    value={form.country}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your country"
-                    className="input"
-                  />
+            <div className="card">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <MapPin size={20} />
+                  Location
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">City *</label>
+                    <input
+                      name="city"
+                      value={form.city}
+                      onChange={handleChange}
+                      required
+                      placeholder="Enter your city"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">State *</label>
+                    <input
+                      name="state"
+                      value={form.state}
+                      onChange={handleChange}
+                      required
+                      placeholder="Enter your state"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Country *</label>
+                    <input
+                      name="country"
+                      value={form.country}
+                      onChange={handleChange}
+                      required
+                      placeholder="Enter your country"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Education & Skills */}
-            <div className="border border-border rounded-card card-padding">
-              <h4 className="text-base font-semibold text-text-dark mb-5">Education & Skills</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                <div>
-                  <label className="label">Highest Qualification *</label>
-                  <select
-                    name="highest_qualification"
-                    value={form.highest_qualification}
-                    onChange={handleChange}
-                    required
-                    className="select"
-                  >
-                    {qualificationOptions.map(opt => (
-                      <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="label">Trade / Stream *</label>
-                  <input
-                    name="trade_stream"
-                    value={form.trade_stream}
-                    onChange={handleChange}
-                    required
-                    placeholder="e.g. Electrician, Computer"
-                    className="input"
-                  />
-                </div>
-                <div>
-                  <label className="label">Key Skills *</label>
-                  <select
-                    name="key_skills"
-                    multiple
-                    value={form.key_skills}
-                    onChange={handleSkillsChange}
-                    required
-                    size="4"
-                    className="select"
-                  >
-                    {skillOptions.map(skill => (
-                      <option key={skill} value={skill}>{skill}</option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-text-muted mt-1.5">Hold Ctrl/Cmd to select multiple</p>
-                </div>
-                <div>
-                  <label className="label">Skill Level *</label>
-                  <select
-                    name="skill_level"
-                    value={form.skill_level}
-                    onChange={handleChange}
-                    required
-                    className="select"
-                  >
-                    {skillLevelOptions.map(opt => (
-                      <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
-                    ))}
-                  </select>
+            <div className="card">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <GraduationCap size={20} />
+                  Education & Skills
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Highest Qualification *</label>
+                    <select
+                      name="highest_qualification"
+                      value={form.highest_qualification}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {qualificationOptions.map(opt => (
+                        <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Trade / Stream *</label>
+                    <input
+                      name="trade_stream"
+                      value={form.trade_stream}
+                      onChange={handleChange}
+                      required
+                      placeholder="e.g. Electrician, Computer"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Key Skills *</label>
+                    <select
+                      name="key_skills"
+                      multiple
+                      value={form.key_skills}
+                      onChange={handleSkillsChange}
+                      required
+                      size="4"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {skillOptions.map(skill => (
+                        <option key={skill} value={skill}>{skill}</option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Skill Level *</label>
+                    <select
+                      name="skill_level"
+                      value={form.skill_level}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {skillLevelOptions.map(opt => (
+                        <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Experience */}
-            <div className="border border-border rounded-card card-padding">
-              <h4 className="text-base font-semibold text-text-dark mb-5">Experience</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                <div>
-                  <label className="label">Experience Type *</label>
-                  <select
-                    name="experience_type"
-                    value={form.experience_type}
-                    onChange={handleChange}
-                    required
-                    className="select"
-                  >
-                    {experienceTypeOptions.map(opt => (
-                      <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="label">Experience Years</label>
-                  <input
-                    name="experience_years"
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="99.9"
-                    value={form.experience_years}
-                    onChange={handleChange}
-                    placeholder="e.g., 2.5"
-                    className="input"
-                  />
+            <div className="card">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Briefcase size={20} />
+                  Experience
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Experience Type *</label>
+                    <select
+                      name="experience_type"
+                      value={form.experience_type}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {experienceTypeOptions.map(opt => (
+                        <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Experience Years</label>
+                    <input
+                      name="experience_years"
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="99.9"
+                      value={form.experience_years}
+                      onChange={handleChange}
+                      placeholder="e.g., 2.5"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Job Preferences */}
-            <div className="border border-border rounded-card card-padding">
-              <h4 className="text-base font-semibold text-text-dark mb-5">Job Preferences</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                <div>
-                  <label className="label">Job Type *</label>
-                  <select
-                    name="job_type"
-                    value={form.job_type}
-                    onChange={handleChange}
-                    required
-                    className="select"
-                  >
-                    {jobTypeOptions.map(opt => (
-                      <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="label">Preferred Work Type *</label>
-                  <select
-                    name="preferred_work_type"
-                    value={form.preferred_work_type}
-                    onChange={handleChange}
-                    required
-                    className="select"
-                  >
-                    {workTypeOptions.map(opt => (
-                      <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="label">Availability *</label>
-                  <select
-                    name="availability"
-                    value={form.availability}
-                    onChange={handleChange}
-                    required
-                    className="select"
-                  >
-                    {availabilityOptions.map(opt => (
-                      <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="label">Expected Salary</label>
-                  <select
-                    name="expected_salary"
-                    value={form.expected_salary}
-                    onChange={handleChange}
-                    className="select"
-                  >
-                    <option value="">Optional</option>
-                    <option value="0-20000">₹0 - ₹20,000</option>
-                    <option value="20000-40000">₹20,000 - ₹40,000</option>
-                    <option value="40000-60000">₹40,000 - ₹60,000</option>
-                    <option value="60000-80000">₹60,000 - ₹80,000</option>
-                    <option value="80000+">₹80,000+</option>
-                  </select>
+            <div className="card">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Preferences</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Job Type *</label>
+                    <select
+                      name="job_type"
+                      value={form.job_type}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {jobTypeOptions.map(opt => (
+                        <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Preferred Work Type *</label>
+                    <select
+                      name="preferred_work_type"
+                      value={form.preferred_work_type}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {workTypeOptions.map(opt => (
+                        <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Availability *</label>
+                    <select
+                      name="availability"
+                      value={form.availability}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {availabilityOptions.map(opt => (
+                        <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Expected Salary</label>
+                    <select
+                      name="expected_salary"
+                      value={form.expected_salary}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Optional</option>
+                      <option value="0-20000">₹0 - ₹20,000</option>
+                      <option value="20000-40000">₹20,000 - ₹40,000</option>
+                      <option value="40000-60000">₹40,000 - ₹60,000</option>
+                      <option value="60000-80000">₹60,000 - ₹80,000</option>
+                      <option value="80000+">₹80,000+</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
 
-
-
             {/* Documents */}
-            <div className="border border-border rounded-card card-padding">
-              <h4 className="text-base font-semibold text-text-dark mb-5">Documents</h4>
+            <div className="card">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <FileText size={20} />
+                  Documents
+                </h3>
 
-              {/* Resume Option Radio Buttons */}
-              <div className="mb-5">
-                <label className="label mb-3">Resume Option</label>
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      name="resume_option"
-                      value="have_resume"
-                      checked={resumeOption === "have_resume"}
-                      onChange={(e) => setResumeOption(e.target.value)}
-                      className="mr-2 w-4 h-4 text-primary-600 focus:ring-primary-500 cursor-pointer"
-                    />
-                    <span className="text-sm text-text-dark">I have a resume</span>
-                  </label>
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      name="resume_option"
-                      value="create_for_me"
-                      checked={resumeOption === "create_for_me"}
-                      onChange={(e) => setResumeOption(e.target.value)}
-                      className="mr-2 w-4 h-4 text-primary-600 focus:ring-primary-500 cursor-pointer"
-                    />
-                    <span className="text-sm text-text-dark">Create for me</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Resume Upload (shown when "I have a resume" is selected) */}
-              {resumeOption === "have_resume" && (
-                <div className="mb-5">
-                  <label className="label mb-3">Upload Resume / Certificate (Optional)</label>
-                  <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-5 hover:border-primary-300 transition-colors bg-gray-50">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                      <div className="flex items-center flex-1 min-w-0">
-                        <div className="w-10 h-10 rounded-button bg-primary-50 flex items-center justify-center text-primary-600 mr-3 flex-shrink-0">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-text-dark truncate">
-                            {selectedResumeFile ? selectedResumeFile.name : (form.resume_path || 'No file chosen')}
-                          </p>
-                          <p className="text-xs text-text-muted">PDF, DOC, DOCX up to 10MB</p>
-                        </div>
-                      </div>
-                      <label className="cursor-pointer flex-shrink-0">
-                        <span className="btn btn-primary btn-sm">
-                          Choose File
-                        </span>
-                        <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileSelect} className="hidden" />
-                      </label>
-                    </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Resume Option</label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="resume_option"
+                        value="have_resume"
+                        checked={resumeOption === "have_resume"}
+                        onChange={(e) => setResumeOption(e.target.value)}
+                        className="mr-2 w-4 h-4"
+                      />
+                      <span className="text-sm">I have a resume</span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="resume_option"
+                        value="create_for_me"
+                        checked={resumeOption === "create_for_me"}
+                        onChange={(e) => setResumeOption(e.target.value)}
+                        className="mr-2 w-4 h-4"
+                      />
+                      <span className="text-sm">Create for me</span>
+                    </label>
                   </div>
                 </div>
-              )}
 
-              {/* Create Resume Button (shown when "Create for me" is selected) */}
-              {resumeOption === "create_for_me" && (
-                <div className="mb-5">
-                  <button
-                    type="button"
-                    onClick={handleCreateResume}
-                    disabled={creatingResume}
-                    className="btn btn-primary btn-md"
+                {resumeOption === "have_resume" && (
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Upload Resume</label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-400 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <FileText size={24} className="text-blue-600" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {selectedResumeFile ? selectedResumeFile.name : (form.resume_path || 'No file chosen')}
+                            </p>
+                            <p className="text-xs text-gray-500">PDF, DOC, DOCX up to 10MB</p>
+                          </div>
+                        </div>
+                        <label className="cursor-pointer">
+                          <span className="btn btn-primary btn-sm">Choose File</span>
+                          <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileSelect} className="hidden" />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {resumeOption === "create_for_me" && (
+                  <div className="mb-4">
+                    <button
+                      type="button"
+                      onClick={handleCreateResume}
+                      disabled={creatingResume}
+                      className="btn btn-primary"
+                    >
+                      {creatingResume ? "Creating Resume..." : "Create Resume"}
+                    </button>
+                    {form.resume_path && (
+                      <p className="text-xs text-green-600 mt-2">Resume created: {form.resume_path}</p>
+                    )}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">ID Proof Available *</label>
+                  <select
+                    name="id_proof_available"
+                    value={form.id_proof_available}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    {creatingResume ? "Creating Resume..." : "Create Resume"}
-                  </button>
-                  {form.resume_path && (
-                    <p className="text-xs text-success-600 mt-2 font-medium">Resume created: {form.resume_path}</p>
-                  )}
+                    {idProofOptions.map(opt => (
+                      <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
+                    ))}
+                  </select>
                 </div>
-              )}
-
-              {/* ID Proof Available */}
-              <div>
-                <label className="label">ID Proof Available *</label>
-                <select
-                  name="id_proof_available"
-                  value={form.id_proof_available}
-                  onChange={handleChange}
-                  required
-                  className="select"
-                >
-                  {idProofOptions.map(opt => (
-                    <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
-                  ))}
-                </select>
               </div>
             </div>
 
             {/* Contact Preference */}
-            <div className="border border-border rounded-card card-padding">
-              <h4 className="text-base font-semibold text-text-dark mb-5">Contact Preference</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                <div>
-                  <label className="label">Preferred Contact Method *</label>
-                  <select
-                    name="preferred_contact_method"
-                    value={form.preferred_contact_method}
-                    onChange={handleChange}
-                    required
-                    className="select"
-                  >
-                    {contactMethodOptions.map(opt => (
-                      <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="label">Willing to Relocate *</label>
-                  <select
-                    name="willing_to_relocate"
-                    value={form.willing_to_relocate === true || form.willing_to_relocate === "Yes" ? "Yes" : form.willing_to_relocate === false || form.willing_to_relocate === "No" ? "No" : ""}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setForm((s) => ({ ...s, willing_to_relocate: value === "Yes" }));
-                    }}
-                    required
-                    className="select"
-                  >
-                    {relocateOptions.map(opt => (
-                      <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
-                    ))}
-                  </select>
+            <div className="card">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Preference</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Preferred Contact Method *</label>
+                    <select
+                      name="preferred_contact_method"
+                      value={form.preferred_contact_method}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {contactMethodOptions.map(opt => (
+                        <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Willing to Relocate *</label>
+                    <select
+                      name="willing_to_relocate"
+                      value={form.willing_to_relocate === true || form.willing_to_relocate === "Yes" ? "Yes" : form.willing_to_relocate === false || form.willing_to_relocate === "No" ? "No" : ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setForm((s) => ({ ...s, willing_to_relocate: value === "Yes" }));
+                      }}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {relocateOptions.map(opt => (
+                        <option key={opt} value={opt === "Select" ? "" : opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
+
             {/* Professional Links */}
-            <div className="border border-border rounded-card card-padding">
-              <h4 className="text-base font-semibold text-text-dark mb-5">Professional Links</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                <div>
-                  <label className="label">LinkedIn URL</label>
-                  <input
-                    name="linkedin_url"
-                    value={form.linkedin_url}
-                    onChange={handleChange}
-                    placeholder="https://linkedin.com/in/yourprofile"
-                    type="url"
-                    className="input"
-                  />
-                </div>
-                <div>
-                  <label className="label">GitHub URL</label>
-                  <input
-                    name="github_url"
-                    value={form.github_url}
-                    onChange={handleChange}
-                    placeholder="https://github.com/yourusername"
-                    type="url"
-                    className="input"
-                  />
+            <div className="card">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Professional Links</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">LinkedIn URL</label>
+                    <input
+                      name="linkedin_url"
+                      value={form.linkedin_url}
+                      onChange={handleChange}
+                      placeholder="https://linkedin.com/in/yourprofile"
+                      type="url"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">GitHub URL</label>
+                    <input
+                      name="github_url"
+                      value={form.github_url}
+                      onChange={handleChange}
+                      placeholder="https://github.com/yourusername"
+                      type="url"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
+
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 pt-6 border-t border-border">
+            <div className="flex gap-3 pt-4">
               <button
                 type="submit"
                 disabled={saving}
-                className="btn btn-primary btn-md sm:w-auto w-full"
+                className="btn btn-primary px-4 py-2 inline-flex items-center gap-2"
               >
+                <Save size={18} />
                 {saving ? "Saving..." : "Save Profile"}
               </button>
               <button
                 type="button"
                 onClick={handleCancel}
-                className="btn btn-outline btn-md sm:w-auto w-full"
+                className="btn btn-outline px-4 py-2 inline-flex items-center gap-2"
               >
+                <X size={18} />
                 Cancel
               </button>
             </div>
@@ -810,122 +814,142 @@ export default function ProfilePage() {
 function ProfileView({ user, onEdit }) {
   if (!user) {
     return (
-      <div className="text-center py-8 sm:py-12">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary-50 flex items-center justify-center text-primary-600 mx-auto mb-4">
-          <svg className="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
+      <div className="card">
+        <div className="p-12 text-center">
+          <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
+            <User size={40} className="text-blue-600" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Profile Found</h3>
+          <p className="text-gray-600 mb-6">Create your professional profile to get started</p>
+          <button onClick={onEdit} className="btn btn-primary">
+            Create Profile
+          </button>
         </div>
-        <h3 className="text-xl font-semibold text-text-dark mb-2">No Profile Found</h3>
-        <p className="text-text-muted text-sm sm:text-base mb-6">Create your professional profile to get started</p>
-        <button
-          onClick={onEdit}
-          className="btn btn-primary btn-md"
-        >
-          Create Profile
-        </button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8">
-      {/* User Info Card */}
-      <div className="bg-primary-50 rounded-card card-padding border border-primary-200">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-bold text-xl sm:text-2xl flex-shrink-0">
-            {user.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
-          </div>
-          <div className="flex-1 text-center sm:text-left">
-            <h3 className="font-semibold text-text-dark text-lg sm:text-xl mb-1">{user.full_name}</h3>
-            <p className="text-text-muted text-sm sm:text-base mb-2">{user.highest_qualification || "Add education"}</p>
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4 text-sm">
-              <span className="text-text-dark">{user.experience_years ?? 0} years experience</span>
-              <span className="text-text-dark">{user.phone || "No phone"}</span>
+    <div className="space-y-6">
+      {/* User Header Card */}
+      <div className="card bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="p-6">
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white font-bold text-2xl">
+              {user.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">{user.full_name}</h2>
+              <p className="text-gray-700">{user.highest_qualification || "Add education"}</p>
+              <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                <span>{user.experience_years ?? 0} years experience</span>
+                <span>•</span>
+                <span>{user.phone || "No phone"}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Info Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-        <div>
-          <h4 className="text-base font-semibold text-text-dark mb-4">Personal Information</h4>
-          <div className="space-y-3">
-            <InfoItem label="Full Name" value={user.full_name} />
-            <InfoItem label="Phone" value={user.phone} />
-            <InfoItem label="Date of Birth" value={user.date_of_birth} />
-            <InfoItem label="Gender" value={user.gender} />
-            <InfoItem label="Highest Qualification" value={user.highest_qualification || user.highest_qualification} />
-            <InfoItem label="Trade/Stream" value={user.trade_stream} />
-            <InfoItem label="Key Skills" value={Array.isArray(user.key_skills) ? user.key_skills.join(", ") : user.key_skills} />
-            <InfoItem label="Skill Level" value={user.skill_level} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="card">
+          <div className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <User size={20} />
+              Personal Information
+            </h3>
+            <div className="space-y-3">
+              <InfoItem label="Full Name" value={user.full_name} />
+              <InfoItem label="Phone" value={user.phone} />
+              <InfoItem label="Date of Birth" value={user.date_of_birth} />
+              <InfoItem label="Gender" value={user.gender} />
+            </div>
           </div>
         </div>
 
-        <div>
-          <h4 className="text-base font-semibold text-text-dark mb-4">Location & Preferences</h4>
-          <div className="space-y-3">
-            <InfoItem label="City" value={user.city} />
-            <InfoItem label="State" value={user.state} />
-            <InfoItem label="Country" value={user.country} />
-            <InfoItem label="Experience Type" value={user.experience_type} />
-            <InfoItem label="Experience Years" value={user.experience_years !== undefined && user.experience_years !== null ? `${user.experience_years} years` : "—"} />
-            <InfoItem label="Job Type" value={user.job_type} />
-            <InfoItem label="Preferred Work Type" value={user.preferred_work_type} />
-            <InfoItem label="Availability" value={user.availability} />
-            <InfoItem label="Expected Salary" value={user.expected_salary} />
+        <div className="card">
+          <div className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <MapPin size={20} />
+              Location
+            </h3>
+            <div className="space-y-3">
+              <InfoItem label="City" value={user.city} />
+              <InfoItem label="State" value={user.state} />
+              <InfoItem label="Country" value={user.country} />
+              <InfoItem label="Willing to Relocate" value={user.willing_to_relocate === 1 || user.willing_to_relocate === true || user.willing_to_relocate === "Yes" ? "Yes" : "No"} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Contact & Documents */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-        <div>
-          <h4 className="text-base font-semibold text-text-dark mb-4">Contact Preference</h4>
-          <div className="space-y-3">
-            <InfoItem label="Preferred Contact Method" value={user.preferred_contact_method} />
-            <InfoItem label="Willing to Relocate" value={user.willing_to_relocate === 1 || user.willing_to_relocate === true || user.willing_to_relocate === "Yes" ? "Yes" : user.willing_to_relocate === 0 || user.willing_to_relocate === false || user.willing_to_relocate === "No" ? "No" : "—"} />
-            <InfoItem label="ID Proof Available" value={user.id_proof_available} />
+        <div className="card">
+          <div className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <GraduationCap size={20} />
+              Education & Skills
+            </h3>
+            <div className="space-y-3">
+              <InfoItem label="Qualification" value={user.highest_qualification} />
+              <InfoItem label="Trade/Stream" value={user.trade_stream} />
+              <InfoItem label="Key Skills" value={Array.isArray(user.key_skills) ? user.key_skills.join(", ") : user.key_skills} />
+              <InfoItem label="Skill Level" value={user.skill_level} />
+            </div>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Briefcase size={20} />
+              Job Preferences
+            </h3>
+            <div className="space-y-3">
+              <InfoItem label="Experience Type" value={user.experience_type} />
+              <InfoItem label="Experience Years" value={user.experience_years !== undefined && user.experience_years !== null ? `${user.experience_years} years` : "—"} />
+              <InfoItem label="Job Type" value={user.job_type} />
+              <InfoItem label="Expected Salary" value={user.expected_salary} />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Professional Links */}
-      <div>
-        <h4 className="text-base font-semibold text-text-dark mb-4">Professional Links</h4>
-        <div className="space-y-3">
-          <LinkItem label="LinkedIn" url={user.linkedin_url} />
-          <LinkItem label="GitHub" url={user.github_url} />
+      {(user.linkedin_url || user.github_url) && (
+        <div className="card">
+          <div className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Professional Links</h3>
+            <div className="space-y-3">
+              {user.linkedin_url && <LinkItem label="LinkedIn" url={user.linkedin_url} />}
+              {user.github_url && <LinkItem label="GitHub" url={user.github_url} />}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Resume */}
       {user.resume_path && (() => {
-        // Construct the resume URL - use full server URL if relative path
         let resumeUrl = user.resume_path;
         if (!resumeUrl.startsWith('http')) {
-          // Get the API base URL (without /api)
           const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
           const serverBase = apiBase.replace('/api', '');
-          // Ensure resume_path starts with / if it doesn't already
           const resumePath = resumeUrl.startsWith('/') ? resumeUrl : `/${resumeUrl}`;
           resumeUrl = `${serverBase}${resumePath}`;
         }
 
         return (
-          <div className="border-t border-slate-200 pt-4">
-            <a
-              href={resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              View Resume
-            </a>
+          <div className="card">
+            <div className="p-6">
+              <a
+                href={resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+              >
+                <FileText size={18} />
+                View Resume
+              </a>
+            </div>
           </div>
         );
       })()}
@@ -935,31 +959,24 @@ function ProfileView({ user, onEdit }) {
 
 function InfoItem({ label, value }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2.5 border-b border-border last:border-0 gap-1 sm:gap-2">
-      <span className="text-sm text-text-muted">{label}</span>
-      <span className="text-sm font-semibold text-text-dark text-left sm:text-right">{value || "—"}</span>
+    <div className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+      <span className="text-sm text-gray-600">{label}</span>
+      <span className="text-sm font-semibold text-gray-900">{value || "—"}</span>
     </div>
   );
 }
 
 function LinkItem({ label, url }) {
-  if (!url) {
-    return (
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2.5 border-b border-border gap-1 sm:gap-2">
-        <span className="text-sm text-text-muted">{label}</span>
-        <span className="text-sm text-text-light">Not provided</span>
-      </div>
-    );
-  }
+  if (!url) return null;
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2.5 border-b border-border gap-1 sm:gap-2">
-      <span className="text-sm text-text-muted">{label}</span>
+    <div className="flex justify-between items-center py-2 border-b border-gray-100">
+      <span className="text-sm text-gray-600">{label}</span>
       <a
         href={url}
         target="_blank"
         rel="noreferrer"
-        className="text-sm text-primary-600 hover:text-primary-700 font-medium truncate max-w-full sm:max-w-[200px] text-left sm:text-right"
+        className="text-sm text-blue-600 hover:text-blue-700 font-medium truncate max-w-xs"
       >
         {url}
       </a>

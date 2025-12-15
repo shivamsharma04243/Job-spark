@@ -99,7 +99,7 @@ export default function GuestNavbar() {
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-border bg-white text-text-dark shadow-sm backdrop-blur-sm bg-white/95">
-        <div className="container-custom py-3 md:py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <Link

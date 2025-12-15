@@ -97,14 +97,14 @@ export default function Hero() {
       className={`relative bg-white transition-all duration-1000 ease-out min-h-[85vh] sm:min-h-screen flex items-center justify-center ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}
     >
-      <div className="container-custom section-padding">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12 section-padding">
         <div className="max-w-5xl mx-auto w-full flex flex-col items-center justify-center text-center gap-6 sm:gap-8">
           <div className="space-y-4 sm:space-y-6 w-full flex flex-col items-center">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-text-dark">
               Trusted Opportunities for{" "}
               <span className="text-primary-500">Fresh Talent</span>
             </h1>
-
+            
             {/* Advanced search */}
             <div className="w-full bg-gray-100 rounded-card border border-border">
               <div className="p-4 sm:p-5 md:p-6">

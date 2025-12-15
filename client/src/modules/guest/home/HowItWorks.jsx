@@ -50,7 +50,7 @@ export default function HowItWorks() {
       className={`transition-all duration-1000 ease-out section-padding ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}
     >
-      <div className="container-custom">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
         <div className="max-w-2xl mb-8 sm:mb-10">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-text-dark mb-2">
             How it works
