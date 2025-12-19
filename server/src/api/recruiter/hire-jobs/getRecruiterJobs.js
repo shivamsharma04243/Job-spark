@@ -15,29 +15,32 @@ async function getRecruiterJobs(req, res) {
 
     const sql = `
       SELECT
-        id,
-        title,
-        company,
-        job_type,
-        work_mode,
-        city,
-        locality,
-        min_experience,
-        max_experience,
-        min_salary,
-        max_salary,
-        vacancies,
-        description,
-        logo_path,
-        contact_email,
-        contact_phone,
-        interview_address,
-        status,
-        posted_at,
-        created_at
-      FROM jobs
-      WHERE recruiter_id = ?
-      ORDER BY created_at DESC
+        j.id,
+        jr.name AS title,
+        j.company,
+        j.job_type,
+        j.work_mode,
+        j.city,
+        j.locality,
+        j.min_experience,
+        j.max_experience,
+        j.min_salary,
+        j.max_salary,
+        j.vacancies,
+        j.description,
+        j.logo_path,
+        j.contact_email,
+        j.contact_phone,
+        j.interview_address,
+        j.status,
+        j.rejection_reason,
+        j.posted_at,
+        j.created_at,
+        (SELECT COUNT(*) FROM job_applications WHERE job_id = j.id) as application_count
+      FROM jobs j
+      LEFT JOIN job_roles jr ON j.role_id = jr.id
+      WHERE j.recruiter_id = ?
+      ORDER BY j.created_at DESC
     `;
 
     const [rows] = await pool.query(sql, [recruiterId]);
@@ -98,6 +101,7 @@ async function getRecruiterJobs(req, res) {
         company: r.company,
         type: r.job_type || 'Full-time',
         workMode: r.work_mode || 'Office',
+        city: r.city || null,
         location,
         tags: tagMap[r.id] || [],
         salary: formatSalary(r.min_salary, r.max_salary),
@@ -110,9 +114,11 @@ async function getRecruiterJobs(req, res) {
         contactPhone: r.contact_phone,
         interviewAddress: r.interview_address,
         status: r.status || 'pending',
+        rejectionReason: r.rejection_reason || null,
         postedAt: r.posted_at,
         createdAt: r.created_at,
         experience,
+        applicationCount: parseInt(r.application_count) || 0,
       };
     });
 

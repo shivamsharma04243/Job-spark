@@ -1,18 +1,34 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Sparkles, User } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Sparkles, User, Menu, X, PlusCircle } from "lucide-react";
 import api from "../../../components/apiconfig/apiconfig";
 
 /**
- * Recruiter Header - Matches the design from the image
- * Shows: Logo, Post a Job, Applications, Profile, User dropdown
+ * Recruiter Header - Navigation for recruiter dashboard
+ * Menu items: Dashboard, My Jobs, My Profile, Post a Job
+ * Highlights active route
  */
 export default function RecruiterHeader() {
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Navigation menu items for recruiters
+  const navItems = [
+    { label: "Dashboard", path: "/recruiter-dashboard" },
+    { label: "My Jobs", path: "/job-posted" },
+    { label: "My Profile", path: "/recruiter-profile" },
+    { label: "Post a Job", path: "/create-job", icon: PlusCircle },
+  ];
+
+  // Check if a nav item is active
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -112,88 +128,122 @@ export default function RecruiterHeader() {
           </Link>
         </div>
 
-        {/* Center Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          <Link
-            to="/create-job"
-            className="px-4 py-2 rounded-lg border-2 border-blue-600 text-blue-600 font-semibold hover:bg-blue-50 transition-colors"
-          >
-            Post a Job
-          </Link>
-          <Link
-            to="/job-posted"
-            className="text-slate-700 font-medium hover:text-blue-600 transition-colors"
-          >
-            Applications
-          </Link>
-          <Link
-            to="/recruiter-profile"
-            className="text-slate-700 font-medium hover:text-blue-600 transition-colors"
-          >
-            Profile
-          </Link>
+        {/* Center Navigation - Desktop */}
+        <nav className="hidden md:flex items-center gap-2 lg:gap-4">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-3 lg:px-4 py-2 rounded-lg text-sm font-semibold transition-colors inline-flex items-center gap-1.5 ${isActive(item.path)
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-slate-700 hover:text-blue-600 hover:bg-slate-50"
+                  }`}
+              >
+                {Icon && <Icon size={16} />}
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
-        {/* User Icon & Dropdown */}
-        <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={() => setOpen(!open)}
-            className="flex items-center gap-2 p-1 rounded-full hover:bg-slate-100 transition-colors"
-          >
-            <div className="h-10 w-10 rounded-full bg-blue-100 grid place-items-center text-sm font-semibold text-blue-700">
-              {user?.name || user?.username
-                ? (user.name || user.username).charAt(0).toUpperCase()
-                : <User size={18} />}
-            </div>
-          </button>
+        {/* User Icon & Dropdown + Mobile Menu Toggle */}
+        <div className="flex items-center gap-2">
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setOpen(!open)}
+              className="flex items-center gap-2 p-1 rounded-full hover:bg-slate-100 transition-colors"
+            >
+              <div className="h-10 w-10 rounded-full bg-blue-100 grid place-items-center text-sm font-semibold text-blue-700">
+                {user?.name || user?.username
+                  ? (user.name || user.username).charAt(0).toUpperCase()
+                  : <User size={18} />}
+              </div>
+            </button>
 
-          {open && (
-            <div className="absolute right-0 mt-3 w-72 bg-white text-slate-900 rounded-xl shadow-2xl p-5 z-50 border border-slate-200">
-              <div className="mb-4">
-                <div className="text-xs text-slate-500">Name</div>
-                <div className="font-semibold text-lg">
-                  {user?.name || user?.fullname || user?.username || "-"}
+            {open && (
+              <div className="absolute right-0 mt-3 w-72 bg-white text-slate-900 rounded-xl shadow-2xl p-5 z-50 border border-slate-200">
+                <div className="mb-4">
+                  <div className="text-xs text-slate-500">Name</div>
+                  <div className="font-semibold text-lg">
+                    {user?.name || user?.fullname || user?.username || "-"}
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <div className="text-xs text-slate-500">Username</div>
+                  <div className="font-medium text-sm">{user?.username || user?.email || "-"}</div>
+                </div>
+                <div className="mb-4">
+                  <div className="text-xs text-slate-500">Role</div>
+                  <div className="font-medium text-sm capitalize">{user?.role || "-"}</div>
+                </div>
+                <div className="mb-4">
+                  <div className="text-xs text-slate-500">Member since</div>
+                  <div className="font-medium text-sm">
+                    {formatCreatedDate(user)}
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <div className="text-xs text-slate-500">Last login</div>
+                  <div className="font-medium text-sm">
+                    {formatLoginTime(user)}
+                  </div>
+                </div>
+                <div className="pt-4 border-t border-slate-200 space-y-3">
+                  <Link
+                    to="/recruiter-profile"
+                    onClick={() => setOpen(false)}
+                    className="block w-full text-left px-4 py-3 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors font-medium text-sm"
+                  >
+                    View Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition-colors font-medium text-sm text-white"
+                  >
+                    Logout
+                  </button>
                 </div>
               </div>
-              <div className="mb-4">
-                <div className="text-xs text-slate-500">Username</div>
-                <div className="font-medium text-sm">{user?.username || user?.email || "-"}</div>
-              </div>
-              <div className="mb-4">
-                <div className="text-xs text-slate-500">Role</div>
-                <div className="font-medium text-sm">{user?.role || "-"}</div>
-              </div>
-              <div className="mb-4">
-                <div className="text-xs text-slate-500">Member since</div>
-                <div className="font-medium text-sm">
-                  {formatCreatedDate(user)}
-                </div>
-              </div>
-              <div className="mb-4">
-                <div className="text-xs text-slate-500">Last login</div>
-                <div className="font-medium text-sm">
-                  {formatLoginTime(user)}
-                </div>
-              </div>
-              <div className="pt-4 border-t border-slate-200 space-y-3">
-                <Link
-                  to="/recruiter-profile"
-                  onClick={() => setOpen(false)}
-                  className="block w-full text-left px-4 py-3 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors font-medium text-sm"
-                >
-                  View Profile
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition-colors font-medium text-sm text-white"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setMobileMenuOpen((v) => !v)}
+            className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
+            aria-label="Toggle mobile menu"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-slate-200">
+          <nav className="px-4 py-4 space-y-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-2 py-3 px-4 rounded-lg text-base font-medium transition-colors ${isActive(item.path)
+                      ? "bg-blue-50 text-blue-700"
+                      : "text-slate-700 hover:text-blue-600 hover:bg-slate-50"
+                    }`}
+                >
+                  {Icon && <Icon size={18} />}
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

@@ -20,7 +20,7 @@ const getAppliedJobs = async (req, res) => {
         ja.job_id,
         ja.status,
         ja.applied_at,
-        j.title,
+        jr.name AS title,
         j.company,
         j.job_type,
         j.work_mode,
@@ -31,6 +31,7 @@ const getAppliedJobs = async (req, res) => {
         j.logo_path
       FROM job_applications ja
       JOIN jobs j ON ja.job_id = j.id
+      LEFT JOIN job_roles jr ON j.role_id = jr.id
       WHERE ja.user_id = ?
       ORDER BY ja.applied_at DESC
     `;

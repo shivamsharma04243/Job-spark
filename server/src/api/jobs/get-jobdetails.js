@@ -9,27 +9,31 @@ async function getjobdetails(req, res) {
 
     const sql = `
       SELECT
-        id,
-        title,
-        company,
-        job_type,
-        work_mode,
-        city,
-        locality,
-        min_experience,
-        max_experience,
-        min_salary,
-        max_salary,
-        vacancies,
-        description,
-        logo_path,
-        status,
-        created_at,
-        contact_email,
-        contact_phone,
-        interview_address
-      FROM jobs
-      WHERE id = ?
+        j.id,
+        j.role_id,
+        jr.name AS role_name,
+        jr.name AS title,
+        j.company,
+        j.job_type,
+        j.work_mode,
+        j.city,
+        j.locality,
+        j.min_experience,
+        j.max_experience,
+        j.min_salary,
+        j.max_salary,
+        j.vacancies,
+        j.description,
+        j.logo_path,
+        j.status,
+        j.created_at,
+        j.contact_email,
+        j.contact_phone,
+        j.interview_address,
+        j.recruiter_id
+      FROM jobs j
+      LEFT JOIN job_roles jr ON j.role_id = jr.id
+      WHERE j.id = ?
       LIMIT 1
     `;
     const [rows] = await pool.query(sql, [id]);
@@ -80,10 +84,14 @@ async function getjobdetails(req, res) {
 
     const job = {
       id: r.id,
+      roleId: r.role_id || null,
+      roleName: r.role_name || null,
       title: r.title,
       company: r.company,
       type: r.job_type || 'Full-time',
       workMode: r.work_mode || 'Office',
+      city: r.city || null,
+      locality: r.locality || null,
       location,
       tags: tags.length ? tags : (r.skills || '').split(',').map(s => s.trim()).filter(Boolean),
       salary: formatSalary(r.min_salary, r.max_salary),
@@ -100,6 +108,7 @@ async function getjobdetails(req, res) {
       contactEmail: r.contact_email || null,
       contactPhone: r.contact_phone || null,
       interviewAddress: r.interview_address || null,
+      recruiterId: r.recruiter_id || null,
     };
 
     res.json({ ok: true, job });

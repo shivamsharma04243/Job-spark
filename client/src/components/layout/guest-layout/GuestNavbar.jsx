@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Sparkles, User, Menu, X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Sparkles, User, Menu, X, PlusCircle } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../../../components/apiconfig/apiconfig";
 import SignInModal from "../../../modules/auth/candidate-recruiter/SignInModal";
 
 /**
  * Guest Navbar - For public pages
+ * Shows different navigation based on user role
  */
 export default function GuestNavbar() {
   const [user, setUser] = useState(null);
@@ -14,10 +15,27 @@ export default function GuestNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // auth popup
   const [authOpen, setAuthOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState("candidate"); // "candidate" (normal user) | "recruiter"
+
+  // Navigation items for recruiters (when logged in)
+  const recruiterNavItems = [
+    { label: "Dashboard", path: "/recruiter-dashboard" },
+    { label: "My Jobs", path: "/job-posted" },
+    { label: "My Profile", path: "/recruiter-profile" },
+    { label: "Post a Job", path: "/create-job", icon: PlusCircle },
+  ];
+
+  // Check if a nav item is active
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
+  // Check if user is a recruiter
+  const isRecruiter = user?.role === "recruiter";
 
   useEffect(() => {
     let mounted = true;
@@ -116,24 +134,53 @@ export default function GuestNavbar() {
 
             {/* Desktop Navigation Menu */}
             <nav className="hidden md:flex items-center gap-2 lg:gap-3">
-              <Link
-                to="/"
-                className="px-3 lg:px-4 py-2 rounded-button text-sm font-semibold text-text-muted hover:bg-primary-50 hover:text-primary-600 transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                to="/jobs"
-                className="px-3 lg:px-4 py-2 rounded-button text-sm font-semibold text-text-muted hover:bg-primary-50 hover:text-primary-600 transition-colors"
-              >
-                Browse Jobs
-              </Link>
-              <Link
-                to="/sign-in?role=recruiter&redirect=post-job"
-                className="px-3 lg:px-4 py-2 rounded-button text-sm font-semibold text-text-muted hover:bg-primary-50 hover:text-primary-600 transition-colors"
-              >
-                Post a Job
-              </Link>
+              {isRecruiter ? (
+                // Recruiter navigation
+                recruiterNavItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`px-3 lg:px-4 py-2 rounded-button text-sm font-semibold transition-colors inline-flex items-center gap-1.5 ${isActive(item.path)
+                          ? "bg-primary-50 text-primary-700"
+                          : "text-text-muted hover:bg-primary-50 hover:text-primary-600"
+                        }`}
+                    >
+                      {Icon && <Icon size={16} />}
+                      {item.label}
+                    </Link>
+                  );
+                })
+              ) : (
+                // Guest/Candidate navigation
+                <>
+                  <Link
+                    to="/"
+                    className={`px-3 lg:px-4 py-2 rounded-button text-sm font-semibold transition-colors ${isActive("/") || isActive("/home")
+                      ? "bg-primary-50 text-primary-700"
+                      : "text-text-muted hover:bg-primary-50 hover:text-primary-600"
+                      }`}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    to="/jobs"
+                    className={`px-3 lg:px-4 py-2 rounded-button text-sm font-semibold transition-colors ${isActive("/jobs") || location.pathname.startsWith("/jobs/")
+                      ? "bg-primary-50 text-primary-700"
+                      : "text-text-muted hover:bg-primary-50 hover:text-primary-600"
+                      }`}
+                  >
+                    Browse Jobs
+                  </Link>
+                  <Link
+                    to="/sign-in?role=recruiter&redirect=post-job"
+                    className="px-3 lg:px-4 py-2 rounded-button text-sm font-semibold text-text-muted hover:bg-primary-50 hover:text-primary-600 transition-colors"
+                  >
+                    Post a Job
+                  </Link>
+                </>
+              )}
             </nav>
 
             {/* Buttons / Profile */}
@@ -188,12 +235,21 @@ export default function GuestNavbar() {
                       </div>
                       <div className="pt-4 border-t border-border space-y-2">
                         <Link
-                          to="/profile"
+                          to={isRecruiter ? "/recruiter-profile" : "/profile"}
                           onClick={() => setOpen(false)}
                           className="block w-full text-left px-4 py-2.5 rounded-button bg-gray-50 hover:bg-gray-100 transition-colors font-medium text-sm"
                         >
                           View Profile
                         </Link>
+                        {isRecruiter && (
+                          <Link
+                            to="/recruiter-dashboard"
+                            onClick={() => setOpen(false)}
+                            className="block w-full text-left px-4 py-2.5 rounded-button bg-primary-50 hover:bg-primary-100 transition-colors font-medium text-sm text-primary-700"
+                          >
+                            Go to Dashboard
+                          </Link>
+                        )}
                         <button
                           onClick={handleLogout}
                           className="w-full text-left px-4 py-2.5 rounded-button bg-error-500 hover:bg-error-600 transition-colors font-medium text-sm text-white"
@@ -241,34 +297,64 @@ export default function GuestNavbar() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-border animate-in slide-in-from-top">
             <nav className="px-4 sm:px-6 py-4 space-y-3">
-              <Link
-                to="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-text-dark hover:text-primary-600 transition-colors font-medium text-base"
-              >
-                Home
-              </Link>
-              <Link
-                to="/jobs"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-text-dark hover:text-primary-600 transition-colors font-medium text-base"
-              >
-                Browse Jobs
-              </Link>
-              <Link
-                to="/sign-in?role=recruiter&redirect=post-job"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-text-dark hover:text-primary-600 transition-colors font-medium text-base"
-              >
-                Post a Job
-              </Link>
-              <Link
-                to="/contact"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-text-dark hover:text-primary-600 transition-colors font-medium text-base"
-              >
-                Contact
-              </Link>
+              {isRecruiter ? (
+                // Recruiter mobile navigation
+                recruiterNavItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-2 py-3 px-4 rounded-lg text-base font-medium transition-colors ${isActive(item.path)
+                          ? "bg-primary-50 text-primary-700"
+                          : "text-text-dark hover:text-primary-600 hover:bg-gray-50"
+                        }`}
+                    >
+                      {Icon && <Icon size={18} />}
+                      {item.label}
+                    </Link>
+                  );
+                })
+              ) : (
+                // Guest/Candidate mobile navigation
+                <>
+                  <Link
+                    to="/"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`block py-2 font-medium text-base transition-colors ${isActive("/") || isActive("/home")
+                      ? "text-primary-600"
+                      : "text-text-dark hover:text-primary-600"
+                      }`}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    to="/jobs"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`block py-2 font-medium text-base transition-colors ${isActive("/jobs") || location.pathname.startsWith("/jobs/")
+                      ? "text-primary-600"
+                      : "text-text-dark hover:text-primary-600"
+                      }`}
+                  >
+                    Browse Jobs
+                  </Link>
+                  <Link
+                    to="/sign-in?role=recruiter&redirect=post-job"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-2 text-text-dark hover:text-primary-600 transition-colors font-medium text-base"
+                  >
+                    Post a Job
+                  </Link>
+                  <Link
+                    to="/contact"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-2 text-text-dark hover:text-primary-600 transition-colors font-medium text-base"
+                  >
+                    Contact
+                  </Link>
+                </>
+              )}
               {!loading && !user && (
                 <div className="pt-4 border-t border-border space-y-2">
                   <Link

@@ -6,6 +6,7 @@ const getjobs = require("../../api/jobs/get-jobs");
 const getjobdetails = require("../../api/jobs/get-jobdetails");
 const getFilters = require("../../api/jobs/get-filters");
 const getCategoryCounts = require("../../api/jobs/get-category-counts");
+const getRoles = require("../../api/jobs/get-roles");
 const { postApplication, upload } = require("../../api/jobs/applications");
 const getAppliedJobs = require("../../api/jobs/getapplied");
 const removeSavedJob = require("../../api/jobs/savejobs/removeSavedJob");
@@ -27,6 +28,7 @@ router.get("/saved-jobs", requireAuth, getSavedJobs);
 // Public routes
 router.get("/", getjobs);
 router.get("/filters", getFilters);
+router.get("/roles", getRoles);
 router.get("/category-counts", getCategoryCounts);
 router.get("/:id", getjobdetails);
 

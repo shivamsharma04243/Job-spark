@@ -7,7 +7,7 @@ const getAdminJobs = async (req, res) => {
     let sql = `
       SELECT 
         j.id,
-        j.title,
+        jr.name AS title,
         j.company,
         j.job_type,
         j.work_mode,
@@ -30,6 +30,7 @@ const getAdminJobs = async (req, res) => {
         u.email as recruiter_email,
         rp.company_name
       FROM jobs j
+      LEFT JOIN job_roles jr ON j.role_id = jr.id
       LEFT JOIN users u ON j.recruiter_id = u.id
       LEFT JOIN recruiter_profiles rp ON j.recruiter_id = rp.user_id
     `;

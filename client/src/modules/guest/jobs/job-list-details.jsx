@@ -1,7 +1,36 @@
-import { Building2, MapPin, Clock, Briefcase, GraduationCap, Bookmark, BookmarkCheck } from "lucide-react";
+import { MapPin, Clock, Briefcase, GraduationCap, Bookmark, BookmarkCheck, Mail, Phone, MapPinned, Users, Lock, CheckCircle2 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../../../components/apiconfig/apiconfig";
+
+// Utility functions to mask contact information
+const maskPhone = (phone) => {
+  if (!phone) return null;
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length < 4) return '•••• ••••';
+  const lastFour = digits.slice(-4);
+  // Format: +91 •••• ••1234
+  if (phone.startsWith('+')) {
+    const countryCode = phone.match(/^\+\d{1,3}/)?.[0] || '+91';
+    return `${countryCode} •••• ••${lastFour}`;
+  }
+  return `•••• ••${lastFour}`;
+};
+
+const maskEmail = (email) => {
+  if (!email) return null;
+  const [localPart, domain] = email.split('@');
+  if (!localPart || !domain) return '••••••@••••••';
+  const firstChar = localPart[0];
+  return `${firstChar}••••••@${domain}`;
+};
+
+const maskAddress = (address) => {
+  if (!address) return null;
+  // Show first 15 characters, then mask the rest
+  if (address.length <= 20) return '••••••••••••••••';
+  return address.substring(0, 15) + '••••••••••';
+};
 
 export default function JobDetail() {
   const { id } = useParams();
@@ -9,28 +38,54 @@ export default function JobDetail() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isSaved, setIsSaved] = useState(false); // Track if job is saved
-  const [isApplied, setIsApplied] = useState(false); // Track if job is already applied
+  const [isSaved, setIsSaved] = useState(false);
+  const [isApplied, setIsApplied] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [candidateProfile, setCandidateProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
 
-  // Application form state (only for non-logged-in users)
-  const [applicantName, setApplicantName] = useState("");
-  const [applicantEmail, setApplicantEmail] = useState("");
-  const [resumeFile, setResumeFile] = useState(null);
-  const [resumeLink, setResumeLink] = useState("");
-  const [coverLetter, setCoverLetter] = useState("");
+  // User role state
+  const [userRole, setUserRole] = useState(null); // 'candidate', 'recruiter', 'admin'
+  const [userId, setUserId] = useState(null);
 
-  // For logged-in users: optional resume update
+  // Application form state
+  const [coverLetter, setCoverLetter] = useState("");
   const [updateResumeFile, setUpdateResumeFile] = useState(null);
 
   const [applying, setApplying] = useState(false);
   const [applyError, setApplyError] = useState(null);
   const [applySuccess, setApplySuccess] = useState(null);
-  const [applied, setApplied] = useState(false); // set true after success
+  const [applied, setApplied] = useState(false);
+
+  // Determine user access level for contact info
+  // Returns: 'full' | 'partial' | 'masked'
+  const getContactAccessLevel = () => {
+    // Guest user - all masked
+    if (!isAuthenticated) return 'masked';
+
+    // Admin or recruiter - full access
+    if (userRole === 'admin' || userRole === 'recruiter') return 'full';
+
+    // Candidate who has applied - full access
+    if (userRole === 'candidate' && isApplied) return 'full';
+
+    // Candidate who hasn't applied - partial (address visible, phone/email masked)
+    if (userRole === 'candidate') return 'partial';
+
+    return 'masked';
+  };
+
+  // Check if current user is the job poster
+  const isOwnJob = () => {
+    return isAuthenticated && userRole === 'recruiter' && job?.recruiterId === userId;
+  };
+
+  // Check if Apply/Save buttons should be hidden
+  const shouldHideActionButtons = () => {
+    return userRole === 'recruiter' || userRole === 'admin';
+  };
 
   // Check if job is already applied
   const checkAppliedStatus = async (jobId) => {
@@ -84,14 +139,22 @@ export default function JobDetail() {
           setIsAuthenticated(Boolean(data?.user));
           if (data?.user) {
             setUserEmail(data.user.email);
-            // Fetch candidate profile if authenticated
-            await loadCandidateProfile();
-            // Check if job is already applied
-            await checkAppliedStatus(id);
+            setUserRole(data.user.role || 'candidate');
+            setUserId(data.user.id);
+
+            // Only fetch candidate profile and check applied status for candidates
+            if (data.user.role === 'candidate' || !data.user.role) {
+              await loadCandidateProfile();
+              await checkAppliedStatus(id);
+            }
           }
         }
       } catch (err) {
-        if (alive) setIsAuthenticated(false);
+        if (alive) {
+          setIsAuthenticated(false);
+          setUserRole(null);
+          setUserId(null);
+        }
       } finally {
         if (alive) setAuthChecked(true);
       }
@@ -151,12 +214,19 @@ export default function JobDetail() {
   };
 
   const toggleSave = async () => {
+    // Recruiters and admins should not save jobs
+    if (shouldHideActionButtons()) {
+      return;
+    }
+
     if (!isAuthenticated) {
       if (!authChecked) {
         try {
           const { data } = await api.get("/auth/session");
           if (data?.user) {
             setIsAuthenticated(true);
+            setUserRole(data.user.role || 'candidate');
+            setUserId(data.user.id);
           } else {
             redirectToLoginForSave();
             return;
@@ -195,19 +265,15 @@ export default function JobDetail() {
   };
 
   const skills = job?.tags || [];
-  const responsibilities = job?.responsibilities || [];
-  const qualifications = job?.qualifications || [];
 
-  // Format salary (monthly) with rupee symbol
+  // Format salary (monthly) with rupee symbol - returns null if no salary data
   const formatSalaryMonthly = () => {
-    if (!job) return 'NA';
+    if (!job) return null;
 
-    // Use minSalary and maxSalary if available (preferred)
     const minSalary = job.minSalary;
     const maxSalary = job.maxSalary;
 
     if (minSalary != null && maxSalary != null) {
-      // Format monthly salary with rupee symbol
       return `₹ ${Number(minSalary).toLocaleString('en-IN')} - ${Number(maxSalary).toLocaleString('en-IN')} /Month`;
     } else if (minSalary != null) {
       return `₹ ${Number(minSalary).toLocaleString('en-IN')}+ /Month`;
@@ -215,53 +281,21 @@ export default function JobDetail() {
       return `Up to ₹ ${Number(maxSalary).toLocaleString('en-IN')} /Month`;
     }
 
-    // Fallback: try to parse from salary string if min/max not available
-    if (job.salary && typeof job.salary === 'string') {
-      const match = job.salary.match(/(\d+)-(\d+)\s*(?:per month|\/Month)/i);
-      if (match) {
-        const min = parseInt(match[1]);
-        const max = parseInt(match[2]);
-        return `₹ ${min.toLocaleString('en-IN')} - ${max.toLocaleString('en-IN')} /Month`;
-      }
-      const singleMatch = job.salary.match(/(\d+)\+\s*(?:per month|\/Month)/i);
-      if (singleMatch) {
-        const min = parseInt(singleMatch[1]);
-        return `₹ ${min.toLocaleString('en-IN')}+ /Month`;
-      }
-      // Also handle old LPA format for backward compatibility
-      const lpaMatch = job.salary.match(/(\d+)-(\d+)\s*LPA/i);
-      if (lpaMatch) {
-        const min = parseInt(lpaMatch[1]);
-        const max = parseInt(lpaMatch[2]);
-        return `₹ ${min.toLocaleString('en-IN')} - ${max.toLocaleString('en-IN')} /Month`;
-      }
-    }
-
-    return 'NA';
+    return null;
   };
 
-  // Basic client-side validation for file type/size
-  const onFileChange = (e) => {
-    const f = e.target.files?.[0] || null;
-    if (!f) {
-      setResumeFile(null);
-      return;
-    }
-    const allowed = [".pdf", ".doc", ".docx"];
-    const ext = f.name.substring(f.name.lastIndexOf(".")).toLowerCase();
-    if (!allowed.includes(ext)) {
-      setApplyError("Only PDF / DOC / DOCX files are allowed for resume.");
-      setResumeFile(null);
-      return;
-    }
-    const maxSize = 5 * 1024 * 1024; // 5 MB
-    if (f.size > maxSize) {
-      setApplyError("Resume must be smaller than 5 MB.");
-      setResumeFile(null);
-      return;
-    }
-    setApplyError(null);
-    setResumeFile(f);
+  // Format experience - returns null if no experience data
+  const formatExperience = () => {
+    if (!job) return null;
+    const minExp = job.min_experience;
+    const maxExp = job.max_experience;
+
+    if (minExp == null && maxExp == null) return null;
+    if (minExp === 0 && (maxExp === 0 || maxExp === 1)) return "Fresher";
+    if (minExp != null && maxExp != null) return `${minExp} - ${maxExp} yrs`;
+    if (minExp != null) return `${minExp}+ yrs`;
+    if (maxExp != null) return `Up to ${maxExp} yrs`;
+    return null;
   };
 
   // Redirect to login for non-logged-in users
@@ -325,12 +359,9 @@ export default function JobDetail() {
           formData.append("resume_path", candidateProfile.resume_path);
         }
       } else {
-        // For non-logged-in users: use form data
+        // Non-logged-in users should be redirected to login
+        // This case shouldn't happen as we redirect above
         if (coverLetter) formData.append("cover_letter", coverLetter);
-        if (applicantName) formData.append("applicant_name", applicantName);
-        if (applicantEmail) formData.append("applicant_email", applicantEmail);
-        if (resumeFile) formData.append("resume", resumeFile);
-        if (!resumeFile && resumeLink) formData.append("resume_link", resumeLink);
       }
 
       const res = await api.post("/jobs/apply", formData, {
@@ -345,8 +376,6 @@ export default function JobDetail() {
         setIsSaved(false);
         // Clear form
         setCoverLetter("");
-        setResumeFile(null);
-        setResumeLink("");
         setUpdateResumeFile(null);
       } else {
         setApplyError(res.data?.error || res.data?.message || "Failed to submit application");
@@ -359,80 +388,268 @@ export default function JobDetail() {
     }
   };
 
+  // Get logo URL
+  const logoUrl = job?.logoPath ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${job.logoPath}` : null;
+
   // Render
   if (loading) return <div className="p-6 text-gray-600">Loading job...</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
   if (!job) return <div className="p-6 text-gray-600">Job not found</div>;
 
+  const salary = formatSalaryMonthly();
+  const experience = formatExperience();
+
   return (
     <div className="min-h-screen bg-bg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Breadcrumb */}
+        <div className="mb-4 text-sm text-text-muted">
+          <a href="/jobs" className="hover:underline text-primary-600 font-medium">Jobs</a>
+          <span className="mx-2">/</span>
+          <span className="text-text-dark">{job.title}</span>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Main Content - Job Details */}
           <div className="lg:col-span-2 space-y-6">
-            <div>
-              <div className="mb-3 text-sm text-text-muted">
-                <a href="/jobs" className="hover:underline text-primary-600 font-medium">Jobs</a> / <span className="text-text-dark">{job.title}</span>
+            {/* Job Header Card */}
+            <div className="card">
+              <div className="p-4 sm:p-6 border-b border-border">
+                <h2 className="text-lg sm:text-xl font-semibold text-text-dark">Job Details</h2>
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-dark mb-3">{job.title}</h1>
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <span className="badge badge-gray inline-flex items-center gap-1.5">
-                  <Building2 size={14} className="text-primary-500" /> {job.company}
-                </span>
-                <span className="badge badge-gray inline-flex items-center gap-1.5">
-                  <MapPin size={14} className="text-primary-500" /> {job.location}
-                </span>
-                <span className="badge badge-primary">
-                  <Clock size={14} className="inline mr-1" /> {job.type}
-                </span>
-                <span className="badge badge-primary">
-                  <Briefcase size={14} className="inline mr-1" /> {job.type}
-                </span>
-                {job.experiance && (
-                  <span className="badge badge-primary">
-                    <GraduationCap size={14} className="inline mr-1" /> {job.experiance}
-                  </span>
-                )}
+              <div className="p-4 sm:p-6 space-y-5">
+                {/* Logo and Title */}
+                <div className="flex items-start gap-4">
+                  {logoUrl ? (
+                    <img
+                      src={logoUrl}
+                      alt={`${job.company} logo`}
+                      className="h-16 w-16 object-contain rounded-lg border border-border flex-shrink-0"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : null}
+                  <div className="flex-1 min-w-0">
+                    <h1 className="text-xl sm:text-2xl font-bold text-text-dark">{job.title}</h1>
+                    {job.company && (
+                      <p className="text-text-muted mt-1">{job.company}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Quick Info Row */}
+                <div className="flex flex-wrap gap-2">
+                  {job.type && (
+                    <span className="badge badge-primary inline-flex items-center gap-1">
+                      <Briefcase size={14} /> {job.type}
+                    </span>
+                  )}
+                  {job.workMode && (
+                    <span className="badge badge-primary inline-flex items-center gap-1">
+                      <Clock size={14} /> {job.workMode}
+                    </span>
+                  )}
+                  {job.location && (
+                    <span className="badge badge-gray inline-flex items-center gap-1">
+                      <MapPin size={14} /> {job.location}
+                    </span>
+                  )}
+                  {experience && (
+                    <span className="badge badge-gray inline-flex items-center gap-1">
+                      <GraduationCap size={14} /> {experience}
+                    </span>
+                  )}
+                  {job.vacancies && job.vacancies > 0 && (
+                    <span className="badge badge-gray inline-flex items-center gap-1">
+                      <Users size={14} /> {job.vacancies} {job.vacancies === 1 ? 'Vacancy' : 'Vacancies'}
+                    </span>
+                  )}
+                </div>
+
+                {/* Details Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-border">
+                  {job.company && (
+                    <div>
+                      <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Company</label>
+                      <p className="text-text-dark mt-1">{job.company}</p>
+                    </div>
+                  )}
+                  {job.type && (
+                    <div>
+                      <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Job Type</label>
+                      <p className="text-text-dark mt-1">{job.type}</p>
+                    </div>
+                  )}
+                  {job.workMode && (
+                    <div>
+                      <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Work Mode</label>
+                      <p className="text-text-dark mt-1">{job.workMode}</p>
+                    </div>
+                  )}
+                  {job.location && (
+                    <div>
+                      <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Location</label>
+                      <p className="text-text-dark mt-1">{job.location}</p>
+                    </div>
+                  )}
+                  {experience && (
+                    <div>
+                      <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Experience</label>
+                      <p className="text-text-dark mt-1">{experience}</p>
+                    </div>
+                  )}
+                  {salary && (
+                    <div>
+                      <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Salary</label>
+                      <p className="text-text-dark mt-1 font-semibold text-primary-600">{salary}</p>
+                    </div>
+                  )}
+                  {job.vacancies && job.vacancies > 0 && (
+                    <div>
+                      <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Vacancies</label>
+                      <p className="text-text-dark mt-1">{job.vacancies}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="card">
-              <div className="border-b border-border p-4 sm:p-6">
-                <h2 className="text-lg sm:text-xl font-semibold text-text-dark">About the role</h2>
-              </div>
-              <div className="space-y-5 text-text-dark p-4 sm:p-6">
-                <p className="text-sm sm:text-base leading-relaxed">{job.description}</p>
-                <div>
-                  <p className="font-semibold mb-2 text-text-dark text-base">Responsibilities</p>
-                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 text-sm sm:text-base text-text-muted">
-                    {responsibilities.length ? responsibilities.map((r) => <li key={r}>{r}</li>) : <li>Responsibilities not provided</li>}
-                  </ul>
+            {/* Job Description Card */}
+            {job.description && (
+              <div className="card">
+                <div className="p-4 sm:p-6 border-b border-border">
+                  <h2 className="text-lg sm:text-xl font-semibold text-text-dark">Job Description</h2>
                 </div>
-                <div>
-                  <p className="font-semibold mb-2 text-text-dark text-base">Qualifications</p>
-                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 text-sm sm:text-base text-text-muted">
-                    {qualifications.length ? qualifications.map((q) => <li key={q}>{q}</li>) : <li>Qualifications not provided</li>}
-                  </ul>
-                </div>
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {skills.map((s) => (
-                    <span
-                      key={s}
-                      className="badge badge-primary"
-                    >
-                      {s}
-                    </span>
-                  ))}
+                <div className="p-4 sm:p-6">
+                  <div className="text-sm sm:text-base text-text-dark leading-relaxed whitespace-pre-wrap">
+                    {job.description}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Skills Card */}
+            {skills.length > 0 && (
+              <div className="card">
+                <div className="p-4 sm:p-6 border-b border-border">
+                  <h2 className="text-lg sm:text-xl font-semibold text-text-dark">Skills / Technologies</h2>
+                </div>
+                <div className="p-4 sm:p-6">
+                  <div className="flex flex-wrap gap-2">
+                    {skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm border border-border text-text-dark bg-gray-50"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Contact Information Card */}
+            {(job.interviewAddress || job.contactEmail || job.contactPhone) && (
+              <div className="card">
+                <div className="p-4 sm:p-6 border-b border-border">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg sm:text-xl font-semibold text-text-dark">Contact Information</h2>
+                    {getContactAccessLevel() !== 'full' && (
+                      <span className="inline-flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
+                        <Lock size={12} />
+                        {!isAuthenticated ? 'Sign in to view' : 'Apply to unlock'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="p-4 sm:p-6 space-y-4">
+                  {/* Interview/Office Address */}
+                  {job.interviewAddress && (
+                    <div className="flex items-start gap-3">
+                      <MapPinned size={18} className="text-primary-500 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Interview / Office Address</label>
+                        {getContactAccessLevel() === 'full' || getContactAccessLevel() === 'partial' ? (
+                          <p className="text-text-dark mt-1">{job.interviewAddress}</p>
+                        ) : (
+                          <p className="text-text-muted mt-1 font-mono text-sm">{maskAddress(job.interviewAddress)}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Contact Email */}
+                  {job.contactEmail && (
+                    <div className="flex items-start gap-3">
+                      <Mail size={18} className="text-primary-500 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Contact Email</label>
+                        {getContactAccessLevel() === 'full' ? (
+                          <p className="text-text-dark mt-1">
+                            <a href={`mailto:${job.contactEmail}`} className="text-primary-600 hover:underline">
+                              {job.contactEmail}
+                            </a>
+                          </p>
+                        ) : (
+                          <p className="text-text-muted mt-1 font-mono text-sm">{maskEmail(job.contactEmail)}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Contact Phone */}
+                  {job.contactPhone && (
+                    <div className="flex items-start gap-3">
+                      <Phone size={18} className="text-primary-500 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <label className="text-xs font-medium text-text-muted uppercase tracking-wider">Contact Phone</label>
+                        {getContactAccessLevel() === 'full' ? (
+                          <p className="text-text-dark mt-1">
+                            <a href={`tel:${job.contactPhone}`} className="text-primary-600 hover:underline">
+                              {job.contactPhone}
+                            </a>
+                          </p>
+                        ) : (
+                          <p className="text-text-muted mt-1 font-mono text-sm">{maskPhone(job.contactPhone)}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Helper message for candidates who haven't applied */}
+                  {getContactAccessLevel() === 'partial' && (
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <p className="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg flex items-center gap-2">
+                        <Lock size={14} />
+                        Apply to this job to unlock full contact details
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Helper message for guests */}
+                  {getContactAccessLevel() === 'masked' && !isAuthenticated && (
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <p className="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg flex items-center gap-2">
+                        <Lock size={14} />
+                        Sign in to view contact details
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
+          {/* Sidebar - Apply Section */}
           <aside className="lg:sticky lg:top-4 lg:self-start">
             <div className="card">
               <div className="border-b border-border p-4 sm:p-6">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-lg sm:text-xl font-semibold text-text-dark">Apply to this job</h2>
-                  {!isApplied && (
+                  <h2 className="text-lg sm:text-xl font-semibold text-text-dark">
+                    {shouldHideActionButtons() ? 'Job Summary' : 'Apply to this job'}
+                  </h2>
+                  {/* Show Save button only for candidates who haven't applied */}
+                  {!shouldHideActionButtons() && !isApplied && (
                     <button
                       onClick={toggleSave}
                       className="flex items-center gap-1.5 border-2 border-primary-300 text-primary-700 hover:bg-primary-50 hover:text-primary-800 text-xs px-3 py-1.5 rounded-button transition-colors"
@@ -453,25 +670,72 @@ export default function JobDetail() {
                 </div>
               </div>
               <div className="p-4 sm:p-6">
+                {/* Quick Summary */}
                 <div className="space-y-3 text-sm text-text-dark mb-5 sm:mb-6 pb-4 border-b border-border">
-                  <div className="flex justify-between items-center">
-                    <span className="text-text-muted">Compensation</span>
-                    <span className="font-semibold text-primary-600">{formatSalaryMonthly()}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-text-muted">Work Mode</span>
-                    <span className="font-semibold text-primary-600">{job.workMode || job.mode || 'Office'}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-text-muted">Experience</span>
-                    <span className="font-semibold text-primary-600">{job.experiance || job.experience || 'Not specified'}</span>
-                  </div>
+                  {salary && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-text-muted">Compensation</span>
+                      <span className="font-semibold text-primary-600">{salary}</span>
+                    </div>
+                  )}
+                  {job.workMode && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-text-muted">Work Mode</span>
+                      <span className="font-semibold">{job.workMode}</span>
+                    </div>
+                  )}
+                  {experience && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-text-muted">Experience</span>
+                      <span className="font-semibold">{experience}</span>
+                    </div>
+                  )}
+                  {job.vacancies && job.vacancies > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-text-muted">Vacancies</span>
+                      <span className="font-semibold">{job.vacancies}</span>
+                    </div>
+                  )}
                 </div>
 
-                {isAuthenticated && candidateProfile ? (
-                  // Logged-in user: Simplified form
+                {/* STATE 4 & 5: Recruiter or Admin viewing job - No action buttons */}
+                {shouldHideActionButtons() && (
                   <div className="space-y-4">
-                    {/* Show profile info */}
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-center">
+                      <p className="text-text-muted">
+                        {isOwnJob() ? (
+                          <>You posted this job</>
+                        ) : userRole === 'admin' ? (
+                          <>Viewing as Admin</>
+                        ) : (
+                          <>Viewing as Recruiter</>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* STATE 3: Candidate who has applied */}
+                {!shouldHideActionButtons() && isAuthenticated && isApplied && (
+                  <div className="space-y-4">
+                    <div className="bg-success-light border border-success-300 rounded-lg p-4 text-center">
+                      <div className="flex items-center justify-center gap-2 text-success-700 font-semibold">
+                        <CheckCircle2 size={20} />
+                        Applied ✓
+                      </div>
+                      <p className="text-success-600 text-sm mt-2">
+                        You have already applied to this job
+                      </p>
+                    </div>
+                    <p className="text-xs text-text-muted text-center">
+                      Contact details are now unlocked above
+                    </p>
+                  </div>
+                )}
+
+                {/* STATE 2: Logged-in candidate who hasn't applied */}
+                {!shouldHideActionButtons() && isAuthenticated && !isApplied && candidateProfile && (
+                  <div className="space-y-4">
                     <div className="bg-primary-50 border border-primary-200 rounded-lg p-3 sm:p-4 text-sm">
                       <div className="font-semibold text-primary-900 mb-1.5">Applying as:</div>
                       <div className="text-text-dark font-medium">{candidateProfile.full_name || "Your name"}</div>
@@ -481,7 +745,6 @@ export default function JobDetail() {
                       )}
                     </div>
 
-                    {/* Optional resume update */}
                     {candidateProfile.resume_path && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
@@ -511,7 +774,7 @@ export default function JobDetail() {
                               setUpdateResumeFile(null);
                               return;
                             }
-                            const maxSize = 5 * 1024 * 1024; // 5 MB
+                            const maxSize = 5 * 1024 * 1024;
                             if (f.size > maxSize) {
                               setApplyError("Resume must be smaller than 5 MB.");
                               setUpdateResumeFile(null);
@@ -528,7 +791,6 @@ export default function JobDetail() {
                       </div>
                     )}
 
-                    {/* Cover letter */}
                     <div>
                       <label className="label text-sm">Cover letter (optional)</label>
                       <textarea
@@ -558,16 +820,51 @@ export default function JobDetail() {
                     >
                       {applied ? "Applied" : applying ? "Applying..." : "Apply Now"}
                     </button>
+
+                    <p className="text-xs text-center text-amber-600 bg-amber-50 p-2 rounded">
+                      🔓 Apply to unlock recruiter contact details
+                    </p>
                   </div>
-                ) : (
-                  // Non-logged-in user: Just Sign in to Apply Now button (no form fields)
-                  <div className="space-y-3">
+                )}
+
+                {/* STATE 2 (alt): Logged-in candidate without profile loaded yet */}
+                {!shouldHideActionButtons() && isAuthenticated && !isApplied && !candidateProfile && !profileLoading && (
+                  <div className="space-y-4">
                     <button
                       className="btn btn-primary btn-md w-full"
                       onClick={submitApplication}
                     >
-                      Sign in to Apply Now
+                      Apply Now
                     </button>
+                    <p className="text-xs text-center text-amber-600 bg-amber-50 p-2 rounded">
+                      🔓 Apply to unlock recruiter contact details
+                    </p>
+                  </div>
+                )}
+
+                {/* STATE 1: Guest user (not logged in) */}
+                {!shouldHideActionButtons() && !isAuthenticated && (
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-center">
+                      <Lock size={24} className="mx-auto text-gray-400 mb-2" />
+                      <p className="text-text-muted">
+                        Sign in to apply and view full contact details
+                      </p>
+                    </div>
+                    <button
+                      className="btn btn-primary btn-md w-full"
+                      onClick={redirectToLoginForApply}
+                    >
+                      Sign in to Apply
+                    </button>
+                  </div>
+                )}
+
+                {/* Loading state */}
+                {!shouldHideActionButtons() && isAuthenticated && !isApplied && profileLoading && (
+                  <div className="space-y-4">
+                    <div className="animate-pulse bg-gray-100 h-24 rounded-lg"></div>
+                    <div className="animate-pulse bg-gray-100 h-10 rounded-lg"></div>
                   </div>
                 )}
               </div>

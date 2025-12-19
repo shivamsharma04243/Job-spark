@@ -12,7 +12,7 @@ const getSavedJobs = async (req, res) => {
         sj.job_id,
         sj.saved_at,
         j.id,
-        j.title,
+        jr.name AS title,
         j.company,
         j.job_type as type,
         j.work_mode,
@@ -28,6 +28,7 @@ const getSavedJobs = async (req, res) => {
         j.created_at
       FROM saved_jobs sj
       LEFT JOIN jobs j ON sj.job_id = j.id
+      LEFT JOIN job_roles jr ON j.role_id = jr.id
       WHERE sj.user_id = ?
       ORDER BY sj.saved_at DESC
     `, [userId]);

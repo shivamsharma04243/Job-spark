@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
-import { Building2, MapPin, Briefcase, Clock } from 'lucide-react';
+import { Building2, MapPin, Briefcase, Clock, ExternalLink } from 'lucide-react';
 import api from '../../../components/apiconfig/apiconfig';
 
 const statusColors = {
@@ -14,7 +14,7 @@ const statusColors = {
 const statusLabels = {
   applied: "Applied",
   reviewed: "Under Review",
-  shortlisted: "Shortlisted",
+  shortlisted: "Under Review",
   rejected: "Rejected",
   hired: "Hired"
 };
@@ -143,18 +143,6 @@ export default function Applied() {
               <div key={application.id} className="card hover:shadow-lg transition-shadow">
                 <div className="p-6">
                   <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-                    {/* Company Logo */}
-                    {application.logo_path ? (
-                      <img
-                        src={application.logo_path}
-                        alt={application.company}
-                        className="w-16 h-16 rounded-lg object-cover border"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 rounded-lg bg-primary-50 border border-primary-200 flex items-center justify-center">
-                        <Building2 size={28} className="text-primary-600" />
-                      </div>
-                    )}
 
                     {/* Job Info */}
                     <div className="flex-1">
@@ -163,7 +151,14 @@ export default function Applied() {
                           <h3 className="text-xl font-bold text-text-dark mb-1">
                             {application.title}
                           </h3>
-                          <p className="text-base font-semibold text-gray-700">{application.company}</p>
+                          <p className="text-base font-semibold text-gray-700 mb-2">{application.company}</p>
+                          <Link
+                            to={`/jobs/${application.job_id}`}
+                            className="inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors"
+                          >
+                            <ExternalLink size={14} />
+                            View Applied Job
+                          </Link>
                         </div>
                         <span className={`px-3 py-1.5 rounded-lg border text-sm font-medium ${statusColors[application.status] || 'bg-gray-50 text-gray-700 border-gray-200'}`}>
                           {statusLabels[application.status] || application.status}

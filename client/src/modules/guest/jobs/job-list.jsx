@@ -89,24 +89,42 @@ export default function Jobs() {
   const [page, setPage] = useState(1);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   // Dynamic filter options (from backend)
   const [cityOptions, setCityOptions] = useState([]);
-  const [titleOptions, setTitleOptions] = useState([]);
+  const [roleOptions, setRoleOptions] = useState([]); // from job_roles
   const [tagOptions, setTagOptions] = useState([]);
 
   const locationHook = useLocation();
   const navigate = useNavigate();
   const isClearingFilters = useRef(false);
 
+  // Check auth and redirect recruiters to their job listing page
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
         const { data } = await api.get("/auth/session");
-        if (alive) setIsAuthenticated(Boolean(data?.user));
+        if (alive) {
+          setIsAuthenticated(Boolean(data?.user));
+          setUserRole(data?.user?.role || null);
+
+          // Redirect recruiters and admins away from candidate job browsing
+          if (data?.user?.role === "recruiter") {
+            navigate("/job-posted", { replace: true });
+            return;
+          }
+          if (data?.user?.role === "admin") {
+            navigate("/admin/jobs", { replace: true });
+            return;
+          }
+        }
       } catch (err) {
-        if (alive) setIsAuthenticated(false);
+        if (alive) {
+          setIsAuthenticated(false);
+          setUserRole(null);
+        }
       } finally {
         if (alive) setAuthChecked(true);
       }
@@ -115,7 +133,7 @@ export default function Jobs() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     // Skip if we're in the process of clearing filters
@@ -191,7 +209,14 @@ export default function Jobs() {
 
         if (data.ok && data.filters) {
           setCityOptions(data.filters.cities || []);
-          setTitleOptions(data.filters.titles || []);
+          // Prefer structured roles from backend (id + name), fallback to legacy titles (strings)
+          if (Array.isArray(data.filters.roles) && data.filters.roles.length) {
+            setRoleOptions(data.filters.roles);
+          } else if (Array.isArray(data.filters.titles) && data.filters.titles.length) {
+            setRoleOptions(
+              data.filters.titles.map((name, idx) => ({ id: idx + 1, name }))
+            );
+          }
           setTagOptions(data.filters.tags || []);
         }
       } catch (err) {
@@ -223,16 +248,16 @@ export default function Jobs() {
       return;
     }
 
-    // Match job role from q param (wait for titleOptions to be loaded)
-    if (qParam && titleOptions.length > 0) {
-      const matchedRole = titleOptions.find((title) =>
-        title.toLowerCase().includes(qParam.toLowerCase()) ||
-        qParam.toLowerCase().includes(title.toLowerCase())
+    // Match job role from q param (wait for roleOptions to be loaded)
+    if (qParam && roleOptions.length > 0) {
+      const matchedRole = roleOptions.find((role) =>
+        role.name.toLowerCase().includes(qParam.toLowerCase()) ||
+        qParam.toLowerCase().includes(role.name.toLowerCase())
       );
       if (matchedRole) {
         setSelectedRoles((prev) => {
-          if (prev.includes(matchedRole)) return prev;
-          return [...prev, matchedRole];
+          if (prev.includes(matchedRole.name)) return prev;
+          return [...prev, matchedRole.name];
         });
       }
     }
@@ -276,7 +301,7 @@ export default function Jobs() {
         setSelectedExperience(experienceValue);
       }
     }
-  }, [locationHook.search, cityOptions, titleOptions]);
+  }, [locationHook.search, cityOptions, roleOptions]);
 
   useEffect(() => {
     let alive = true;
@@ -297,6 +322,8 @@ export default function Jobs() {
         if (data.ok && Array.isArray(data.jobs)) {
           const mapped = data.jobs.map((j) => ({
             id: j._id || j.id,
+            roleId: j.roleId != null ? j.roleId : j.role_id != null ? j.role_id : null,
+            roleName: j.roleName || j.role_name || "",
             title: j.title || j.jobTitle || "",
             company: j.company || j.companyName || "",
             location: j.location || j.jobLocation || "",
@@ -430,9 +457,17 @@ export default function Jobs() {
 
     if (selectedRoles.length) {
       data = data.filter((job) =>
-        selectedRoles.some((role) =>
-          job.title.toLowerCase().includes(role.toLowerCase())
-        )
+        selectedRoles.some((role) => {
+          const roleLc = role.toLowerCase();
+          const jobRoleName = (job.roleName || "").toLowerCase();
+          const jobTitle = (job.title || "").toLowerCase();
+          // Prefer matching against normalized roleName from job_roles,
+          // but fall back to title for legacy data
+          return (
+            (jobRoleName && jobRoleName.includes(roleLc)) ||
+            (!jobRoleName && jobTitle.includes(roleLc))
+          );
+        })
       );
     }
 
@@ -571,9 +606,9 @@ export default function Jobs() {
     }).length;
   };
 
-  const getJobCountForTitle = (title) => {
+  const getJobCountForRoleName = (roleName) => {
     return jobList.filter((job) =>
-      job.title.toLowerCase().includes(title.toLowerCase())
+      (job.roleName || job.title || "").toLowerCase().includes(roleName.toLowerCase())
     ).length;
   };
 
@@ -652,27 +687,28 @@ export default function Jobs() {
                 </div>
               )}
 
-              {/* Dynamic Job Title/Role Filter */}
-              {titleOptions.length > 0 && (
+              {/* Dynamic Job Role Filter (from job_roles) */}
+              {roleOptions.length > 0 && (
                 <div>
                   <p className="text-sm font-semibold text-text-dark mb-3">
                     Job Role(s)
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {titleOptions.map((title) => {
-                      const active = selectedRoles.includes(title);
-                      const jobCount = getJobCountForTitle(title);
+                    {roleOptions.map((role) => {
+                      const label = role.name || role;
+                      const active = selectedRoles.includes(label);
+                      const jobCount = getJobCountForRoleName(label);
                       if (jobCount === 0) return null; // Hide filters with zero jobs
                       return (
                         <button
-                          key={title}
-                          onClick={() => toggleValue(title, setSelectedRoles)}
+                          key={role.id || label}
+                          onClick={() => toggleValue(label, setSelectedRoles)}
                           className={`rounded-chip px-3 py-1.5 text-xs font-medium transition-colors ${active
                             ? "bg-primary-50 border-2 border-primary-200 text-primary-700"
                             : "bg-white border-2 border-border text-text-muted hover:bg-gray-50"
                             }`}
                         >
-                          {title}
+                          {label}
                         </button>
                       );
                     })}

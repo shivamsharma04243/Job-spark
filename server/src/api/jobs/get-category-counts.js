@@ -33,13 +33,11 @@ function buildFilterConditions(filters) {
     params.push(...filters.cities);
   }
 
-  // roles filter (search in title)
+  // roles filter (match against job_roles.name)
   if (filters.roles && Array.isArray(filters.roles) && filters.roles.length > 0) {
-    const roleConditions = filters.roles.map((role) => {
-      params.push(`%${role}%`);
-      return `j.title LIKE ?`;
-    });
-    conditions.push(`(${roleConditions.join(' OR ')})`);
+    const placeholders = filters.roles.map(() => '?').join(',');
+    conditions.push(`jr.name IN (${placeholders})`);
+    params.push(...filters.roles);
   }
 
   // tags filter (requires JOIN with job_tag_map and job_tags)
@@ -47,7 +45,7 @@ function buildFilterConditions(filters) {
     needsTagJoin = true;
     const tagConditions = filters.tags.map((tag) => {
       params.push(tag);
-      return `jt.name = ?`;
+      return `LOWER(jt.name) = LOWER(?)`;
     });
     conditions.push(`(${tagConditions.join(' OR ')})`);
   }
@@ -76,16 +74,20 @@ async function getCategoryCounts(req, res) {
       let sql;
       let params = [];
 
-      // Build FROM clause
+      // Build FROM clause - always join job_roles for role filtering
       let fromClause;
       if (filterInfo.needsTagJoin) {
         fromClause = `
           FROM jobs j
+          LEFT JOIN job_roles jr ON j.role_id = jr.id
           LEFT JOIN job_tag_map jtm ON j.id = jtm.job_id
           LEFT JOIN job_tags jt ON jtm.tag_id = jt.id
         `;
       } else {
-        fromClause = `FROM jobs j`;
+        fromClause = `
+          FROM jobs j
+          LEFT JOIN job_roles jr ON j.role_id = jr.id
+        `;
       }
 
       // Build WHERE clause

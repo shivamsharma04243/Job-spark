@@ -45,7 +45,7 @@ async function createJobHandler(req, res) {
 
       // fields from your frontend form (camelCase)
       const {
-        title = "",
+        roleId,
         company = "",
         jobType = "Full-time",
         workMode = "Office",
@@ -60,12 +60,12 @@ async function createJobHandler(req, res) {
         interviewAddress = "",
         contactEmail = "",
         contactPhone = "",
-        skills = "", // Added skills here
+        skills = "",
       } = req.body;
 
       // simple validation
       const errors = [];
-      if (!title.trim()) errors.push("title is required");
+      if (!roleId) errors.push("roleId is required");
       if (!company.trim()) errors.push("company is required");
       if (!city.trim()) errors.push("city is required");
       if (!description.trim()) errors.push("description is required");
@@ -77,11 +77,25 @@ async function createJobHandler(req, res) {
       const logoPath = req.file ? path.posix.join("uploads", "logos", req.file.filename) : null;
 
       // convert numeric fields carefully
+      const roleIdNum = roleId ? Number(roleId) : null;
       const minExpNum = minExperience === null || minExperience === "" ? null : Number(minExperience);
       const maxExpNum = maxExperience === null || maxExperience === "" ? null : Number(maxExperience);
       const minSalaryNum = minSalary === null || minSalary === "" ? null : Number(minSalary);
       const maxSalaryNum = maxSalary === null || maxSalary === "" ? null : Number(maxSalary);
       const vacanciesNum = vacancies ? Math.max(1, parseInt(vacancies, 10) || 1) : 1;
+
+      if (!roleIdNum || Number.isNaN(roleIdNum)) {
+        return res.status(400).json({ ok: false, message: "Invalid roleId" });
+      }
+
+      // Validate that role exists
+      const [roleRows] = await pool.query(
+        "SELECT id, name FROM job_roles WHERE id = ? LIMIT 1",
+        [roleIdNum]
+      );
+      if (!roleRows || roleRows.length === 0) {
+        return res.status(400).json({ ok: false, message: "Selected job role does not exist" });
+      }
 
       // Validate work_mode
       const validWorkModes = ['Office', 'Remote', 'Hybrid'];
@@ -89,14 +103,15 @@ async function createJobHandler(req, res) {
 
       // Insert into DB (use placeholders)
       // Set status to 'pending' by default - jobs need admin approval
+      // Note: title is derived from role_id via JOIN with job_roles table
       const sql = `
         INSERT INTO jobs
-          (title, company, job_type, work_mode, city, locality, min_experience, max_experience, min_salary, max_salary, vacancies, description, interview_address, contact_email, contact_phone, logo_path, recruiter_id, status, posted_at)
+          (role_id, company, job_type, work_mode, city, locality, min_experience, max_experience, min_salary, max_salary, vacancies, description, interview_address, contact_email, contact_phone, logo_path, recruiter_id, status, posted_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
       `;
 
       const params = [
-        title,
+        roleIdNum,
         company,
         jobType,
         workModeValue,
@@ -122,13 +137,24 @@ async function createJobHandler(req, res) {
       if (skills && typeof skills === 'string' && skills.trim()) {
         try {
           const skillList = skills.split(',').map(s => s.trim()).filter(Boolean);
+
+          // Function to convert string to Title Case
+          const toTitleCase = (str) => {
+            return str.toLowerCase().split(' ').map(word =>
+              word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+          };
+
           for (const skillName of skillList) {
+            // Convert to Title Case before storing
+            const titleCaseSkill = toTitleCase(skillName);
+
             // Insert tag if not exists, get its ID
             const [tagRows] = await pool.query(
               `INSERT INTO job_tags (name) VALUES (?) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)`,
-              [skillName]
+              [titleCaseSkill]
             );
-            const tagId = tagRows.insertId || (await pool.query(`SELECT id FROM job_tags WHERE name = ?`, [skillName]))[0][0].id;
+            const tagId = tagRows.insertId || (await pool.query(`SELECT id FROM job_tags WHERE LOWER(name) = LOWER(?)`, [titleCaseSkill]))[0][0].id;
             // Link job to tag
             await pool.query(`INSERT IGNORE INTO job_tag_map (job_id, tag_id) VALUES (?, ?)`, [jobId, tagId]);
           }

@@ -60,13 +60,11 @@ function buildFilterConditions(filters, isAuthenticated) {
     params.push(...filters.cities);
   }
 
-  // roles filter (search in title)
+  // roles filter (match against normalized job_roles.name)
   if (filters.roles && Array.isArray(filters.roles) && filters.roles.length > 0) {
-    const roleConditions = filters.roles.map((role) => {
-      params.push(`%${role}%`);
-      return `j.title LIKE ?`;
-    });
-    conditions.push(`(${roleConditions.join(' OR ')})`);
+    const placeholders = filters.roles.map(() => '?').join(',');
+    conditions.push(`jr.name IN (${placeholders})`);
+    params.push(...filters.roles);
   }
 
   // tags filter (requires JOIN with job_tag_map and job_tags)
@@ -74,7 +72,7 @@ function buildFilterConditions(filters, isAuthenticated) {
     needsTagJoin = true;
     const tagConditions = filters.tags.map((tag) => {
       params.push(tag);
-      return `jt.name = ?`;
+      return `LOWER(jt.name) = LOWER(?)`;
     });
     conditions.push(`(${tagConditions.join(' OR ')})`);
   }
@@ -95,17 +93,16 @@ async function getjobs(req, res) {
     // Build SQL query - exclude jobs user has already applied for if authenticated
     let sql;
     let params = [];
-    // Use table alias 'j' if we have filters, tag joins, or authenticated user
-    const useAlias = userId || filterInfo.needsTagJoin || filterInfo.conditions.length > 0;
-    const tableAlias = useAlias ? 'j' : null;
-    const prefix = tableAlias ? `${tableAlias}.` : '';
+    // We always use table alias 'j' now because we join job_roles as 'jr'
+    const prefix = 'j.';
 
     // Base SELECT clause - use DISTINCT if we have tag joins to avoid duplicate rows
     const selectKeyword = filterInfo.needsTagJoin ? 'SELECT DISTINCT' : 'SELECT';
     const selectClause = `
       ${selectKeyword}
         ${prefix}id,
-        ${prefix}title,
+        ${prefix}role_id,
+        jr.name AS title,
         ${prefix}company,
         ${prefix}job_type,
         ${prefix}work_mode,
@@ -119,7 +116,8 @@ async function getjobs(req, res) {
         ${prefix}description,
         ${prefix}logo_path,
         ${prefix}status,
-        ${prefix}created_at
+        ${prefix}created_at,
+        jr.name as role_name
     `;
 
     // Build FROM and JOIN clauses
@@ -132,11 +130,13 @@ async function getjobs(req, res) {
           LEFT JOIN job_applications ja ON j.id = ja.job_id AND ja.user_id = ?
           LEFT JOIN job_tag_map jtm ON j.id = jtm.job_id
           LEFT JOIN job_tags jt ON jtm.tag_id = jt.id
+          LEFT JOIN job_roles jr ON j.role_id = jr.id
         `;
       } else {
         fromClause = `
           FROM jobs j
           LEFT JOIN job_applications ja ON j.id = ja.job_id AND ja.user_id = ?
+          LEFT JOIN job_roles jr ON j.role_id = jr.id
         `;
       }
     } else {
@@ -146,11 +146,13 @@ async function getjobs(req, res) {
           FROM jobs j
           LEFT JOIN job_tag_map jtm ON j.id = jtm.job_id
           LEFT JOIN job_tags jt ON jtm.tag_id = jt.id
+          LEFT JOIN job_roles jr ON j.role_id = jr.id
         `;
-      } else if (useAlias) {
-        fromClause = `FROM jobs j`;
       } else {
-        fromClause = `FROM jobs`;
+        fromClause = `
+          FROM jobs j
+          LEFT JOIN job_roles jr ON j.role_id = jr.id
+        `;
       }
     }
 
@@ -244,6 +246,8 @@ async function getjobs(req, res) {
 
       return {
         id: r.id,
+        roleId: r.role_id || null,
+        roleName: r.role_name || null,
         title: r.title,
         company: r.company,
         type: r.job_type || 'Full-time',

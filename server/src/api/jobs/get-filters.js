@@ -4,7 +4,7 @@ const pool = require('../config/db');
  * GET /api/jobs/filters
  * Returns dynamic filter options based on approved jobs only:
  * - cities: distinct cities from jobs.city where status='approved'
- * - titles: distinct titles from jobs.title where status='approved'
+ * - roles: distinct job roles from job_roles joined with jobs via role_id where status='approved'
  * - tags: distinct tags from job_tags joined with job_tag_map and jobs where status='approved'
  */
 async function getFilters(req, res) {
@@ -17,12 +17,13 @@ async function getFilters(req, res) {
       ORDER BY city ASC
     `);
 
-    // Fetch distinct job titles from approved jobs
-    const [titleRows] = await pool.query(`
-      SELECT DISTINCT title 
-      FROM jobs 
-      WHERE status = 'approved' AND title IS NOT NULL AND title != ''
-      ORDER BY title ASC
+    // Fetch distinct job roles from approved jobs using job_roles table
+    const [roleRows] = await pool.query(`
+      SELECT DISTINCT jr.id, jr.name
+      FROM job_roles jr
+      INNER JOIN jobs j ON j.role_id = jr.id
+      WHERE j.status = 'approved' AND jr.name IS NOT NULL AND jr.name != ''
+      ORDER BY jr.name ASC
     `);
 
     // Fetch distinct tags from approved jobs via job_tag_map
@@ -43,13 +44,15 @@ async function getFilters(req, res) {
     }
 
     const cities = cityRows.map(row => row.city);
-    const titles = titleRows.map(row => row.title);
+    const roles = roleRows.map(row => ({ id: row.id, name: row.name }));
 
     res.json({
       ok: true,
       filters: {
         cities,
-        titles,
+        roles,
+        // keep legacy "titles" key for backward compatibility with any older clients
+        titles: roles.map(r => r.name),
         tags
       }
     });
