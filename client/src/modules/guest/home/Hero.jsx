@@ -153,7 +153,7 @@ export default function Hero() {
         <div className="max-w-5xl mx-auto w-full flex flex-col items-center justify-center text-center gap-6 sm:gap-8">
           <div className="space-y-4 sm:space-y-6 w-full flex flex-col items-center">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-text-dark">
-              Trust Opportunities for{" "}
+              Trusted Opportunities for{" "}
               <span className="text-primary-500">Fresh Talent</span>
             </h1>
 
