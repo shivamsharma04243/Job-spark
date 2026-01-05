@@ -3,7 +3,7 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - master  # ✅ Changed from main
+      - master
 
 jobs:
   deploy:
@@ -14,6 +14,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Test SSH Connection
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "✅ SSH Connection successful!"
+            whoami
+            pwd
+            
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -22,9 +33,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "🚀 Starting deployment..."
-            
             cd /var/www/jobion
-            git pull origin master  # ✅ Changed from main
+            git pull origin master
             
             echo "🔧 Backend deployment..."
             cd server
