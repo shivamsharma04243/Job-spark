@@ -20,6 +20,18 @@ const allowedOrigins = [
   'https://oauth2.googleapis.com',
 ].filter(Boolean);
 
+// Early middleware to ensure clean headers from the start
+app.use((req, res, next) => {
+  // Remove any existing CORS headers that might have been set by a proxy
+  res.removeHeader('Access-Control-Allow-Origin');
+  res.removeHeader('Access-Control-Allow-Credentials');
+  res.removeHeader('Access-Control-Allow-Methods');
+  res.removeHeader('Access-Control-Allow-Headers');
+  res.removeHeader('Cross-Origin-Opener-Policy');
+  res.removeHeader('Cross-Origin-Embedder-Policy');
+  next();
+});
+
 // CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
@@ -41,10 +53,8 @@ const corsOptions = {
   optionsSuccessStatus: 204
 };
 
+// Apply CORS middleware - ONLY ONCE
 app.use(cors(corsOptions));
-
-// Explicit OPTIONS handler to prevent duplicate headers
-app.options('*', cors(corsOptions));
 
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
@@ -58,8 +68,9 @@ app.use((req, res, next) => {
   const originalWriteHead = res.writeHead.bind(res);
   const originalEnd = res.end.bind(res);
 
-  // Track headers to prevent duplicates
-  const headersMap = new Map();
+  // Track if Access-Control-Allow-Origin has been set
+  let corsOriginSet = false;
+  let corsOriginValue = null;
 
   // Intercept setHeader to prevent problematic headers and duplicates
   res.setHeader = function (name, value) {
@@ -72,17 +83,15 @@ app.use((req, res, next) => {
 
     // Prevent duplicate Access-Control-Allow-Origin headers
     if (lowerName === 'access-control-allow-origin') {
-      if (headersMap.has('access-control-allow-origin')) {
-        // Header already set, don't duplicate
-        const existingValue = headersMap.get('access-control-allow-origin');
-        if (existingValue !== value) {
-          console.warn(`Duplicate Access-Control-Allow-Origin detected. Existing: ${existingValue}, New: ${value}. Keeping existing.`);
+      if (corsOriginSet) {
+        // Header already set, don't duplicate - log for debugging
+        if (corsOriginValue !== value) {
+          console.warn(`[CORS] Duplicate Access-Control-Allow-Origin blocked. Existing: ${corsOriginValue}, Attempted: ${value}`);
         }
-        return res;
+        return res; // Block the duplicate
       }
-      headersMap.set('access-control-allow-origin', value);
-    } else {
-      headersMap.set(lowerName, value);
+      corsOriginSet = true;
+      corsOriginValue = value;
     }
 
     return originalSetHeader(name, value);
@@ -90,12 +99,16 @@ app.use((req, res, next) => {
 
   // Intercept writeHead to clean up headers before sending
   res.writeHead = function (statusCode, statusMessage, headers) {
-    // Clean up problematic headers
-    res.removeHeader('Cross-Origin-Opener-Policy');
-    res.removeHeader('Cross-Origin-Embedder-Policy');
+    // Clean up problematic headers first
+    try {
+      res.removeHeader('Cross-Origin-Opener-Policy');
+      res.removeHeader('Cross-Origin-Embedder-Policy');
+    } catch (e) {
+      // Ignore if header doesn't exist
+    }
 
     // Handle headers parameter
-    if (headers) {
+    if (headers && typeof headers === 'object') {
       // Remove problematic headers from headers object
       delete headers['cross-origin-opener-policy'];
       delete headers['Cross-Origin-Opener-Policy'];
@@ -103,32 +116,44 @@ app.use((req, res, next) => {
       delete headers['Cross-Origin-Embedder-Policy'];
 
       // Handle duplicate Access-Control-Allow-Origin in headers object
-      if (headers['access-control-allow-origin'] || headers['Access-Control-Allow-Origin']) {
-        const originValue = headers['access-control-allow-origin'] || headers['Access-Control-Allow-Origin'];
+      const originKey = headers['access-control-allow-origin'] ? 'access-control-allow-origin' :
+        headers['Access-Control-Allow-Origin'] ? 'Access-Control-Allow-Origin' : null;
+
+      if (originKey) {
+        let originValue = headers[originKey];
+
+        // Handle array case
         if (Array.isArray(originValue)) {
-          headers['Access-Control-Allow-Origin'] = originValue[0];
-          delete headers['access-control-allow-origin'];
-        } else if (typeof originValue === 'string' && originValue.includes(',')) {
-          headers['Access-Control-Allow-Origin'] = originValue.split(',')[0].trim();
-          delete headers['access-control-allow-origin'];
-        } else {
-          headers['Access-Control-Allow-Origin'] = originValue;
-          delete headers['access-control-allow-origin'];
+          originValue = originValue[0];
+        }
+        // Handle comma-separated string case
+        else if (typeof originValue === 'string' && originValue.includes(',')) {
+          originValue = originValue.split(',')[0].trim();
+        }
+
+        // Set clean value and remove duplicates
+        headers['Access-Control-Allow-Origin'] = originValue;
+        if (originKey !== 'Access-Control-Allow-Origin') {
+          delete headers[originKey];
         }
       }
     }
 
     // Ensure single Access-Control-Allow-Origin from response headers
-    const existingOrigin = res.getHeader('access-control-allow-origin');
-    if (existingOrigin) {
-      let cleanOrigin = existingOrigin;
-      if (Array.isArray(existingOrigin)) {
-        cleanOrigin = existingOrigin[0];
-      } else if (typeof existingOrigin === 'string' && existingOrigin.includes(',')) {
-        cleanOrigin = existingOrigin.split(',')[0].trim();
+    try {
+      const existingOrigin = res.getHeader('access-control-allow-origin');
+      if (existingOrigin) {
+        let cleanOrigin = existingOrigin;
+        if (Array.isArray(existingOrigin)) {
+          cleanOrigin = existingOrigin[0];
+        } else if (typeof existingOrigin === 'string' && existingOrigin.includes(',')) {
+          cleanOrigin = existingOrigin.split(',')[0].trim();
+        }
+        res.removeHeader('Access-Control-Allow-Origin');
+        originalSetHeader('Access-Control-Allow-Origin', cleanOrigin);
       }
-      res.removeHeader('Access-Control-Allow-Origin');
-      originalSetHeader('Access-Control-Allow-Origin', cleanOrigin);
+    } catch (e) {
+      // Ignore errors
     }
 
     // Call original writeHead
@@ -143,28 +168,53 @@ app.use((req, res, next) => {
     }
   };
 
-  // Clean up headers right before response ends
+  // Clean up headers right before response ends - FINAL SAFETY CHECK
   res.end = function (chunk, encoding) {
     // Final cleanup before sending - remove problematic headers
     try {
+      // Remove problematic headers
       res.removeHeader('Cross-Origin-Opener-Policy');
       res.removeHeader('Cross-Origin-Embedder-Policy');
 
-      // Ensure single Access-Control-Allow-Origin (handle all cases)
+      // CRITICAL: Ensure single Access-Control-Allow-Origin (handle all cases)
       const existingOrigin = res.getHeader('access-control-allow-origin');
       if (existingOrigin) {
         let cleanOrigin = existingOrigin;
+
+        // Handle array case
         if (Array.isArray(existingOrigin)) {
           cleanOrigin = existingOrigin[0];
-        } else if (typeof existingOrigin === 'string' && existingOrigin.includes(',')) {
+        }
+        // Handle comma-separated string case (this is the main issue)
+        else if (typeof existingOrigin === 'string' && existingOrigin.includes(',')) {
           cleanOrigin = existingOrigin.split(',')[0].trim();
         }
+
+        // Remove ALL instances and set clean single value
         res.removeHeader('Access-Control-Allow-Origin');
         originalSetHeader('Access-Control-Allow-Origin', cleanOrigin);
       }
+
+      // Double-check: Get all headers and verify no duplicates
+      const allHeaders = res.getHeaders();
+      const originHeaders = Object.keys(allHeaders).filter(key =>
+        key.toLowerCase() === 'access-control-allow-origin'
+      );
+
+      if (originHeaders.length > 1) {
+        // Multiple origin headers found - keep only the first one
+        const firstOrigin = allHeaders[originHeaders[0]];
+        originHeaders.forEach((key, index) => {
+          if (index > 0) {
+            res.removeHeader(key);
+          }
+        });
+        res.removeHeader('Access-Control-Allow-Origin');
+        originalSetHeader('Access-Control-Allow-Origin', firstOrigin);
+      }
     } catch (err) {
       // Ignore errors during cleanup
-      console.error('Error cleaning up headers:', err.message);
+      console.error('[CORS Cleanup] Error:', err.message);
     }
 
     return originalEnd(chunk, encoding);
