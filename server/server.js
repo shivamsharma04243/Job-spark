@@ -20,7 +20,8 @@ const allowedOrigins = [
   'https://oauth2.googleapis.com',
 ].filter(Boolean);
 
-app.use(cors({
+// CORS configuration
+const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
@@ -38,7 +39,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
   preflightContinue: false,
   optionsSuccessStatus: 204
-}));
+};
+
+app.use(cors(corsOptions));
+
+// Explicit OPTIONS handler to prevent duplicate headers
+app.options('*', cors(corsOptions));
 
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
@@ -49,10 +55,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   // Store original methods
   const originalSetHeader = res.setHeader.bind(res);
+  const originalWriteHead = res.writeHead.bind(res);
   const originalEnd = res.end.bind(res);
 
-  // Track if Access-Control-Allow-Origin has been set to prevent duplicates
-  let corsOriginSet = false;
+  // Track headers to prevent duplicates
+  const headersMap = new Map();
 
   // Intercept setHeader to prevent problematic headers and duplicates
   res.setHeader = function (name, value) {
@@ -65,15 +72,75 @@ app.use((req, res, next) => {
 
     // Prevent duplicate Access-Control-Allow-Origin headers
     if (lowerName === 'access-control-allow-origin') {
-      if (corsOriginSet) {
+      if (headersMap.has('access-control-allow-origin')) {
         // Header already set, don't duplicate
-        console.warn(`Duplicate Access-Control-Allow-Origin header detected. Ignoring: ${value}`);
+        const existingValue = headersMap.get('access-control-allow-origin');
+        if (existingValue !== value) {
+          console.warn(`Duplicate Access-Control-Allow-Origin detected. Existing: ${existingValue}, New: ${value}. Keeping existing.`);
+        }
         return res;
       }
-      corsOriginSet = true;
+      headersMap.set('access-control-allow-origin', value);
+    } else {
+      headersMap.set(lowerName, value);
     }
 
     return originalSetHeader(name, value);
+  };
+
+  // Intercept writeHead to clean up headers before sending
+  res.writeHead = function (statusCode, statusMessage, headers) {
+    // Clean up problematic headers
+    res.removeHeader('Cross-Origin-Opener-Policy');
+    res.removeHeader('Cross-Origin-Embedder-Policy');
+
+    // Handle headers parameter
+    if (headers) {
+      // Remove problematic headers from headers object
+      delete headers['cross-origin-opener-policy'];
+      delete headers['Cross-Origin-Opener-Policy'];
+      delete headers['cross-origin-embedder-policy'];
+      delete headers['Cross-Origin-Embedder-Policy'];
+
+      // Handle duplicate Access-Control-Allow-Origin in headers object
+      if (headers['access-control-allow-origin'] || headers['Access-Control-Allow-Origin']) {
+        const originValue = headers['access-control-allow-origin'] || headers['Access-Control-Allow-Origin'];
+        if (Array.isArray(originValue)) {
+          headers['Access-Control-Allow-Origin'] = originValue[0];
+          delete headers['access-control-allow-origin'];
+        } else if (typeof originValue === 'string' && originValue.includes(',')) {
+          headers['Access-Control-Allow-Origin'] = originValue.split(',')[0].trim();
+          delete headers['access-control-allow-origin'];
+        } else {
+          headers['Access-Control-Allow-Origin'] = originValue;
+          delete headers['access-control-allow-origin'];
+        }
+      }
+    }
+
+    // Ensure single Access-Control-Allow-Origin from response headers
+    const existingOrigin = res.getHeader('access-control-allow-origin');
+    if (existingOrigin) {
+      let cleanOrigin = existingOrigin;
+      if (Array.isArray(existingOrigin)) {
+        cleanOrigin = existingOrigin[0];
+      } else if (typeof existingOrigin === 'string' && existingOrigin.includes(',')) {
+        cleanOrigin = existingOrigin.split(',')[0].trim();
+      }
+      res.removeHeader('Access-Control-Allow-Origin');
+      originalSetHeader('Access-Control-Allow-Origin', cleanOrigin);
+    }
+
+    // Call original writeHead
+    if (typeof statusCode === 'number' && typeof statusMessage === 'object' && !headers) {
+      return originalWriteHead(statusCode, statusMessage);
+    } else if (typeof statusCode === 'number' && typeof statusMessage === 'string') {
+      return originalWriteHead(statusCode, statusMessage, headers);
+    } else if (typeof statusCode === 'number' && typeof statusMessage === 'object') {
+      return originalWriteHead(statusCode, statusMessage);
+    } else {
+      return originalWriteHead(statusCode);
+    }
   };
 
   // Clean up headers right before response ends
@@ -83,19 +150,17 @@ app.use((req, res, next) => {
       res.removeHeader('Cross-Origin-Opener-Policy');
       res.removeHeader('Cross-Origin-Embedder-Policy');
 
-      // Ensure single Access-Control-Allow-Origin (handle array case)
+      // Ensure single Access-Control-Allow-Origin (handle all cases)
       const existingOrigin = res.getHeader('access-control-allow-origin');
       if (existingOrigin) {
+        let cleanOrigin = existingOrigin;
         if (Array.isArray(existingOrigin)) {
-          // Multiple values detected - keep only the first one
-          res.removeHeader('Access-Control-Allow-Origin');
-          originalSetHeader('Access-Control-Allow-Origin', existingOrigin[0]);
+          cleanOrigin = existingOrigin[0];
         } else if (typeof existingOrigin === 'string' && existingOrigin.includes(',')) {
-          // Comma-separated values detected - keep only the first one
-          const firstOrigin = existingOrigin.split(',')[0].trim();
-          res.removeHeader('Access-Control-Allow-Origin');
-          originalSetHeader('Access-Control-Allow-Origin', firstOrigin);
+          cleanOrigin = existingOrigin.split(',')[0].trim();
         }
+        res.removeHeader('Access-Control-Allow-Origin');
+        originalSetHeader('Access-Control-Allow-Origin', cleanOrigin);
       }
     } catch (err) {
       // Ignore errors during cleanup
