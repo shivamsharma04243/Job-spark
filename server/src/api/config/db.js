@@ -35,6 +35,43 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-// Export pool so other files can run queries using:
-// const [rows] = await pool.query("SELECT * FROM users");
+/**
+ * Test database connection
+ * -------------------------
+ * Purpose:
+ *   - Verify database connection is working
+ *   - Display connection status on server startup
+ */
+async function testConnection() {
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.ping();
+
+    // Get database info
+    const [rows] = await connection.execute('SELECT DATABASE() as db, USER() as user, VERSION() as version');
+    const dbInfo = rows[0];
+
+    console.log('✅ SQL Connection Status: SUCCESS');
+    console.log(`   Database: ${dbInfo.db || process.env.DB_NAME}`);
+    console.log(`   Host: ${process.env.DB_HOST}`);
+    console.log(`   User: ${dbInfo.user || process.env.DB_USER}`);
+    console.log(`   MySQL Version: ${dbInfo.version}`);
+
+    return true;
+  } catch (error) {
+    console.error('❌ SQL Connection Status: FAILED');
+    console.error(`   Error: ${error.message}`);
+    console.error(`   Host: ${process.env.DB_HOST}`);
+    console.error(`   Database: ${process.env.DB_NAME}`);
+    return false;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+}
+
+// Export pool and testConnection function
 module.exports = pool;
+module.exports.testConnection = testConnection;

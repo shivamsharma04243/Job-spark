@@ -9,19 +9,35 @@ const { expireOldJobs } = require('./src/jobs/job-expiration-cleanup');
 const app = express();
 
 // Middlewares
+// Configure CORS with a function to handle origins dynamically and prevent duplicates
+const allowedOrigins = [
+  'https://jobion.in',
+  'https://www.jobion.in',
+  'https://api.jobion.in',
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'https://accounts.google.com',
+  'https://oauth2.googleapis.com',
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    'https://jobion.in',
-    'https://www.jobion.in',
-    'https://api.jobion.in',
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'https://accounts.google.com',
-    'https://oauth2.googleapis.com',
-  ].filter(Boolean),
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      // Return the origin explicitly to prevent duplicates
+      callback(null, origin);
+    } else {
+      callback(null, false);
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 
 app.use(cookieParser());
@@ -29,27 +45,68 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Headers for Google Sign-In compatibility
+// This middleware runs AFTER CORS to clean up headers that block Google Sign-In
 app.use((req, res, next) => {
-  // Remove COOP header that can block Google Sign-In
-  res.removeHeader('Cross-Origin-Opener-Policy');
-  res.removeHeader('Cross-Origin-Embedder-Policy');
+  // Store original methods
+  const originalSetHeader = res.setHeader.bind(res);
+  const originalEnd = res.end.bind(res);
 
-  // Add necessary headers for OAuth
+  // Track if Access-Control-Allow-Origin has been set to prevent duplicates
+  let corsOriginSet = false;
+
+  // Intercept setHeader to prevent problematic headers and duplicates
+  res.setHeader = function (name, value) {
+    const lowerName = name.toLowerCase();
+
+    // Block headers that interfere with Google Sign-In
+    if (lowerName === 'cross-origin-opener-policy' || lowerName === 'cross-origin-embedder-policy') {
+      return res; // Don't set these headers
+    }
+
+    // Prevent duplicate Access-Control-Allow-Origin headers
+    if (lowerName === 'access-control-allow-origin') {
+      if (corsOriginSet) {
+        // Header already set, don't duplicate
+        console.warn(`Duplicate Access-Control-Allow-Origin header detected. Ignoring: ${value}`);
+        return res;
+      }
+      corsOriginSet = true;
+    }
+
+    return originalSetHeader(name, value);
+  };
+
+  // Clean up headers right before response ends
+  res.end = function (chunk, encoding) {
+    // Final cleanup before sending - remove problematic headers
+    try {
+      res.removeHeader('Cross-Origin-Opener-Policy');
+      res.removeHeader('Cross-Origin-Embedder-Policy');
+
+      // Ensure single Access-Control-Allow-Origin (handle array case)
+      const existingOrigin = res.getHeader('access-control-allow-origin');
+      if (existingOrigin) {
+        if (Array.isArray(existingOrigin)) {
+          // Multiple values detected - keep only the first one
+          res.removeHeader('Access-Control-Allow-Origin');
+          originalSetHeader('Access-Control-Allow-Origin', existingOrigin[0]);
+        } else if (typeof existingOrigin === 'string' && existingOrigin.includes(',')) {
+          // Comma-separated values detected - keep only the first one
+          const firstOrigin = existingOrigin.split(',')[0].trim();
+          res.removeHeader('Access-Control-Allow-Origin');
+          originalSetHeader('Access-Control-Allow-Origin', firstOrigin);
+        }
+      }
+    } catch (err) {
+      // Ignore errors during cleanup
+      console.error('Error cleaning up headers:', err.message);
+    }
+
+    return originalEnd(chunk, encoding);
+  };
+
+  // Add necessary headers for OAuth compatibility
   res.header('Cross-Origin-Resource-Policy', 'cross-origin');
-
-  // Special handling for Google OAuth requests - only add missing headers
-  if (req.path.includes('/auth/google') || req.headers.origin?.includes('google') || req.headers.origin?.includes('googleusercontent')) {
-    // Ensure CORS headers are properly set for Google OAuth (don't override existing ones)
-    if (!res.get('Access-Control-Allow-Origin')) {
-      res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-    }
-    if (!res.get('Access-Control-Allow-Credentials')) {
-      res.header('Access-Control-Allow-Credentials', 'true');
-    }
-    if (!res.get('Access-Control-Max-Age')) {
-      res.header('Access-Control-Max-Age', '86400'); // 24 hours
-    }
-  }
 
   next();
 });
@@ -130,8 +187,18 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+// Test database connection on server start
+const { testConnection } = require('./src/api/config/db');
+
+(async () => {
+  // Test database connection
+  await testConnection();
+
+  // Start the server
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+})();
 
 module.exports = app;
