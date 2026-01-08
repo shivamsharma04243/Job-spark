@@ -189,6 +189,12 @@ export default function RecruiterProfileForm({ initialData = null, onSaved = nul
 
   const handleSubmit = async e => {
     e.preventDefault();
+
+    // Prevent multiple submissions
+    if (saving) {
+      return;
+    }
+
     setMessage(null);
 
     if (!termsAccepted) {
@@ -202,6 +208,7 @@ export default function RecruiterProfileForm({ initialData = null, onSaved = nul
       return;
     }
 
+    // Set saving state immediately to prevent duplicate clicks
     setSaving(true);
 
     try {
@@ -221,15 +228,17 @@ export default function RecruiterProfileForm({ initialData = null, onSaved = nul
         window.location.href = "/recruiter-profile";
       }, 1500);
     } catch (err) {
+      // Re-enable button on error
+      setSaving(false);
+
       if (err.response) {
         const msg = err.response.data?.message || "Failed to save profile.";
         showError(msg);
       } else {
         showError("Network error while saving.");
       }
-    } finally {
-      setSaving(false);
     }
+    // Note: Don't set saving to false in finally block if redirecting on success
   };
 
   return (
@@ -472,10 +481,22 @@ export default function RecruiterProfileForm({ initialData = null, onSaved = nul
             <button
               type="submit"
               disabled={saving || !termsAccepted}
-              className={`px-6 py-2 rounded-full text-white ${saving || !termsAccepted ? "bg-gray-400 cursor-not-allowed" : "bg-primary-600 hover:brightness-95"
+              className={`px-6 py-2 rounded-full text-white transition-all ${saving || !termsAccepted
+                ? "bg-gray-400 cursor-not-allowed opacity-60"
+                : "bg-primary-600 hover:brightness-95"
                 }`}
             >
-              {saving ? "Saving..." : "Save Profile"}
+              {saving ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Saving...
+                </span>
+              ) : (
+                "Save Profile"
+              )}
             </button>
           </div>
         </form>

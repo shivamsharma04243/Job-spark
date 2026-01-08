@@ -1,5 +1,6 @@
 
 const pool = require('../../config/db');
+const { sendEmail } = require('../../services/emailService');
 
 /**
  * Get candidate_profiles table columns to verify structure
@@ -80,6 +81,25 @@ const candidateProfile = async (req, res) => {
       'SELECT user_id FROM candidate_profiles WHERE user_id = ?',
       [finalUserId]
     );
+
+    // Fetch user email and name for welcome email (only if creating new profile)
+    let userEmail = null;
+    let userName = null;
+    if (existingProfiles.length === 0) {
+      try {
+        const [userRows] = await connection.execute(
+          'SELECT email, name FROM users WHERE id = ?',
+          [finalUserId]
+        );
+        if (userRows.length > 0) {
+          userEmail = userRows[0].email;
+          userName = userRows[0].name || full_name || 'there';
+        }
+      } catch (err) {
+        // Log error but don't fail profile creation
+        console.error('Error fetching user data for email:', err);
+      }
+    }
 
     const now = new Date();
 
@@ -289,6 +309,51 @@ const candidateProfile = async (req, res) => {
           newProfiles[0].key_skills = JSON.parse(newProfiles[0].key_skills);
         } catch (e) {
           // If parsing fails, keep as is
+        }
+      }
+
+      // Send welcome email to candidate (only for new profiles)
+      if (userEmail && userName) {
+        try {
+          const firstName = userName.split(' ')[0] || userName;
+          const dashboardLink = process.env.FRONTEND_URL || 'http://localhost:5173';
+          const emailSubject = 'Welcome to Jobion – Let\'s Find Your Next Opportunity';
+          const emailHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: #2563eb;">Hi ${firstName},</h2>
+
+              <p>Welcome to <strong>Jobion</strong> 🎉</p>
+
+              <p>Your account has been successfully created, and you're now one step closer to finding opportunities that truly match your skills and career goals.</p>
+
+              <h3 style="color: #374151; margin-top: 30px;">What you can do next:</h3>
+              <ul style="line-height: 1.8;">
+                <li>Complete your profile to improve job matches</li>
+                <li>Upload your resume</li>
+                <li>Apply to jobs curated for you</li>
+                <li>Get recommendations based on your skills</li>
+              </ul>
+
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${dashboardLink}/candidate/dashboard" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
+                  👉 Get Started
+                </a>
+              </div>
+
+              <p>If you have any questions, we're just a reply away.</p>
+
+              <p style="margin-top: 30px;">
+                Best wishes,<br>
+                <strong>Team Jobion</strong><br>
+                <em>Connecting Talent with Opportunity</em>
+              </p>
+            </div>
+          `;
+
+          await sendEmail(userEmail, emailSubject, emailHtml);
+        } catch (emailError) {
+          // Log error but don't fail profile creation
+          console.error('Error sending welcome email:', emailError);
         }
       }
 
