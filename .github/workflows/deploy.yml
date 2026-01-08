@@ -9,43 +9,45 @@ jobs:
   deploy:
     name: Deploy to Server
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Test SSH Connection
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v1.0.3  # ✅ Updated version
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
+          username: ${{ secrets.SSH_USER }}  # ✅ Changed from SSH_USERNAME
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
           script: |
             echo "✅ SSH Connection successful!"
             whoami
             pwd
-            
+
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v1.0.3  # ✅ Updated version
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
+          username: ${{ secrets.SSH_USER }}  # ✅ Changed from SSH_USERNAME
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
           script: |
             echo "🚀 Starting deployment..."
             cd /var/www/jobion
             git pull origin master
-            
+
             echo "🔧 Backend deployment..."
             cd server
             npm install --production
             pm2 restart jobion-backend
-            
+
             echo "🎨 Frontend deployment..."
             cd ../client
             npm install --legacy-peer-deps
             npm run build
             pm2 restart jobion-frontend
-            
+
             pm2 save
             echo "✅ Deployment complete!"
