@@ -433,6 +433,38 @@ Work Details:
     maxSalary: "10000",
     vacancies: 2
   },
+  "Graphic Designer": {
+    description: `We are hiring a Graphic Designer to create visual content and designs for our brand.
+
+Responsibilities:
+• Create visual designs for digital and print media
+• Develop branding materials, logos, and marketing collateral
+• Design user interfaces and user experiences for websites and apps
+• Use design software to produce high-quality graphics
+• Collaborate with marketing and product teams
+• Ensure brand consistency across all design elements
+
+Requirements:
+• Proficiency in Adobe Creative Suite (Photoshop, Illustrator, InDesign)
+• Understanding of design principles and typography
+• Experience with UI/UX design is a plus
+• Portfolio showcasing design skills
+• Knowledge of web design tools (Figma, Sketch)
+• Freshers with strong portfolio are welcome
+
+Work Details:
+• Full-time position
+• Office-based work with remote options
+• Creative and collaborative environment`,
+    skills: "Adobe Photoshop, Adobe Illustrator, Adobe InDesign, Figma, Sketch, UI/UX Design, Branding, Typography",
+    minExperience: "0",
+    maxExperience: "3",
+    jobType: "Full-time",
+    workMode: "Office",
+    minSalary: "15000",
+    maxSalary: "35000",
+    vacancies: 1
+  },
 
   // Sales & Marketing roles
   "Business Development Executive": {
@@ -1828,7 +1860,7 @@ export default function AdminPostJob() {
     if (form.contactEmail.trim() && validateEmail(form.contactEmail)) err.contactEmail = validateEmail(form.contactEmail);
     if (form.contactPhone.trim() && validatePhone(form.contactPhone)) err.contactPhone = validatePhone(form.contactPhone);
     if (form.vacancies <= 0 || !Number.isInteger(form.vacancies)) err.vacancies = "Vacancies must be >= 1";
-    
+
     // Numeric range validations
     if (form.minExperience && form.maxExperience) {
       const minExp = Number(form.minExperience);
@@ -2202,7 +2234,7 @@ export default function AdminPostJob() {
                   value={form.vacancies}
                   onChange={(e) => updateField("vacancies", Math.max(1, Number(e.target.value || 1)))}
                   onBlur={() => handleBlur("vacancies", form.vacancies)}
-                  className={errors.vacancies && fieldTouched.vacancies 
+                  className={errors.vacancies && fieldTouched.vacancies
                     ? (autoFilledFields.has("vacancies") ? inputAutoClass.replace('border-primary-300', 'border-red-500') : inputErrorClass.replace('border-primary-400', 'border-red-500'))
                     : (autoFilledFields.has("vacancies") ? inputAutoClass : inputClass)}
                 />
@@ -2357,7 +2389,7 @@ export default function AdminPostJob() {
                     onBlur={() => handleBlur("contactEmail", form.contactEmail)}
                     placeholder="hr@company.com"
                     type="email"
-                    className={errors.contactEmail && fieldTouched.contactEmail 
+                    className={errors.contactEmail && fieldTouched.contactEmail
                       ? inputErrorClass.replace('border-primary-400', 'border-red-500')
                       : inputClass}
                   />
@@ -2375,7 +2407,7 @@ export default function AdminPostJob() {
                     onBlur={() => handleBlur("contactPhone", form.contactPhone)}
                     placeholder="9876543210"
                     type="tel"
-                    className={errors.contactPhone && fieldTouched.contactPhone 
+                    className={errors.contactPhone && fieldTouched.contactPhone
                       ? inputErrorClass.replace('border-primary-400', 'border-red-500')
                       : inputClass}
                   />
