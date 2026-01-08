@@ -53,6 +53,7 @@ import PendingJobs from "../modules/admin/approval-management/pending-jobs-list.
 import ApprovedJobs from "../modules/admin/approval-management/approval-job-list.jsx";
 import ClosedJobs from "../modules/admin/approval-management/closed-jobs-list.jsx";
 import RejectedJobs from "../modules/admin/approval-management/rejected-jobs.jsx";
+import AdminJobRoles from "../modules/admin/job-role/job-roles-list.jsx";
 
 // Define application routes
 const router = createBrowserRouter([
@@ -188,6 +189,7 @@ const router = createBrowserRouter([
       { path: "approved-jobs", element: <ApprovedJobs /> },
       { path: "closed-jobs", element: <ClosedJobs /> },
       { path: "rejected-jobs", element: <RejectedJobs /> },
+      { path: "job-roles", element: <AdminJobRoles /> },
     ],
   },
 ]);

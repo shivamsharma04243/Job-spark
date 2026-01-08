@@ -10,6 +10,12 @@ const getAdminRecruiters = require('../../../api/profile/admin/admin-recruiters'
 const getAdminJobs = require('../../../api/profile/admin/admin-jobs');
 const verifyRecruiter = require('../../../api/profile/admin/admin-verify-recruiter');
 const updateJobStatus = require('../../../api/profile/admin/admin-update-job-status');
+const {
+    getJobRoles,
+    createJobRole,
+    updateJobRole,
+    deleteJobRole
+} = require('../../../api/profile/admin/admin-job-roles');
 
 // Admin Register
 router.post('/register', validateInput, adminRegister);
@@ -24,6 +30,12 @@ router.get('/recruiters', requireAdminAuth, getAdminRecruiters);
 router.get('/jobs', requireAdminAuth, getAdminJobs);
 router.put('/recruiters/:recruiterId/verify', requireAdminAuth, verifyRecruiter);
 router.put('/jobs/:jobId/status', requireAdminAuth, updateJobStatus);
+
+// Job Roles routes
+router.get('/job-roles', requireAdminAuth, getJobRoles);
+router.post('/job-roles', requireAdminAuth, validateInput, createJobRole);
+router.put('/job-roles/:id', requireAdminAuth, validateInput, updateJobRole);
+router.delete('/job-roles/:id', requireAdminAuth, deleteJobRole);
 
 
 
