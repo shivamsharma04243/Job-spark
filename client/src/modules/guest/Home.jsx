@@ -24,6 +24,18 @@ export default function Home() {
 
         {/* Canonical URL */}
         <link rel="canonical" href="https://www.jobion.in/" />
+
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-4NMNL3G3VQ"></script>
+        <script>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-4NMNL3G3VQ');
+          `}
+        </script>
       </Helmet>
 
       <div className="min-h-screen flex flex-col bg-white text-slate-900">
