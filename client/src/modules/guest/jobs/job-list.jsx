@@ -16,7 +16,9 @@ import {
   Building,
   Filter,
   ArrowLeft,
-  X
+  X,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import api from "../../../components/apiconfig/apiconfig";
 import { CATEGORY_FILTER_MAPPING } from "../home/data";
@@ -656,18 +658,21 @@ export default function Jobs() {
               </p>
             </div>
             <div className="w-full sm:w-auto sm:min-w-[320px] md:min-w-[420px]">
-              <div className="flex items-center gap-2 bg-white rounded-xl border border-gray-200 px-4 py-3">
-                <Search size={18} className="text-gray-400 flex-shrink-0" />
-                <input
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-                  className="flex-1 text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-500"
-                  placeholder="Search jobs here"
-                />
+              {/* Mobile-optimized search */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 bg-white rounded-xl border border-gray-200 px-3 sm:px-4 py-2.5 sm:py-3">
+                <div className="flex items-center gap-2 flex-1">
+                  <Search size={18} className="text-gray-400 flex-shrink-0" />
+                  <input
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && applyFilters()}
+                    className="flex-1 text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-500"
+                    placeholder="Search jobs..."
+                  />
+                </div>
                 <button
                   onClick={applyFilters}
-                  className="px-4 py-2 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors flex-shrink-0"
+                  className="w-full sm:w-auto px-4 py-2.5 sm:py-2 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors flex-shrink-0"
                 >
                   Search
                 </button>
@@ -1185,107 +1190,119 @@ export default function Jobs() {
                     key={r.id}
                     className="relative bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
                   >
-                    <div className="p-6">
+                    <div className="p-4 sm:p-6">
                       <button
                         onClick={() => toggleSaveJob(r.id, savedStatus[r.id])}
-                        className="absolute right-4 top-4 text-gray-400 hover:text-primary-600 transition-colors z-10"
+                        className="absolute right-3 top-3 sm:right-4 sm:top-4 text-gray-400 hover:text-primary-600 transition-colors z-10 p-1.5"
                         aria-label={savedStatus[r.id] ? "Unsave job" : "Save job"}
                       >
                         {savedStatus[r.id] ? (
-                          <BookmarkCheck size={18} className="text-primary-600" />
+                          <BookmarkCheck size={20} className="text-primary-600" />
                         ) : (
-                          <Bookmark size={18} />
+                          <Bookmark size={20} />
                         )}
                       </button>
 
-                      <div className="flex flex-col gap-3 sm:gap-4 pr-8">
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      {/* Mobile-optimized job card */}
+                      <div className="flex flex-col gap-3 sm:gap-4 pr-10 sm:pr-8">
+                        {/* Header with title and salary */}
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                           <div className="space-y-1.5 flex-1">
-
-                            <h3 className="text-xl font-bold text-gray-900">
+                            <h3 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
                               {r.title || "Untitled role"}
                             </h3>
-                            <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
+                            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3 text-sm text-gray-600">
                               {r.company && (
                                 <span className="inline-flex items-center gap-1.5">
-                                  <Building2 size={16} className="text-primary-500" /> {r.company}
+                                  <Building2 size={14} className="text-primary-500 flex-shrink-0" /> 
+                                  <span className="truncate">{r.company}</span>
                                 </span>
                               )}
                               {r.workMode === 'Remote' ? (
                                 <span className="inline-flex items-center gap-1.5">
-                                  <Globe size={16} className="text-primary-500" /> Remote
+                                  <Globe size={14} className="text-primary-500 flex-shrink-0" /> 
+                                  Remote
                                 </span>
                               ) : r.location ? (
                                 <span className="inline-flex items-center gap-1.5">
-                                  <MapPin size={16} className="text-primary-500" /> {r.location}
+                                  <MapPin size={14} className="text-primary-500 flex-shrink-0" /> 
+                                  <span className="truncate">{r.location}</span>
                                 </span>
                               ) : null}
                             </div>
                           </div>
 
+                          {/* Salary - more prominent on mobile */}
                           <div className="text-left sm:text-right">
                             {(r.minSalary != null || r.maxSalary != null || r.salary) && (
-                              <p className="text-xl font-semibold text-gray-900">
-                                {formatSalary(r.salary, r.minSalary, r.maxSalary)} /Month
+                              <p className="text-lg sm:text-xl font-semibold text-primary-600 sm:text-gray-900">
+                                {formatSalary(r.salary, r.minSalary, r.maxSalary)}
+                                <span className="text-sm font-normal text-gray-600">/Month</span>
                               </p>
                             )}
                             {r.vacancies && (
-                              <p className="text-xs text-gray-600 mt-1">{r.vacancies} vacancies</p>
+                              <p className="text-xs text-gray-600 mt-0.5">{r.vacancies} vacancies</p>
                             )}
                           </div>
                         </div>
 
+                        {/* Job type badges - optimized for mobile */}
                         <div className="flex flex-wrap gap-2">
                           {r.type && (
-                            <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-50 text-primary-700 rounded-lg text-sm border border-primary-200">
-                              <Briefcase size={14} />
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-1 bg-primary-50 text-primary-700 rounded-lg text-xs sm:text-sm border border-primary-200">
+                              <Briefcase size={12} className="sm:w-3.5 sm:h-3.5" />
                               {r.type}
                             </span>
                           )}
                           {r.experience && (
-                            <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 text-purple-700 rounded-lg text-sm border border-purple-200">
-                              <GraduationCap size={14} />
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-1 bg-purple-50 text-purple-700 rounded-lg text-xs sm:text-sm border border-purple-200">
+                              <GraduationCap size={12} className="sm:w-3.5 sm:h-3.5" />
                               {r.experience}
                             </span>
                           )}
-
                           {r.workMode && (
-                            <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-50 text-green-700 border border-slate-200 rounded-lg text-sm">
-                              {r.workMode === 'Remote' && <Globe size={14} />}
-                              {r.workMode === 'Hybrid' && <Monitor size={14} />}
-                              {(r.workMode === 'Office' || r.workMode === 'On-site') && <Building size={14} />}
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-green-50 text-green-700 border border-slate-200 rounded-lg text-xs sm:text-sm">
+                              {r.workMode === 'Remote' && <Globe size={12} className="sm:w-3.5 sm:h-3.5" />}
+                              {r.workMode === 'Hybrid' && <Monitor size={12} className="sm:w-3.5 sm:h-3.5" />}
+                              {(r.workMode === 'Office' || r.workMode === 'On-site') && <Building size={12} className="sm:w-3.5 sm:h-3.5" />}
                               {r.workMode}
                             </span>
                           )}
                         </div>
 
-                        <div className="flex flex-col gap-3 pt-4 border-t border-gray-200 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="flex flex-wrap gap-2">
-                            <span className="px-3 py-1.5 bg-primary-50 text-primary-700 border border-primary-200 rounded-lg text-sm font-medium">
-                              Skills
-                            </span>
-
+                        {/* Skills section - mobile optimized */}
+                        <div className="flex flex-col gap-3 pt-3 sm:pt-4 border-t border-gray-200">
+                          <div className="flex flex-wrap gap-1.5 sm:gap-2">
                             {r.skills && r.skills.length > 0 && (
-                              r.skills.map((skill) => (
-                                <span
-                                  key={skill}
-                                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-gray-300 text-gray-600 bg-gray-50"
-                                >
-                                  {skill}
+                              <>
+                                <span className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-primary-50 text-primary-700 border border-primary-200 rounded-lg text-xs sm:text-sm font-medium">
+                                  Skills
                                 </span>
-                              ))
+                                {r.skills.slice(0, 3).map((skill) => (
+                                  <span
+                                    key={skill}
+                                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-gray-300 text-gray-600 bg-gray-50"
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
+                                {r.skills.length > 3 && (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs text-gray-500">
+                                    +{r.skills.length - 3} more
+                                  </span>
+                                )}
+                              </>
                             )}
                           </div>
 
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => navigate(`/jobs/${r.id}`)}
-                              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors"
-                            >
-                              View details
-                              <ArrowUpRight size={16} />
-                            </button>
-                          </div>
+                          {/* View details button - full width on mobile */}
+                          <button
+                            onClick={() => navigate(`/jobs/${r.id}`)}
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 sm:gap-1.5 px-4 py-2.5 sm:py-1.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors sm:bg-transparent sm:text-primary-600 sm:hover:text-primary-700 sm:p-0"
+                          >
+                            View details
+                            <ArrowUpRight size={16} />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -1294,39 +1311,68 @@ export default function Jobs() {
               </div>
             )}
 
-            <div className="flex justify-center items-center gap-2 mt-6 sm:mt-8">
-              <button
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                disabled={page === 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-              >
-                Previous
-              </button>
+            {/* Mobile-optimized pagination */}
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-2 mt-6 sm:mt-8">
+              {/* Mobile: Simple Previous/Next with page info */}
+              <div className="flex sm:hidden w-full items-center justify-between gap-3">
+                <button
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                >
+                  <ChevronLeft size={18} />
+                  Previous
+                </button>
+                
+                <span className="text-sm text-gray-600 font-medium">
+                  Page {page} of {totalPages}
+                </span>
+                
+                <button
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={page === totalPages || filteredWithoutSaved.length === 0}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                >
+                  Next
+                  <ChevronRight size={18} />
+                </button>
+              </div>
 
-              {Array.from({ length: totalPages }).map((_, i) => {
-                const pageNum = i + 1;
-                const active = page === pageNum;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => setPage(pageNum)}
-                    className={`px-3 py-2 text-sm font-medium rounded-lg border transition-colors ${active
-                      ? "bg-primary-600 text-white border-primary-600"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                      }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
+              {/* Desktop: Full pagination with page numbers */}
+              <div className="hidden sm:flex justify-center items-center gap-2">
+                <button
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                >
+                  Previous
+                </button>
 
-              <button
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                disabled={page === totalPages || filteredWithoutSaved.length === 0}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              >
-                Next
-              </button>
+                {Array.from({ length: totalPages }).map((_, i) => {
+                  const pageNum = i + 1;
+                  const active = page === pageNum;
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setPage(pageNum)}
+                      className={`px-3 py-2 text-sm font-medium rounded-lg border transition-colors ${active
+                        ? "bg-primary-600 text-white border-primary-600"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                        }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={page === totalPages || filteredWithoutSaved.length === 0}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                >
+                  Next
+                </button>
+              </div>
             </div>
 
           </section>
