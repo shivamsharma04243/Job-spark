@@ -1214,18 +1214,18 @@ export default function Jobs() {
                             <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3 text-sm text-gray-600">
                               {r.company && (
                                 <span className="inline-flex items-center gap-1.5">
-                                  <Building2 size={14} className="text-primary-500 flex-shrink-0" /> 
+                                  <Building2 size={14} className="text-primary-500 flex-shrink-0" />
                                   <span className="truncate">{r.company}</span>
                                 </span>
                               )}
                               {r.workMode === 'Remote' ? (
                                 <span className="inline-flex items-center gap-1.5">
-                                  <Globe size={14} className="text-primary-500 flex-shrink-0" /> 
+                                  <Globe size={14} className="text-primary-500 flex-shrink-0" />
                                   Remote
                                 </span>
                               ) : r.location ? (
                                 <span className="inline-flex items-center gap-1.5">
-                                  <MapPin size={14} className="text-primary-500 flex-shrink-0" /> 
+                                  <MapPin size={14} className="text-primary-500 flex-shrink-0" />
                                   <span className="truncate">{r.location}</span>
                                 </span>
                               ) : null}
@@ -1298,7 +1298,7 @@ export default function Jobs() {
                           {/* View details button - full width on mobile */}
                           <button
                             onClick={() => navigate(`/jobs/${r.id}`)}
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 sm:gap-1.5 px-4 py-2.5 sm:py-1.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors sm:bg-transparent sm:text-primary-600 sm:hover:text-primary-700 sm:p-0"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 sm:gap-1.5 px-4 py-2.5 sm:py-1.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 hover:text-white rounded-lg transition-colors sm:bg-transparent sm:text-primary-600 sm:hover:text-primary-700 sm:p-0"
                           >
                             View details
                             <ArrowUpRight size={16} />
@@ -1323,11 +1323,11 @@ export default function Jobs() {
                   <ChevronLeft size={18} />
                   Previous
                 </button>
-                
+
                 <span className="text-sm text-gray-600 font-medium">
                   Page {page} of {totalPages}
                 </span>
-                
+
                 <button
                   className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={page === totalPages || filteredWithoutSaved.length === 0}
