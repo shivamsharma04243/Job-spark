@@ -527,6 +527,39 @@ Work Details:
     maxSalary: "30000",
     vacancies: 2
   },
+  "Content Writer": {
+    description: `We are hiring Content Writers to create engaging written content for our brand.
+
+Responsibilities:
+• Write high-quality content for websites, blogs, social media, and marketing materials
+• Research topics and gather information to create accurate and informative content
+• Edit and proofread content to ensure clarity, grammar, and brand consistency
+• Optimize content for SEO to improve search engine visibility
+• Collaborate with marketing and design teams to develop content strategies
+• Adapt writing style for different platforms and target audiences
+
+Requirements:
+• Excellent writing skills in English
+• Strong grammar and proofreading abilities
+• Basic understanding of SEO principles
+• Research and analytical skills
+• Creativity and ability to write engaging content
+• Freshers with strong writing skills and portfolio are welcome
+
+Work Details:
+• Full-time position
+• Office/Remote/Hybrid work options available
+• Creative and collaborative environment
+• Opportunity to work on diverse content projects`,
+    skills: "Content Writing, SEO, Copywriting, Blog Writing, Social Media Content, Proofreading, Research, Grammar, Creative Writing",
+    minExperience: "0",
+    maxExperience: "3",
+    jobType: "Full-time",
+    workMode: "Office",
+    minSalary: "15000",
+    maxSalary: "35000",
+    vacancies: 1
+  },
   "Marketing Intern": {
     description: `We are looking for Marketing Interns to learn marketing skills.
 
