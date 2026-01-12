@@ -12,7 +12,8 @@ import {
   XCircle,
   Archive,
   LogOut,
-  Tag
+  Tag,
+  FileCheck
 } from "lucide-react";
 import api from "../../../components/apiconfig/apiconfig";
 
@@ -35,6 +36,7 @@ const AdminSidebar = () => {
     { title: "Approved Jobs", icon: <CheckCircle />, path: "/admin/approved-jobs" },
     { title: "Rejected Jobs", icon: <XCircle />, path: "/admin/rejected-jobs" },
     { title: "Closed Jobs", icon: <Archive />, path: "/admin/closed-jobs" },
+    { title: "Applications", icon: <FileCheck />, path: "/admin/applications" },
     { title: "Job Roles", icon: <Tag />, path: "/admin/job-roles" },
   ];
 

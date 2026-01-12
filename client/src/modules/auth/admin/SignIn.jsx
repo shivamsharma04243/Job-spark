@@ -135,11 +135,10 @@ export default function AdminSignIn() {
                   </label>
                   <input
                     name="email"
-                    className={`w-full rounded-lg border px-4 py-3 text-sm focus:ring-2 transition-colors outline-none ${
-                      fieldErrors.email && fieldTouched.email
+                    className={`w-full rounded-lg border px-4 py-3 text-sm focus:ring-2 transition-colors outline-none ${fieldErrors.email && fieldTouched.email
                         ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                         : "border-gray-300 focus:border-blue-500 focus:ring-blue-200"
-                    }`}
+                      }`}
                     placeholder="admin@jobion.com"
                     type="email"
                     value={formData.email}
@@ -158,11 +157,10 @@ export default function AdminSignIn() {
                   </label>
                   <input
                     name="password"
-                    className={`w-full rounded-lg border px-4 py-3 text-sm focus:ring-2 transition-colors outline-none ${
-                      fieldErrors.password && fieldTouched.password
+                    className={`w-full rounded-lg border px-4 py-3 text-sm focus:ring-2 transition-colors outline-none ${fieldErrors.password && fieldTouched.password
                         ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                         : "border-gray-300 focus:border-blue-500 focus:ring-blue-200"
-                    }`}
+                      }`}
                     placeholder="Enter your password"
                     type="password"
                     value={formData.password}
@@ -254,15 +252,7 @@ export default function AdminSignIn() {
 
             {/* Links */}
             <div className="text-center pt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-600">
-                Need an admin account?{" "}
-                <a
-                  className="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
-                  href="/admin/signup"
-                >
-                  Register here
-                </a>
-              </p>
+
               <p className="text-sm text-gray-600 mt-2">
                 Regular user?{" "}
                 <a

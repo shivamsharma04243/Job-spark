@@ -16,6 +16,13 @@ const {
     updateJobRole,
     deleteJobRole
 } = require('../../../api/profile/admin/admin-job-roles');
+const {
+    getAllApplications,
+    getApplicationsByJob,
+    getApplicationsByRecruiter,
+    getApplicationsByCandidate,
+    getApplicationStats
+} = require('../../../api/profile/admin/admin-applications');
 
 // Admin Register
 router.post('/register', validateInput, adminRegister);
@@ -37,6 +44,11 @@ router.post('/job-roles', requireAdminAuth, validateInput, createJobRole);
 router.put('/job-roles/:id', requireAdminAuth, validateInput, updateJobRole);
 router.delete('/job-roles/:id', requireAdminAuth, deleteJobRole);
 
-
+// Applications routes
+router.get('/applications', requireAdminAuth, getAllApplications);
+router.get('/applications/job/:jobId', requireAdminAuth, getApplicationsByJob);
+router.get('/applications/recruiter/:recruiterId', requireAdminAuth, getApplicationsByRecruiter);
+router.get('/applications/candidate/:candidateId', requireAdminAuth, getApplicationsByCandidate);
+router.get('/applications/stats', requireAdminAuth, getApplicationStats);
 
 module.exports = router;
