@@ -651,7 +651,7 @@ export default function JobDetail() {
             )}
 
             {/* Contact Information Card */}
-            {(job.interviewAddress || job.contactEmail || job.contactPhone) && (
+            {((job.interviewAddress && job.showInterviewAddress !== false) || job.contactEmail || (job.contactPhone && job.showContactPhone !== false)) && (
               <div className="card">
                 <div className="p-4 sm:p-6 border-b border-border">
                   <div className="flex items-center justify-between">
@@ -666,7 +666,7 @@ export default function JobDetail() {
                 </div>
                 <div className="p-4 sm:p-6 space-y-4">
                   {/* Interview/Office Address */}
-                  {job.interviewAddress && (
+                  {job.interviewAddress && (job.showInterviewAddress !== false) && (
                     <div className="flex items-start gap-3">
                       <MapPinned size={18} className="text-primary-500 flex-shrink-0 mt-0.5" />
                       <div className="flex-1">
@@ -700,7 +700,7 @@ export default function JobDetail() {
                   )}
 
                   {/* Contact Phone */}
-                  {job.contactPhone && (
+                  {job.contactPhone && (job.showContactPhone !== false) && (
                     <div className="flex items-start gap-3">
                       <Phone size={18} className="text-primary-500 flex-shrink-0 mt-0.5" />
                       <div className="flex-1">

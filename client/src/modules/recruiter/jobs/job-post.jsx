@@ -1383,6 +1383,8 @@ export default function AdminPostJob() {
     interviewAddress: "",
     contactEmail: "",
     contactPhone: "",
+    showInterviewAddress: true,
+    showContactPhone: true,
   });
 
   const [errors, setErrors] = useState({});
@@ -1989,6 +1991,8 @@ export default function AdminPostJob() {
       payload.append("interviewAddress", form.interviewAddress);
       payload.append("contactEmail", form.contactEmail);
       payload.append("contactPhone", form.contactPhone);
+      payload.append("showInterviewAddress", form.showInterviewAddress.toString());
+      payload.append("showContactPhone", form.showContactPhone.toString());
 
       // send to backend using axios instance
       const { data } = await api.post("/recruiter/jobs/create", payload, {
@@ -2019,6 +2023,8 @@ export default function AdminPostJob() {
         interviewAddress: recruiterDefaults.interviewAddress,
         contactEmail: recruiterDefaults.contactEmail,
         contactPhone: recruiterDefaults.contactPhone,
+        showInterviewAddress: true,
+        showContactPhone: true,
       });
       setSearchTerm("");
       setErrors({});
@@ -2092,10 +2098,9 @@ export default function AdminPostJob() {
                     value={searchTerm}
                     onChange={handleInputChange}
                     onFocus={handleInputFocus}
-                    onBlur={(e) => {
-                      handleInputBlur(); // Close dropdown
-                      handleBlur("roleId", form.roleId); // Validation
-                    }}
+                    // For job role, we rely on submit-time validation and role change,
+                    // not on blur, to avoid race conditions with async state updates.
+                    onBlur={handleInputBlur}
                     onKeyDown={handleKeyDown}
                     placeholder={rolesLoading ? "Loading roles..." : "-- Select or type to search job role --"}
                     className={`${selectClass} ${errors.roleId && fieldTouched.roleId ? '!border-red-500' : ''}`}
@@ -2405,7 +2410,35 @@ export default function AdminPostJob() {
             </div>
             <div className="p-6 space-y-5">
               <div>
-                <label className={labelClass}>Interview / Office Address</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className={labelClass}>Interview / Office Address</label>
+                  <button
+                    type="button"
+                    onClick={() => updateField("showInterviewAddress", !form.showInterviewAddress)}
+                    className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                      form.showInterviewAddress
+                        ? "bg-green-50 text-green-700 border-green-300 hover:bg-green-100"
+                        : "bg-gray-50 text-gray-600 border-gray-300 hover:bg-gray-100"
+                    }`}
+                  >
+                    {form.showInterviewAddress ? (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        Show to Candidates
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                        </svg>
+                        Hidden from Candidates
+                      </>
+                    )}
+                  </button>
+                </div>
                 <input
                   value={form.interviewAddress}
                   onChange={(e) => updateField("interviewAddress", e.target.value)}
@@ -2432,7 +2465,35 @@ export default function AdminPostJob() {
                   )}
                 </div>
                 <div>
-                  <label className={labelClass}>Contact Phone</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className={labelClass}>Contact Phone</label>
+                    <button
+                      type="button"
+                      onClick={() => updateField("showContactPhone", !form.showContactPhone)}
+                      className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                        form.showContactPhone
+                          ? "bg-green-50 text-green-700 border-green-300 hover:bg-green-100"
+                          : "bg-gray-50 text-gray-600 border-gray-300 hover:bg-gray-100"
+                      }`}
+                    >
+                      {form.showContactPhone ? (
+                        <>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                          Show to Candidates
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                        </svg>
+                          Hidden from Candidates
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <input
                     value={form.contactPhone}
                     readOnly
@@ -2495,13 +2556,13 @@ export default function AdminPostJob() {
                       interviewAddress: recruiterDefaults.interviewAddress,
                       contactEmail: recruiterDefaults.contactEmail,
                       contactPhone: recruiterDefaults.contactPhone,
+                      showInterviewAddress: true,
+                      showContactPhone: true,
                     });
                     setSearchTerm("");
                     setErrors({});
                     setSuccess(null);
                     setTermsAccepted(false);
-                    setIsAutoClassified(false);
-                    setClassificationConfidence("none");
                     setAutoFilledFields(new Set());
                   }}
                   className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"

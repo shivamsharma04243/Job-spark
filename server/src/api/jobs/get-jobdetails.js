@@ -108,6 +108,8 @@ async function getjobdetails(req, res) {
         j.contact_email,
         j.contact_phone,
         j.interview_address,
+        j.show_interview_address,
+        j.show_contact_phone,
         j.recruiter_id
       FROM jobs j
       LEFT JOIN job_roles jr ON j.role_id = jr.id
@@ -188,6 +190,8 @@ async function getjobdetails(req, res) {
       contactEmail: r.contact_email || null,
       contactPhone: r.contact_phone || null,
       interviewAddress: r.interview_address || null,
+      showInterviewAddress: r.show_interview_address !== undefined ? Boolean(r.show_interview_address) : true,
+      showContactPhone: r.show_contact_phone !== undefined ? Boolean(r.show_contact_phone) : true,
       recruiterId: r.recruiter_id || null,
     };
 

@@ -60,6 +60,8 @@ async function createJobHandler(req, res) {
         contactEmail = "",
         contactPhone = "",
         skills = "",
+        showInterviewAddress = "true",
+        showContactPhone = "true",
       } = req.body;
 
       // simple validation
@@ -101,13 +103,17 @@ async function createJobHandler(req, res) {
       const validWorkModes = ['Office', 'Remote', 'Hybrid'];
       const workModeValue = validWorkModes.includes(workMode) ? workMode : 'Office';
 
+      // Convert boolean strings to actual booleans
+      const showInterviewAddressBool = showInterviewAddress === "true" || showInterviewAddress === true;
+      const showContactPhoneBool = showContactPhone === "true" || showContactPhone === true;
+
       // Insert into DB (use placeholders)
       // Set status to 'pending' by default - jobs need admin approval
       // Note: title is derived from role_id via JOIN with job_roles table
       const sql = `
         INSERT INTO jobs
-          (role_id, company, job_type, work_mode, city, state, country, locality, min_experience, max_experience, min_salary, max_salary, vacancies, description, interview_address, contact_email, contact_phone, logo_path, recruiter_id, status, posted_at, expires_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY))
+          (role_id, company, job_type, work_mode, city, state, country, locality, min_experience, max_experience, min_salary, max_salary, vacancies, description, interview_address, contact_email, contact_phone, show_interview_address, show_contact_phone, logo_path, recruiter_id, status, posted_at, expires_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY))
       `;
 
       const params = [
@@ -128,6 +134,8 @@ async function createJobHandler(req, res) {
         interviewAddress || null,
         contactEmail || null,
         contactPhone || null,
+        showInterviewAddressBool,
+        showContactPhoneBool,
         logoPath,
         recruiterId,
       ];
