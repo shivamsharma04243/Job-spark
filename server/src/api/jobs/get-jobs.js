@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const CATEGORY_FILTER_MAPPING = require('../config/category-filters');
 
 // Allowed values for each filter type to prevent injection
-const ALLOWED_JOB_TYPES = ['Full Time', 'Part Time', 'Contract', 'Internship', 'Freelance'];
+const ALLOWED_JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'];
 const ALLOWED_WORK_MODES = ['Office', 'Remote', 'Hybrid'];
 const ALLOWED_EXPERIENCE = ['0']; // Only '0' for fresher filter
 

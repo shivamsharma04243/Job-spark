@@ -10,13 +10,13 @@ const CATEGORY_FILTER_MAPPING = {
   "full-time": {
     label: "Full-time Jobs",
     filters: {
-      jobTypes: ["Full Time"],
+      jobTypes: ["Full-time"],
     },
   },
   "part-time": {
     label: "Part-time Jobs",
     filters: {
-      jobTypes: ["Part Time"],
+      jobTypes: ["Part-time"],
     },
   },
   internship: {
