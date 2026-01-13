@@ -163,7 +163,7 @@ export default function Hero() {
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     <div className="relative sm:col-span-2 lg:col-span-1">
-                      <label className="label text-text-muted">
+                      <label className="label text-text-dark text-left sm:text-center sm:block mb-1.5">
                         Job title or skill
                       </label>
                       <div className="relative flex items-center gap-2.5 rounded-input px-3.5 py-2.5 sm:py-3 bg-white border border-border focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20 transition-all">
@@ -205,7 +205,7 @@ export default function Hero() {
                     </div>
 
                     <div>
-                      <label className="label text-text-muted">
+                      <label className="label text-text-dark text-left sm:text-center sm:block mb-1.5">
                         City / area
                       </label>
                       <div className="relative flex items-center gap-2.5 rounded-input px-3.5 py-2.5 sm:py-3 bg-white border border-border focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20 transition-all">
@@ -246,7 +246,7 @@ export default function Hero() {
                     </div>
 
                     <div>
-                      <label className="label text-text-muted">
+                      <label className="label text-text-dark text-left sm:text-center sm:block mb-1.5">
                         Experience
                       </label>
                       <select
