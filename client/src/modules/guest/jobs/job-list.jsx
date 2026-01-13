@@ -513,7 +513,7 @@ export default function Jobs() {
 
         switch (selectedExperience) {
           case "0":
-            return minExp === 0 && (maxExp === 0 || maxExp === null);
+            return minExp === 0; // Only check min experience, ignore max experience
           case "0-2":
             return minExp >= 0 && maxExp <= 2;
           case "2-5":
